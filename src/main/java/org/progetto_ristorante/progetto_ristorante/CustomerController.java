@@ -229,11 +229,9 @@ public class CustomerController {
     // simulates a customer order
     @FXML
     private void getOrder() {
-
         final int WAITER_PORT = 1316;           // used to communicate with the waiter
 
         try {
-
             // creates a socket to communicate with the waiter
             Socket waiterSocket = new Socket(InetAddress.getLocalHost(), WAITER_PORT);
 
@@ -255,27 +253,28 @@ public class CustomerController {
                 // closes the interface and stop the execution
                 Stage stage = (Stage) orderField.getScene().getWindow();
                 stage.close();
-            }
+            } else if (!order.isEmpty()) { // Check if the order is not empty before checking its availability
 
-            // if the requested order isn't in the menù, shows an error message
-            if (checkOrder(order) < 0.50f) {
-                unavailableOrder.setVisible(true);
-            } else {
+                // if the requested order isn't in the menù, shows an error message
+                if (checkOrder(order) < 0.50f) {
+                    unavailableOrder.setVisible(true);
+                } else {
 
-                // sends the order to the waiter
-                unavailableOrder.setVisible(false);
-                System.out.println("(Cliente) Attendo che " + order + " sia pronto");
-                takeOrder.println(order);
+                    // sends the order to the waiter
+                    unavailableOrder.setVisible(false);
+                    System.out.println("(Cliente) Attendo che " + order + " sia pronto");
+                    takeOrder.println(order);
 
-                // waits for the order and eats it
-                order = eatOrder.readLine();
+                    // waits for the order and eats it
+                    order = eatOrder.readLine();
 
-                // adds the order to the customer's list and its price to the bill
-                totalOrdered.append(order).append("\n");
-                bill += checkOrder(order);
+                    // adds the order to the customer's list and its price to the bill
+                    totalOrdered.append(order).append("\n");
+                    bill += checkOrder(order);
 
-                // eats the order
-                System.out.println("(Cliente) Mangio " + order);
+                    // eats the order
+                    System.out.println("(Cliente) Mangio " + order);
+                }
             }
 
             // shows orders and total bill
@@ -285,6 +284,7 @@ public class CustomerController {
             throw new RuntimeException(exc);
         }
     }
+
 
     // deletes the elements of the interface that allows users to say how many seats they require
     private void deleteSeatsInterface() {
