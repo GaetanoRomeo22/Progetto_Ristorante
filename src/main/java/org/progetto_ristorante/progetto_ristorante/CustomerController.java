@@ -25,8 +25,6 @@ public class CustomerController {
     @FXML
     private TextArea totalOrderedArea;
 
-
-
     @FXML
     private Text billText;
 
@@ -49,7 +47,8 @@ public class CustomerController {
     private Label orderLabel;
 
     @FXML
-    private Button orderButton;
+    private Button orderButton,
+                   stopButton;
 
     @FXML
     private Text unavailableOrder;
@@ -302,5 +301,13 @@ public class CustomerController {
         orderField.setVisible(true);
         orderLabel.setVisible(true);
         orderButton.setVisible(true);
+        stopButton.setVisible(true);
+    }
+
+    // closes customer's interface once he has done
+    @FXML
+    private void closeInterface() {
+        Stage stage = (Stage) stopButton.getScene().getWindow();
+        stage.close();
     }
 }

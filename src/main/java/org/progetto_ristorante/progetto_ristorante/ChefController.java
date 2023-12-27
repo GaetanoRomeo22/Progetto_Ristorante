@@ -13,13 +13,12 @@ public class ChefController {
     @FXML
     private TextField menuOrderField,
                       orderPriceField;
+    
     @FXML
     private void cook() {
         final int PORT = 1315;              // used for communication with waiters
         Socket acceptedOrder;               // used to accept an order
 
-        Stage stage = (Stage) menuOrderField.getScene().getWindow();
-        stage.close();
         // creates a server socket with the specified port to communicate with waiters
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
 
