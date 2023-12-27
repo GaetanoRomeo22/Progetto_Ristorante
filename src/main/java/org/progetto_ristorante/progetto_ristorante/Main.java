@@ -3,23 +3,24 @@ package org.progetto_ristorante.progetto_ristorante;
 public class Main {
     public static void main(String[] args) {
         try {
-            // Esegui il processo Chef
-            ProcessBuilder chefBuilder = new ProcessBuilder("java", "Chef");
+
+            // executes chef process
+            ProcessBuilder chefBuilder = new ProcessBuilder("java", "org.progetto_ristorante.progetto_ristorante.Chef");
             Process chefProcess = chefBuilder.start();
 
-            // Esegui il processo Receptionist
+            // executes receptionist process
             ProcessBuilder receptionistBuilder = new ProcessBuilder("java", "Receptionist");
             Process receptionistProcess = receptionistBuilder.start();
 
-            // Esegui il processo Waiter
+            // executes waiter process
             ProcessBuilder waiterBuilder = new ProcessBuilder("java", "Waiter");
             Process waiterProcess = waiterBuilder.start();
 
-            // Esegui il processo Customer
+            // executes customer process
             ProcessBuilder customerBuilder = new ProcessBuilder("java", "Customer");
             Process customerProcess = customerBuilder.start();
 
-            // Attendi che tutti i processi terminino
+            // waits for their termination
             int chefExitCode = chefProcess.waitFor();
             int receptionistExitCode = receptionistProcess.waitFor();
             int waiterExitCode = waiterProcess.waitFor();
@@ -29,9 +30,8 @@ public class Main {
             System.out.println("Receptionist Exit Code: " + receptionistExitCode);
             System.out.println("Waiter Exit Code: " + waiterExitCode);
             System.out.println("Customer Exit Code: " + customerExitCode);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e) ;
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
         }
     }
 }

@@ -13,7 +13,7 @@ public class Customer extends Application {
     }
 
     public void start(Stage stage) throws IOException {
-        stage.setTitle("Interfaccia posti");
+        stage.setTitle("Interfaccia clienti");
         FXMLLoader fxmlLoader = new FXMLLoader(Customer.class.getResource("CustomerInterface.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setScene(scene);

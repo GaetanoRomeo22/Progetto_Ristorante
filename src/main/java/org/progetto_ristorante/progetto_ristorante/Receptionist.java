@@ -14,9 +14,9 @@ public class Receptionist {
     final static Object lock = new Object();             // lock to synchronize the access to the receptionist by many customers
     static Random rand = new Random();                   // used to generate random numbers
     static int availableSeats = 100,                     // number of available seats for customers
-            availableTables = 20,                        // number of available tables for customers
-            requiredSeats,                               // number of customer's required seats
-            tableNumber;                                 // customer's table number
+               availableTables = 20,                     // number of available tables for customers
+               requiredSeats,                            // number of customer's required seats
+               tableNumber;                              // customer's table number
     static int [] tables = new int[MAX_TABLES];          // 0 in a cell means free table, 1 means occupied table
     static BufferedReader readSeatsNumber;               // used to read customer requested seats
     static PrintWriter giveTableNumber;                  // used to assign a table to the customer

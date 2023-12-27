@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.*;
@@ -17,6 +18,18 @@ public class CustomerController {
 
     @FXML
     private VBox customerInterface;
+
+    @FXML
+    private Label totalOrderedLabel;
+
+    @FXML
+    private TextArea totalOrderedArea;
+
+    @FXML
+    private Label billLabel;
+
+    @FXML
+    private Text billText;
 
     @FXML
     private TextField requiredSeatsField;
@@ -45,7 +58,6 @@ public class CustomerController {
     @FXML
     private void getRequiredSeats() {
 
-        Socket waiterSocket;
         try {
             final int RECEPTIONIST_PORT = 1313;     // used to communicate with the receptionist
 
@@ -67,15 +79,10 @@ public class CustomerController {
                 receptionSocket.close();
 
                 // erases first interface
-                customerInterface.getChildren().remove(requiredSeatsField);
-                customerInterface.getChildren().remove(seatsLabel);
-                customerInterface.getChildren().remove(seatsButton);
+                deleteSeatsInterface();
 
                 // shows second interface's elements
-                menuArea.setVisible(true);
-                orderField.setVisible(true);
-                orderLabel.setVisible(true);
-                orderButton.setVisible(true);
+                showOrderInterface();
 
                 // shows the menu
                 getMenu();
@@ -239,46 +246,63 @@ public class CustomerController {
             String order;
             float bill = 0.0f;
 
-            do {
+            // gets customer's order
+            order = orderField.getText();
 
-                // gets customer's order
-                order = orderField.getText();
+            // if the customer stops eating
+            if (order.equalsIgnoreCase("fine")) {
+                takeOrder.println("fine");
 
-                // if the customer stops eating
-                if (order.equalsIgnoreCase("fine")) {
-                    takeOrder.println("fine");
+                // closes the interface and stop the execution
+                Stage stage = (Stage) orderField.getScene().getWindow();
+                stage.close();
+            }
 
-                    // closes the interface and stop the execution
-                    Stage stage = (Stage) orderField.getScene().getWindow();
-                    stage.close();
-                    break;
-                }
-                // if the requested order isn't in the menù, shows an error message
-                if (checkOrder(order) < 0.50f) {
-                    unavailableOrder.setVisible(true);
-                } else {
+            // if the requested order isn't in the menù, shows an error message
+            if (checkOrder(order) < 0.50f) {
+                unavailableOrder.setVisible(true);
+            } else {
 
-                    // sends the order to the waiter
-                    unavailableOrder.setVisible(false);
-                    System.out.println("(Cliente) Attendo che " + order + " sia pronto");
-                    takeOrder.println(order);
+                // sends the order to the waiter
+                unavailableOrder.setVisible(false);
+                System.out.println("(Cliente) Attendo che " + order + " sia pronto");
+                takeOrder.println(order);
 
-                    // waits for the order and eats it
-                    order = eatOrder.readLine();
+                // waits for the order and eats it
+                order = eatOrder.readLine();
 
-                    // adds the order to the customer's list and its price to the bill
-                    totalOrdered.append(order).append("\n");
-                    bill += checkOrder(order);
+                // adds the order to the customer's list and its price to the bill
+                totalOrdered.append(order).append("\n");
+                bill += checkOrder(order);
 
-                    // eats the order
-                    System.out.println("(Cliente) Mangio " + order);
-                }
-            } while (true);
+                // eats the order
+                System.out.println("(Cliente) Mangio " + order);
+            }
 
-            System.out.println("Lista degli ordini: " + "\n" + totalOrdered);
-            System.out.println("(Cliente) Conto: " + bill + '€');
+            // shows orders and total bill
+            totalOrderedArea.appendText(totalOrdered + "\n");
+            billText.setText("Conto: " + String.format("%.2f", bill) + "€");
         } catch (IOException exc) {
             throw new RuntimeException(exc);
         }
+    }
+
+    // deletes the elements of the interface that allows users to say how many seats they require
+    private void deleteSeatsInterface() {
+        customerInterface.getChildren().remove(requiredSeatsField);
+        customerInterface.getChildren().remove(seatsLabel);
+        customerInterface.getChildren().remove(seatsButton);
+    }
+
+    // shows the interface that allows users to get orders
+    private void showOrderInterface() {
+        totalOrderedLabel.setVisible(true);
+        totalOrderedArea.setVisible(true);
+        billLabel.setVisible(true);
+        billText.setVisible(true);
+        menuArea.setVisible(true);
+        orderField.setVisible(true);
+        orderLabel.setVisible(true);
+        orderButton.setVisible(true);
     }
 }
