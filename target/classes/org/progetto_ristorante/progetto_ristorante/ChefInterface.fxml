@@ -22,10 +22,11 @@
 
     <!-- Price's Writing -->
     <Label text="Indica il prezzo dell'ordine" style="-fx-font-size: 16px; -fx-text-fill: #333333;"/>
-    <TextField fx:id="orderPriceField" style="-fx-font-size: 14px"/>
+    <TextField fx:id="orderPriceField"         style="-fx-font-size: 14px"/>
     <!-- Price's Writing -->
 
-    <!-- Commit Button -->
+    <!-- Commit Buttons -->
     <Button text="Conferma" onAction="#addOrder"/>
-    <!-- Commit Button -->
+    <Button text="Fine"     onAction="#cook"/>
+    <!-- Commit Buttons -->
 </VBox>
