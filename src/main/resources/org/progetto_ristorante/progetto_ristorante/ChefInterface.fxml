@@ -27,5 +27,6 @@
 
     <!-- Commit Button -->
     <Button text="Conferma" onAction="#addOrder"/>
+    <Button text="Fine"     onAction="#cook"/>
     <!-- Commit Button -->
 </VBox>
