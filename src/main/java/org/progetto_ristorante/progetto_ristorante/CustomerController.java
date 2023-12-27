@@ -25,8 +25,7 @@ public class CustomerController {
     @FXML
     private TextArea totalOrderedArea;
 
-    @FXML
-    private Label billLabel;
+
 
     @FXML
     private Text billText;
@@ -53,7 +52,7 @@ public class CustomerController {
     private Button orderButton;
 
     @FXML
-    private Label unavailableOrder;
+    private Text unavailableOrder;
 
     @FXML
     private void getRequiredSeats() {
@@ -298,7 +297,6 @@ public class CustomerController {
     private void showOrderInterface() {
         totalOrderedLabel.setVisible(true);
         totalOrderedArea.setVisible(true);
-        billLabel.setVisible(true);
         billText.setVisible(true);
         menuArea.setVisible(true);
         orderField.setVisible(true);
