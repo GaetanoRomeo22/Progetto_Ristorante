@@ -20,7 +20,6 @@
     <!-- Orders and Bill -->
     <Label fx:id="totalOrderedLabel" text="Ordini effettuati:" style="-fx-font-size: 16px; -fx-text-fill: #333333;" visible="false"/>
     <TextArea fx:id="totalOrderedArea" style="-fx-font-size: 14px" visible="false" editable="false"/>
-    <Label fx:id="billLabel" text="Conto: 0€" style="-fx-font-size: 16px; -fx-text-fill: #333333;" visible="false"/>
     <Text fx:id="billText" style="-fx-font-size: 14px" visible="false"/>
     <!-- Orders and Bill -->
 
@@ -41,6 +40,6 @@
     <!-- Commit Button -->
 
     <!-- Error Messages -->
-    <Label fx:id="unavailableOrder" text="L'ordine non è presente nel menù, riprovare" textFill="red" visible="false"/>
+    <Text fx:id="unavailableOrder" text="L'ordine non è presente nel menù, riprovare" visible="false" fill="red"/>
     <!-- Error Messages -->
 </VBox>
