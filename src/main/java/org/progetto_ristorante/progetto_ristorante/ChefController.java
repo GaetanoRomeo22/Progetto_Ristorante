@@ -1,9 +1,12 @@
 package org.progetto_ristorante.progetto_ristorante;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.*;
@@ -19,42 +22,63 @@ public class ChefController implements Initializable {
 
     @FXML
     private TextField menuOrderField,
-                      orderPriceField;
+            orderPriceField;
+    @FXML
+    private static Text orderStatus;
+
+    @FXML
+    private Button Conferma,
+                   Fine;
 
     // disables automatic focus on interface's elements
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         menuOrderField.setFocusTraversable(false);
         orderPriceField.setFocusTraversable(false);
+        orderStatus = new Text();
+    }
+
+    public static void updateOrderStatus(String status) {
+        // Puoi utilizzare un controllo JavaFX, come un Text o una Label, per mostrare lo stato
+        // In questo esempio, si presume che tu abbia un oggetto Text chiamato orderStatusText
+
+        orderStatus.setText(status);
     }
 
     @FXML
     private void cook() {
 
-        // hides interface's elements
-        chefInterface.getChildren().remove(menuOrderField);
-        chefInterface.getChildren().remove(orderPriceField);
-
         final int PORT = 1315;              // used for communication with waiters
-        Socket acceptedOrder;               // used to accept an order
 
-        // creates a server socket with the specified port to communicate with waiters
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
 
-            // keeps cooking clients' orders and sending them to waiters
-            do {
+        menuOrderField.setManaged(false);
+        menuOrderField.setVisible(false);
+        orderPriceField.setManaged(false);
+        orderPriceField.setVisible(false);
 
-                // waits for an order request by a waiter
-                acceptedOrder = serverSocket.accept();
+        Fine.setManaged(false);
+        Fine.setVisible(false);
+        Conferma.setManaged(false);
+        Conferma.setVisible(false);
+        // Avvia il thread per il server socket
+        Thread serverThread = new Thread(() -> {
+            try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+                while (true) {
+                    // Attende una richiesta di ordine da parte di un cameriere
+                    Socket acceptedOrder = serverSocket.accept();
 
-                // creates a new thread to manage a request
-                Thread chef = new Thread(new ChefHandler(acceptedOrder));
-                chef.start();
-            } while (true);
-        } catch (IOException exc) {
-            System.out.println("(Cuoco) Impossibile comunicare con il cameriere");
-            throw new RuntimeException(exc);
-        }
+                    // Crea un nuovo thread per gestire la richiesta
+                    Thread chef = new Thread(new ChefHandler(acceptedOrder));
+                    chef.start();
+                }
+            } catch (IOException exc) {
+                System.out.println("(Cuoco) Impossibile comunicare con il cameriere");
+                throw new RuntimeException(exc);
+            }
+        });
+
+        serverThread.setDaemon(true); // Imposta il thread come daemon per terminarlo con l'applicazione
+        serverThread.start();
     }
 
     @FXML
@@ -66,7 +90,7 @@ public class ChefController implements Initializable {
 
             // reads order's name and price
             String order = menuOrderField.getText(),
-            inputPrice = orderPriceField.getText();
+                    inputPrice = orderPriceField.getText();
             inputPrice = inputPrice.replace(',', '.');
 
             // checks if the chef has entered an order
@@ -102,7 +126,7 @@ public class ChefController implements Initializable {
         System.out.println("(Cuoco) Preparo: " + order);
         try {
             Thread.sleep(3000);
-        } catch(InterruptedException exc) {
+        } catch (InterruptedException exc) {
             System.out.println("(Cuoco) Errore utilizzo sleep");
             throw new RuntimeException(exc);
         }
@@ -119,35 +143,36 @@ public class ChefController implements Initializable {
     record ChefHandler(Socket accepted) implements Runnable {
 
         public void run() {
+            try (Socket currentSocket = accepted) {
+                // gets the order to prepare by the waiter
+                String order;
+                while (true) {
+                    try {
+                        // gets an order
+                        order = getOrder(currentSocket);
+                        if (order.equalsIgnoreCase("fine")) {
+                            break;
+                        }
 
-            // gets the order to prepare by the waiter
-            String order;
-            while (true) {
-                try {
+                        // prepares the order
+                        prepareOrder(order);
 
-                    // gets an order
-                    order = getOrder(accepted);
-                    if (order.equalsIgnoreCase("fine")) {
-                        break;
+                        String finalOrder = order;
+                        Platform.runLater(() -> updateOrderStatus(finalOrder + " pronto"));
+
+                        // gives back the order to the waiter
+                        giveOrder(currentSocket, order);
+                    } catch (IOException exc) {
+                        System.out.println("(Chef " + Thread.currentThread().getId() + ") Errore generico");
+                        throw new RuntimeException(exc);
                     }
-
-                    // prepares the order
-                    prepareOrder(order);
-
-                    // gives back the order to the waiter
-                    giveOrder(accepted, order);
-                } catch (IOException exc) {
-                    System.out.println("(Chef " + Thread.currentThread().threadId() + ") Errore generico");
-                    throw new RuntimeException(exc);
                 }
-            }
-            try {
-                accepted.close();
             } catch (IOException exc) {
-                System.out.println("(Chef " + Thread.currentThread().threadId() + ") Errore chiusura connessione");
+                System.out.println("(Chef " + Thread.currentThread().getId() + ") Errore chiusura connessione");
                 throw new RuntimeException(exc);
             }
         }
     }
 }
+
 
