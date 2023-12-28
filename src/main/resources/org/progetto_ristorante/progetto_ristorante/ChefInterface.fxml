@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TextField?>
-
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
-<VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.progetto_ristorante.progetto_ristorante.ChefController" style="-fx-background-color: #F5F5DC;">
 
-    <!-- Logo -->
-    <ImageView>
-        <Image url=""/>
-        <fitWidth>150.0</fitWidth>
-        <fitHeight>150.0</fitHeight>
-    </ImageView>
-    <!-- Logo -->
+<?import javafx.scene.text.Text?>
+<VBox alignment="CENTER" spacing="5.0" fx:id="chefInterface" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.progetto_ristorante.progetto_ristorante.ChefController"
+      style="-fx-background-color: #F5F5DC;">
 
     <!-- Distance Among Elements -->
     <padding>
@@ -25,18 +19,25 @@
     </padding>
     <!-- Distance Among Elements -->
 
-    <!-- Order's Writing -->
-    <Label text="Inserisci il nome del piatto da inserire nel menù o fine per terminare" style="-fx-font-size: 16px; -fx-text-fill: #333333;"/>
-    <TextField fx:id="menuOrderField" style="-fx-font-size: 14px" maxWidth="150"/>
-    <!-- Order's Writing -->
+    <!-- Logo
+    <ImageView fitHeight="150" fitWidth="150">
+        <Image url="images/logo.png"/>
+    </ImageView>
+    < Logo -->
 
-    <!-- Price's Writing -->
-    <Label text="Indica il prezzo dell'ordine" style="-fx-font-size: 16px; -fx-text-fill: #333333;"/>
-    <TextField fx:id="orderPriceField" style="-fx-font-size: 14px" maxWidth="150"/>
-    <!-- Price's Writing -->
+    <!-- Title -->
+    <Text text="SCRITTURA DEL MENU" style="-fx-font-size: 28px; -fx-fill: #1E90FF; -fx-padding: 10 0 20 0; -fx-font-weight: bold;"/>
+    <!-- Title -->
+
+    <!-- Order and Price Writing -->
+    <TextField fx:id="menuOrderField"  style="-fx-font-size: 20px; -fx-background-color: #E6E6FA; -fx-font-family: 'sans-serif'" maxWidth="250" promptText="Ordine"/>
+    <TextField fx:id="orderPriceField" style="-fx-font-size: 20px; -fx-background-color: #E6E6FA; -fx-font-family: 'sans-serif'" maxWidth="250" promptText="Prezzo"/>
+    <!-- Order and Price Writing -->
 
     <!-- Commit Buttons -->
-    <Button text="Conferma" onAction="#addOrder"/>
-    <Button text="Fine"     onAction="#cook"/>
+    <HBox spacing="20.0" alignment="CENTER">
+        <Button text="Conferma" onAction="#addOrder" style="-fx-font-size: 20px; -fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-family: 'sans-serif'"/>
+        <Button text="Fine"     onAction="#cook"     style="-fx-font-size: 20px; -fx-background-color: #FF6347; -fx-text-fill: white; -fx-font-family: 'sans-serif'"/>
+    </HBox>
     <!-- Commit Buttons -->
 </VBox>

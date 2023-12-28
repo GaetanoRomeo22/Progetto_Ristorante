@@ -1,21 +1,40 @@
 package org.progetto_ristorante.progetto_ristorante;
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class ChefController {
+public class ChefController implements Initializable {
+
+    @FXML
+    private VBox chefInterface;
 
     @FXML
     private TextField menuOrderField,
                       orderPriceField;
-    
+
+    // disables automatic focus on interface's elements
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        menuOrderField.setFocusTraversable(false);
+        orderPriceField.setFocusTraversable(false);
+    }
+
     @FXML
     private void cook() {
+
+        // hides interface's elements
+        chefInterface.getChildren().remove(menuOrderField);
+        chefInterface.getChildren().remove(orderPriceField);
+
         final int PORT = 1315;              // used for communication with waiters
         Socket acceptedOrder;               // used to accept an order
 

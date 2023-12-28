@@ -1,10 +1,12 @@
 package org.progetto_ristorante.progetto_ristorante;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import java.io.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Customer extends Application {
 
@@ -13,11 +15,15 @@ public class Customer extends Application {
     }
 
     public void start(Stage stage) throws IOException {
-        stage.setTitle("Interfaccia clienti");
+        stage.setTitle("Customer");
         FXMLLoader fxmlLoader = new FXMLLoader(Customer.class.getResource("CustomerInterface.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setScene(scene);
         stage.setMaximized(true);
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000));
+        fadeTransition.setFromValue(0.0);
+        fadeTransition.setToValue(1.0);
+        fadeTransition.play();
         stage.show();
     }
 }
