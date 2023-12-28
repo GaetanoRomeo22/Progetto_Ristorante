@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController" style="-fx-background-color: #F5F5DC;">
+
+    <!-- Logo
+    <ImageView fitHeight="150" fitWidth="150">
+        <Image url="images/logo.png"/>
+    </ImageView>
+    < Logo -->
+
+    <!-- Distance Among Elements -->
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+    <!-- Distance Among Elements -->
+
+    <!-- Orders and Bill -->
+    <Label text="ORDINI EFFETTUATI" style="-fx-font-size: 18px; -fx-text-fill: #333333;"/>
+    <TextArea fx:id="totalOrderedArea" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;" editable="false"/>
+    <Text fx:id="billText" style="-fx-font-size: 14px; -fx-fill: #008000;"/>
+    <!-- Orders and Bill -->
+
+    <!-- Menu -->
+    <Label text="MENU" style="-fx-font-size: 18px; -fx-text-fill: #333333;"/>
+    <TextArea fx:id="menuArea" wrapText="true" editable="false" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;"/>
+    <Label text="Scrivi l'ordine che intendi effettuare" style="-fx-font-size: 18px; -fx-text-fill: #333333;"/>
+    <TextField fx:id="orderField" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;" maxWidth="150"/>
+    <!-- Menu -->
+
+    <!-- Commit Button -->
+    <HBox spacing="10.0" alignment="CENTER">
+        <Button text="Conferma Ordine" onAction="#getOrder" style="-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+        <Button fx:id="stopButton"  text="Fine" onAction="#closeInterface" style="-fx-font-size: 14px; -fx-background-color: #FF6347; -fx-text-fill: white;"/>
+    </HBox>
+    <!-- Commit Button -->
+
+    <!-- Error Messages -->
+    <Text fx:id="unavailableOrder" text="L'ordine non è presente nel menù, riprovare" visible="false" fill="red"/>
+    <!-- Error Messages -->
+</VBox>

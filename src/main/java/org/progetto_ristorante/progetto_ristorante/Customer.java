@@ -16,7 +16,7 @@ public class Customer extends Application {
 
     public void start(Stage stage) throws IOException {
         stage.setTitle("Customer");
-        FXMLLoader fxmlLoader = new FXMLLoader(Customer.class.getResource("CustomerInterface.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("GetSeatsInterface.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setScene(scene);
         stage.setMaximized(true);

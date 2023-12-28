@@ -4,10 +4,9 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -18,30 +17,29 @@ import java.util.ResourceBundle;
 public class ChefController implements Initializable {
 
     @FXML
-    private VBox chefInterface;
-
-    @FXML
     private TextField menuOrderField,
             orderPriceField;
+
+    @FXML
+    private TextArea menuArea;
+
     @FXML
     private static Text orderStatus;
 
     @FXML
-    private Button Conferma,
-                   Fine;
+    private Button commitOrderButton,
+                   stopWriteButton;
 
     // disables automatic focus on interface's elements
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         menuOrderField.setFocusTraversable(false);
         orderPriceField.setFocusTraversable(false);
+        menuArea.setFocusTraversable(false);
         orderStatus = new Text();
     }
 
     public static void updateOrderStatus(String status) {
-        // Puoi utilizzare un controllo JavaFX, come un Text o una Label, per mostrare lo stato
-        // In questo esempio, si presume che tu abbia un oggetto Text chiamato orderStatusText
-
         orderStatus.setText(status);
     }
 
@@ -50,24 +48,23 @@ public class ChefController implements Initializable {
 
         final int PORT = 1315;              // used for communication with waiters
 
-
         menuOrderField.setManaged(false);
         menuOrderField.setVisible(false);
         orderPriceField.setManaged(false);
         orderPriceField.setVisible(false);
+        stopWriteButton.setManaged(false);
+        stopWriteButton.setVisible(false);
+        commitOrderButton.setManaged(false);
+        commitOrderButton.setVisible(false);
 
-        Fine.setManaged(false);
-        Fine.setVisible(false);
-        Conferma.setManaged(false);
-        Conferma.setVisible(false);
-        // Avvia il thread per il server socket
+        // starts a thread
         Thread serverThread = new Thread(() -> {
             try (ServerSocket serverSocket = new ServerSocket(PORT)) {
                 while (true) {
-                    // Attende una richiesta di ordine da parte di un cameriere
+                    // waits for a waiter request
                     Socket acceptedOrder = serverSocket.accept();
 
-                    // Crea un nuovo thread per gestire la richiesta
+                    // creates a new thread to manage the request
                     Thread chef = new Thread(new ChefHandler(acceptedOrder));
                     chef.start();
                 }
@@ -108,6 +105,9 @@ public class ChefController implements Initializable {
                 // clears previous text
                 menuOrderField.setText("");
                 orderPriceField.setText("");
+
+                // shows written menu
+                showMenu();
             }
         } catch (IOException exc) {
             System.out.println("(Cuoco) Errore scrittura menù");
@@ -144,10 +144,12 @@ public class ChefController implements Initializable {
 
         public void run() {
             try (Socket currentSocket = accepted) {
+
                 // gets the order to prepare by the waiter
                 String order;
                 while (true) {
                     try {
+
                         // gets an order
                         order = getOrder(currentSocket);
                         if (order.equalsIgnoreCase("fine")) {
@@ -163,14 +165,35 @@ public class ChefController implements Initializable {
                         // gives back the order to the waiter
                         giveOrder(currentSocket, order);
                     } catch (IOException exc) {
-                        System.out.println("(Chef " + Thread.currentThread().getId() + ") Errore generico");
+                        System.out.println("(Chef " + Thread.currentThread().threadId() + ") Errore generico");
                         throw new RuntimeException(exc);
                     }
                 }
             } catch (IOException exc) {
-                System.out.println("(Chef " + Thread.currentThread().getId() + ") Errore chiusura connessione");
+                System.out.println("(Chef " + Thread.currentThread().threadId() + ") Errore chiusura connessione");
                 throw new RuntimeException(exc);
             }
+        }
+    }
+
+    private void showMenu() {
+
+        // read menu from file
+        try (FileReader fileReader = new FileReader("menu.txt")) {
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String order;
+            float price;
+
+            // the menu witch the chef is writing, will be showed on the interface
+            while ((order = bufferedReader.readLine()) != null) {
+                price = Float.parseFloat(bufferedReader.readLine());
+                menuArea.appendText("Piatto: " + order + System.lineSeparator());
+                menuArea.appendText("Prezzo: " + price + System.lineSeparator());
+                menuArea.appendText("\n");
+            }
+        } catch (Exception exc) {
+            System.out.println("(Cliente) Errore scannerizzazione menù");
+            throw new RuntimeException(exc);
         }
     }
 }

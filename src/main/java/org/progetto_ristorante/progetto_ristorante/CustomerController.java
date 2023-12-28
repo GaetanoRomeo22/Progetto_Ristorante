@@ -1,13 +1,16 @@
 package org.progetto_ristorante.progetto_ristorante;
 
+import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -17,41 +20,19 @@ import java.util.concurrent.*;
 public class CustomerController {
 
     @FXML
-    private VBox customerInterface;
+    private TextArea totalOrderedArea,
+                     menuArea;
 
     @FXML
-    private Label totalOrderedLabel;
+    private Text billText,
+                 unavailableOrder;
 
     @FXML
-    private TextArea totalOrderedArea;
+    private TextField orderField,
+                      requiredSeatsField;
 
     @FXML
-    private Text billText;
-
-    @FXML
-    private TextField requiredSeatsField;
-
-    @FXML
-    private Label seatsLabel;
-
-    @FXML
-    private Button seatsButton;
-
-    @FXML
-    private TextArea menuArea;
-
-    @FXML
-    private TextField orderField;
-
-    @FXML
-    private Label orderLabel;
-
-    @FXML
-    private Button orderButton,
-                   stopButton;
-
-    @FXML
-    private Text unavailableOrder;
+    private Button stopButton;
 
     @FXML
     private void getRequiredSeats() {
@@ -75,9 +56,6 @@ public class CustomerController {
 
                 // closes connection with receptionist
                 receptionSocket.close();
-
-                // erases first interface
-                deleteSeatsInterface();
 
                 // shows second interface's elements
                 showOrderInterface();
@@ -179,7 +157,6 @@ public class CustomerController {
             float price;
 
             // shows each menu order and its price on the screen
-            menu.append("Questo è il menù: ").append("\n");
             while ((order = bufferedReader.readLine()) != null) {
                 price = Float.parseFloat(bufferedReader.readLine());
                 menu.append("Ordine: ").append(order).append("\n");
@@ -278,30 +255,25 @@ public class CustomerController {
 
             // shows orders and total bill
             totalOrderedArea.appendText(totalOrdered + "\n");
-            billText.setText("Conto: " + String.format("%.2f", bill) + "€");
+            billText.setText("CONTO: " + String.format("%.2f", bill) + "€");
         } catch (IOException exc) {
             throw new RuntimeException(exc);
         }
     }
 
-
-    // deletes the elements of the interface that allows users to say how many seats they require
-    private void deleteSeatsInterface() {
-        customerInterface.getChildren().remove(requiredSeatsField);
-        customerInterface.getChildren().remove(seatsLabel);
-        customerInterface.getChildren().remove(seatsButton);
-    }
-
     // shows the interface that allows users to get orders
-    private void showOrderInterface() {
-        totalOrderedLabel.setVisible(true);
-        totalOrderedArea.setVisible(true);
-        billText.setVisible(true);
-        menuArea.setVisible(true);
-        orderField.setVisible(true);
-        orderLabel.setVisible(true);
-        orderButton.setVisible(true);
-        stopButton.setVisible(true);
+    private void showOrderInterface() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("GetOrderInterface.fxml"));
+        Parent parent = loader.load();
+        Scene scene = new Scene(parent);
+        Stage stage = (Stage) requiredSeatsField.getScene().getWindow();
+        stage.setScene(scene);
+        stage.setMaximized(true);
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000));
+        fadeTransition.setFromValue(0.0);
+        fadeTransition.setToValue(1.0);
+        fadeTransition.play();
+        stage.show();
     }
 
     // closes customer's interface once he has done

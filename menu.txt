@@ -1,2 +1,2 @@
-pizza
-32.0
+Pasta al sugo
+8.5
