@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 
@@ -27,14 +24,19 @@
     </padding>
     <!-- Distance Among Elements -->
 
-    <!-- Orders and Bill -->
-    <TextField fx:id="usernameField" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;"/>
-    <PasswordField fx:id="passwordField" style="-fx-font-size: 14px; -fx-fill: #008000;"/>
-    <!-- Orders and Bill -->
+    <!-- Title -->
+    <Text text="ACCESSO" style="-fx-font-size: 28px; -fx-fill: black; -fx-padding: 10 0 20 0;"/>
+    <!-- Title -->
 
-    <!-- Commit Button -->
+    <!-- Username and Password -->
+    <TextField fx:id="loginUsername" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;"/>
+    <PasswordField fx:id="loginPassword" style="-fx-font-size: 14px; -fx-fill: #008000;"/>
+    <!-- Username and Password -->
+
+    <!-- Commit Buttons -->
     <Button text="Accedi" onAction="#login" style="-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white;"/>
-    <!-- Commit Button -->
+    <Button text="Registrati" onAction="#showRegisterInterface" style="-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+    <!-- Commit Buttons -->
 
     <!-- Error Messages -->
     <Text fx:id="loginError" text="Credenziali errate, riprovare" visible="false" fill="red"/>

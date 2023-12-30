@@ -25,20 +25,20 @@
     <!-- Distance Among Elements -->
 
     <!-- Title -->
-    <Text text="REGISTRAZIONE" style="-fx-font-size: 28px; -fx-fill: black; -fx-padding: 10 0 20 0;"/>
+    <Text text="ACCESSO" style="-fx-font-size: 28px; -fx-fill: black; -fx-padding: 10 0 20 0;"/>
     <!-- Title -->
 
     <!-- Username and Password -->
-    <TextField fx:id="registerUsername" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;"/>
-    <PasswordField fx:id="registerPassword" style="-fx-font-size: 14px; -fx-fill: #008000;"/>
+    <TextField fx:id="loginUsername" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;"/>
+    <PasswordField fx:id="loginPassword" style="-fx-font-size: 14px; -fx-fill: #008000;"/>
     <!-- Username and Password -->
 
-    <!-- Commit Buttons -->
-    <Button text="Registrati" onAction="#register" style="-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white;"/>
-    <Button text="Accedi" onAction="#showLoginInterface" style="-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white;"/>
-    <!-- Commit Buttons -->
+    <!-- Commit Button -->
+    <Button text="Accedi" onAction="#login" style="-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+    <Button text="Registrati" onAction="#showRegisterInterface" style="-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+    <!-- Commit Button -->
 
     <!-- Error Messages -->
-    <Text fx:id="registerError" text="Registrazione già effettuata," visible="false" fill="red"/>
+    <Text fx:id="loginError" text="Credenziali errate, riprovare" visible="false" fill="red"/>
     <!-- Error Messages -->
 </VBox>

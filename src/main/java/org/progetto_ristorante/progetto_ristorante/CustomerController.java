@@ -13,6 +13,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -22,8 +25,6 @@ import java.sql.SQLException;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.URL;
-import java.util.ResourceBundle;
 import java.util.concurrent.*;
 
 public class CustomerController {
@@ -35,15 +36,18 @@ public class CustomerController {
     @FXML
     private Text billText,
                  loginError,
+                 registerError,
                  unavailableOrder;
 
     @FXML
-    private TextField usernameField,
+    private TextField loginUsername,
+                      registerUsername,
                       orderField,
                       requiredSeatsField;
 
     @FXML
-    private PasswordField passwordField;
+    private PasswordField loginPassword,
+                          registerPassword;
 
     @FXML
     private Button stopButton;
@@ -52,8 +56,11 @@ public class CustomerController {
     private void login() {
 
         // gets username and password from the interface
-        String username = usernameField.getText(),
-               password = passwordField.getText();
+        String username = loginUsername.getText(),
+               password = loginPassword.getText();
+
+        // encrypts the password with a hash algorithm
+        String hashedPassword = hashPassword(password);
 
         // connection to the database
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
@@ -62,8 +69,7 @@ public class CustomerController {
             String query = "SELECT * FROM UTENTI WHERE USERNAME = ? AND PASSWORD = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, username);
-                preparedStatement.setString(2, password);
-
+                preparedStatement.setString(2, hashedPassword);
 
                 // checks if the login works
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -72,12 +78,47 @@ public class CustomerController {
                     } else {
                         loginError.setVisible(true);
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } catch (SQLException | IOException exc) {
+                    throw new RuntimeException(exc);
                 }
             }
 
         } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void register() {
+
+        // gets username and password from the interface
+        String username = registerUsername.getText();
+        String password = registerPassword.getText();
+
+        // encrypts the password with a hash algorithm
+        String hashedPassword = hashPassword(password);
+
+        // connection to the database
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
+
+            // query to insert a new uses into the database
+            String insertQuery = "INSERT INTO UTENTI (USERNAME, PASSWORD) VALUES (?, ?)";
+            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
+                insertStatement.setString(1, username);
+                insertStatement.setString(2, hashedPassword);
+
+                // performs the insert
+                int rowsAffected = insertStatement.executeUpdate();
+
+                // if it works, show login's interface, otherwise shows an error message
+                if (rowsAffected > 0) {
+                    showLoginInterface();
+                } else {
+                    registerError.setVisible(true);
+                }
+            }
+
+        } catch (SQLException | IOException exc) {
             exc.printStackTrace();
         }
     }
@@ -98,9 +139,6 @@ public class CustomerController {
 
             // if there are available seats, the customer takes them
             if (tableNumber >= 0) {
-
-                // gets the menù
-                System.out.println("(Cliente) Prendo posto al tavolo " + tableNumber + " e scannerizzo il menù");
 
                 // closes connection with receptionist
                 receptionSocket.close();
@@ -172,6 +210,7 @@ public class CustomerController {
         BufferedReader checkSeats = new BufferedReader(new InputStreamReader(receptionSocket.getInputStream()));
         PrintWriter sendSeats = new PrintWriter(receptionSocket.getOutputStream(), true);
 
+        // gets user's required seats from interface
         String input = requiredSeatsField.getText();
         int requiredSeats = Integer.parseInt(input);
 
@@ -186,7 +225,6 @@ public class CustomerController {
         sendSeats.close();
         receptionSocket.close();
 
-        System.out.println(requiredSeats);
         return tableNumber;
     }
 
@@ -309,11 +347,41 @@ public class CustomerController {
         }
     }
 
+    @FXML
+    private void showLoginInterface() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("LoginInterface.fxml"));
+        Parent parent = loader.load();
+        Scene scene = new Scene(parent);
+        Stage stage = (Stage) registerUsername.getScene().getWindow();
+        stage.setScene(scene);
+        stage.setMaximized(true);
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000));
+        fadeTransition.setFromValue(0.0);
+        fadeTransition.setToValue(1.0);
+        fadeTransition.play();
+        stage.show();
+    }
+
+    @FXML
+    private void showRegisterInterface() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("RegisterInterface.fxml"));
+        Parent parent = loader.load();
+        Scene scene = new Scene(parent);
+        Stage stage = (Stage) loginUsername.getScene().getWindow();
+        stage.setScene(scene);
+        stage.setMaximized(true);
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000));
+        fadeTransition.setFromValue(0.0);
+        fadeTransition.setToValue(1.0);
+        fadeTransition.play();
+        stage.show();
+    }
+
     private void showSeatsInterface() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GetSeatsInterface.fxml"));
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
-        Stage stage = (Stage) usernameField.getScene().getWindow();
+        Stage stage = (Stage) loginUsername.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true);
         FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000));
@@ -342,5 +410,28 @@ public class CustomerController {
     private void closeInterface() {
         Stage stage = (Stage) stopButton.getScene().getWindow();
         stage.close();
+    }
+
+    // encrypts the password using a hash algorithm
+    private String hashPassword(String password) {
+        try {
+
+            // gets an instance of Message Digest (Java package that establishes hash functionalities)
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+            // calculates the array of byte that contains the hashed password
+            byte[] hashedBytes = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+
+            // converts the array of byte into hexadecimal
+            StringBuilder stringBuilder = new StringBuilder();
+            for (byte b : hashedBytes) {
+                stringBuilder.append(String.format("%02x", b));
+            }
+
+            // returns it as string
+            return stringBuilder.toString();
+        } catch (NoSuchAlgorithmException exc) {
+            throw new RuntimeException(exc);
+        }
     }
 }

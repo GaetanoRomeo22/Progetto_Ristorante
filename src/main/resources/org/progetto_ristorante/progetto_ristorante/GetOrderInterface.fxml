@@ -39,12 +39,12 @@
     <TextField fx:id="orderField" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;" maxWidth="150"/>
     <!-- Menu -->
 
-    <!-- Commit Button -->
+    <!-- Commit Buttons -->
     <HBox spacing="10.0" alignment="CENTER">
         <Button text="Conferma Ordine" onAction="#getOrder" style="-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white;"/>
         <Button fx:id="stopButton"  text="Fine" onAction="#closeInterface" style="-fx-font-size: 14px; -fx-background-color: #FF6347; -fx-text-fill: white;"/>
     </HBox>
-    <!-- Commit Button -->
+    <!-- Commit Buttons -->
 
     <!-- Error Messages -->
     <Text fx:id="unavailableOrder" text="L'ordine non è presente nel menù, riprovare" visible="false" fill="red"/>

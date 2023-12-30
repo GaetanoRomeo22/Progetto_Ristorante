@@ -33,10 +33,10 @@
     <PasswordField fx:id="registerPassword" style="-fx-font-size: 14px; -fx-fill: #008000;"/>
     <!-- Username and Password -->
 
-    <!-- Commit Buttons -->
+    <!-- Commit Button -->
     <Button text="Registrati" onAction="#register" style="-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white;"/>
     <Button text="Accedi" onAction="#showLoginInterface" style="-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white;"/>
-    <!-- Commit Buttons -->
+    <!-- Commit Button -->
 
     <!-- Error Messages -->
     <Text fx:id="registerError" text="Registrazione già effettuata," visible="false" fill="red"/>
