@@ -20,11 +20,11 @@
     </padding>
     <!-- Distance Among Elements -->
 
-    <!-- Logo
+    <!-- Logo -->
     <ImageView fitHeight="150" fitWidth="150">
-        <Image url="images/logo.png"/>
+        <Image url="@images/logo.png"/>
     </ImageView>
-    < Logo -->
+    <!-- Logo -->
 
     <!-- Title -->
     <Text text="Scrivi il menù" style="-fx-font-size: 28px; -fx-fill: black; -fx-padding: 10 0 20 0;"/>

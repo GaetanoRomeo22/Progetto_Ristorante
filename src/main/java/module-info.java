@@ -10,6 +10,7 @@ module org.progetto_ristorante.progetto_ristorante {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires java.sql;
 
     opens org.progetto_ristorante.progetto_ristorante to javafx.fxml;
     exports org.progetto_ristorante.progetto_ristorante;

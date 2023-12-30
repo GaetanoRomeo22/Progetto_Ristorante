@@ -14,11 +14,11 @@
 <VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController" style="-fx-background-color: #F5F5DC;">
 
-    <!-- Logo
+    <!-- Logo -->
     <ImageView fitHeight="150" fitWidth="150">
-        <Image url="images/logo.png"/>
+        <Image url="@images/logo.png"/>
     </ImageView>
-    < Logo -->
+    <!-- Logo -->
 
     <!-- Distance Among Elements -->
     <padding>

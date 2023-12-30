@@ -6,15 +6,24 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.concurrent.*;
 
 public class CustomerController {
@@ -25,14 +34,53 @@ public class CustomerController {
 
     @FXML
     private Text billText,
+                 loginError,
                  unavailableOrder;
 
     @FXML
-    private TextField orderField,
+    private TextField usernameField,
+                      orderField,
                       requiredSeatsField;
 
     @FXML
+    private PasswordField passwordField;
+
+    @FXML
     private Button stopButton;
+
+    @FXML
+    private void login() {
+
+        // gets username and password from the interface
+        String username = usernameField.getText(),
+               password = passwordField.getText();
+
+        // connection to the database
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
+
+            // query to check if the user is registered
+            String query = "SELECT * FROM UTENTI WHERE USERNAME = ? AND PASSWORD = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, username);
+                preparedStatement.setString(2, password);
+
+
+                // checks if the login works
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        showSeatsInterface();
+                    } else {
+                        loginError.setVisible(true);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+        }
+    }
 
     @FXML
     private void getRequiredSeats() {
@@ -261,7 +309,20 @@ public class CustomerController {
         }
     }
 
-    // shows the interface that allows users to get orders
+    private void showSeatsInterface() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("GetSeatsInterface.fxml"));
+        Parent parent = loader.load();
+        Scene scene = new Scene(parent);
+        Stage stage = (Stage) usernameField.getScene().getWindow();
+        stage.setScene(scene);
+        stage.setMaximized(true);
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000));
+        fadeTransition.setFromValue(0.0);
+        fadeTransition.setToValue(1.0);
+        fadeTransition.play();
+        stage.show();
+    }
+
     private void showOrderInterface() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GetOrderInterface.fxml"));
         Parent parent = loader.load();
