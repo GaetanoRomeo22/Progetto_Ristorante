@@ -21,7 +21,7 @@ public class ChefController implements Initializable {
             orderPriceField;
 
     @FXML
-    private TextArea menuArea;
+    private TextArea chefMenuArea;
 
     @FXML
     private static Text orderStatus;
@@ -35,7 +35,7 @@ public class ChefController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         menuOrderField.setFocusTraversable(false);
         orderPriceField.setFocusTraversable(false);
-        menuArea.setFocusTraversable(false);
+        chefMenuArea.setFocusTraversable(false);
         orderStatus = new Text();
     }
 
@@ -46,21 +46,18 @@ public class ChefController implements Initializable {
     @FXML
     private void cook() {
 
-        final int PORT = 1315;              // used for communication with waiters
+        // hides the interface
+        hideInterface();
 
-        menuOrderField.setManaged(false);
-        menuOrderField.setVisible(false);
-        orderPriceField.setManaged(false);
-        orderPriceField.setVisible(false);
-        stopWriteButton.setManaged(false);
-        stopWriteButton.setVisible(false);
-        commitOrderButton.setManaged(false);
-        commitOrderButton.setVisible(false);
+        final int PORT = 1315; // used for communication with waiters
 
         // starts a thread
         Thread serverThread = new Thread(() -> {
+
+            // creates a server socket to communicate with waiters
             try (ServerSocket serverSocket = new ServerSocket(PORT)) {
                 while (true) {
+
                     // waits for a waiter request
                     Socket acceptedOrder = serverSocket.accept();
 
@@ -69,7 +66,6 @@ public class ChefController implements Initializable {
                     chef.start();
                 }
             } catch (IOException exc) {
-                System.out.println("(Cuoco) Impossibile comunicare con il cameriere");
                 throw new RuntimeException(exc);
             }
         });
@@ -78,6 +74,7 @@ public class ChefController implements Initializable {
         serverThread.start();
     }
 
+    // adds an order into the menu
     @FXML
     private void addOrder() {
 
@@ -110,7 +107,6 @@ public class ChefController implements Initializable {
                 showMenu();
             }
         } catch (IOException exc) {
-            System.out.println("(Cuoco) Errore scrittura menù");
             throw new RuntimeException(exc);
         }
     }
@@ -122,24 +118,21 @@ public class ChefController implements Initializable {
     }
 
     // simulates the preparation of an order by the chef
-    public static void prepareOrder(String order) {
-        System.out.println("(Cuoco) Preparo: " + order);
+    public static void prepareOrder() {
         try {
             Thread.sleep(3000);
         } catch (InterruptedException exc) {
-            System.out.println("(Cuoco) Errore utilizzo sleep");
             throw new RuntimeException(exc);
         }
-        System.out.println("(Cuoco) " + order + " pronto");
     }
 
     // sends a ready order to the waiter who has required to prepare it
     public static void giveOrder(Socket acceptedOrder, String order) throws IOException {
         PrintWriter sendOrder = new PrintWriter(acceptedOrder.getOutputStream(), true);
-        System.out.println("(Cuoco) Invio " + order + " al cameriere");
         sendOrder.println(order);
     }
 
+    // chef thread code
     record ChefHandler(Socket accepted) implements Runnable {
 
         public void run() {
@@ -157,7 +150,7 @@ public class ChefController implements Initializable {
                         }
 
                         // prepares the order
-                        prepareOrder(order);
+                        prepareOrder();
 
                         String finalOrder = order;
                         Platform.runLater(() -> updateOrderStatus(finalOrder + " pronto"));
@@ -165,36 +158,46 @@ public class ChefController implements Initializable {
                         // gives back the order to the waiter
                         giveOrder(currentSocket, order);
                     } catch (IOException exc) {
-                        System.out.println("(Chef " + Thread.currentThread().threadId() + ") Errore generico");
                         throw new RuntimeException(exc);
                     }
                 }
             } catch (IOException exc) {
-                System.out.println("(Chef " + Thread.currentThread().threadId() + ") Errore chiusura connessione");
                 throw new RuntimeException(exc);
             }
         }
     }
 
+    // shows the menu in real time
     private void showMenu() {
 
-        // read menu from file
+        // reads menu from file
         try (FileReader fileReader = new FileReader("menu.txt")) {
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             String order;
             float price;
 
-            // the menu witch the chef is writing, will be showed on the interface
+            // shows the menu
             while ((order = bufferedReader.readLine()) != null) {
                 price = Float.parseFloat(bufferedReader.readLine());
-                menuArea.appendText("Piatto: " + order + System.lineSeparator());
-                menuArea.appendText("Prezzo: " + price + System.lineSeparator());
-                menuArea.appendText("\n");
+                chefMenuArea.appendText("Piatto: " + order + System.lineSeparator());
+                chefMenuArea.appendText("Prezzo: " + price + System.lineSeparator());
+                chefMenuArea.appendText("\n");
             }
         } catch (Exception exc) {
-            System.out.println("(Cliente) Errore scannerizzazione menù");
             throw new RuntimeException(exc);
         }
+    }
+
+    // hides the interface once the chef has finished to write the menu
+    private void hideInterface() {
+        menuOrderField.setManaged(false);
+        menuOrderField.setVisible(false);
+        orderPriceField.setManaged(false);
+        orderPriceField.setVisible(false);
+        stopWriteButton.setManaged(false);
+        stopWriteButton.setVisible(false);
+        commitOrderButton.setManaged(false);
+        commitOrderButton.setVisible(false);
     }
 }
 

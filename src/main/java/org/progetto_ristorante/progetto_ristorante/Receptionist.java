@@ -59,14 +59,12 @@ public class Receptionist {
                             System.out.println("(Receptionist) Il tempo finché un tavolo si liberi è " + waitingTime + " minuti");
                             waitingTimeWriter.println(waitingTime);
                         } catch (IOException exc) {
-                            System.out.println("(Receptionist) Impossibile comunicare con il cliente");
                             throw new RuntimeException(exc);
                         }
                     }
                 }
             } while (true);
         } catch (IOException exc) {
-            System.out.println("(Receptionist) Impossibile comunicare con i clienti");
             throw new RuntimeException(exc);
         } finally {
 

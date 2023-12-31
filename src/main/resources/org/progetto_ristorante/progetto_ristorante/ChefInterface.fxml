@@ -10,7 +10,7 @@
 
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.TextArea?>
-<VBox alignment="CENTER" spacing="5.0" fx:id="chefInterface" xmlns:fx="http://javafx.com/fxml"
+<VBox alignment="CENTER" spacing="5.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.ChefController"
       style="-fx-background-color: white;">
 
@@ -27,7 +27,7 @@
     <!-- Logo -->
 
     <!-- Title -->
-    <Text text="Scrivi il menù" style="-fx-font-size: 28px; -fx-fill: black; -fx-padding: 10 0 20 0;"/>
+    <Text fx:id="menuTitle" text="Scrivi il menu" style="-fx-font-size: 28px; -fx-fill: black; -fx-padding: 10 0 20 0;"/>
     <!-- Title -->
 
     <!-- Order and Price Writing -->
@@ -39,9 +39,11 @@
     </HBox>
     <!-- Order and Price Writing -->
 
-    <TextArea fx:id="menuArea" wrapText="true" editable="false"
+    <!-- Menu -->
+    <TextArea fx:id="chefMenuArea" wrapText="true" editable="false"
               style="-fx-font-size: 20px; -fx-border-radius: 20px; -fx-border-color: grey; -fx-padding: 5 5 5 5; -fx-background-color: transparent"
               minWidth="0" prefWidth="814" maxWidth="814"/>
+    <!-- Menu -->
 
     <!-- Commit Buttons -->
     <HBox spacing="5.0" alignment="CENTER">

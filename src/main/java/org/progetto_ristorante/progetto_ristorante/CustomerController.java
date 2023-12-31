@@ -31,7 +31,7 @@ public class CustomerController {
 
     @FXML
     private TextArea totalOrderedArea,
-                     menuArea;
+                     clientMenuArea;
 
     @FXML
     private Text billText,
@@ -182,7 +182,6 @@ public class CustomerController {
                         try {
                             waitTask.get();
                         } catch (InterruptedException | ExecutionException exc) {
-                            System.out.println("(Cliente) Errore utilizzo scheduler");
                             throw new RuntimeException(exc);
                         } finally {
 
@@ -192,13 +191,10 @@ public class CustomerController {
                             stdin.close();
                             stdin.close();
                         }
-                    } else {
-                        System.out.println("(Cliente) Me ne vado!");
                     }
                 }
             } */
         } catch (IOException exc) {
-            System.out.println("(Cliente) Impossibile comunicare con il receptionist");
             throw new RuntimeException(exc);
         }
     }
@@ -250,7 +246,7 @@ public class CustomerController {
             }
 
             // shows the menu into the interface's text area
-            menuArea.setText(menu.toString());
+            clientMenuArea.setText(menu.toString());
 
             // closes the connection to the file
             bufferedReader.close();
@@ -283,7 +279,6 @@ public class CustomerController {
             bufferedReader.close();
             return -1;
         } catch (Exception exc) {
-            System.out.println("(Cliente) Errore apertura menù");
             throw new RuntimeException(exc);
         }
     }
@@ -324,7 +319,6 @@ public class CustomerController {
 
                     // sends the order to the waiter
                     unavailableOrder.setVisible(false);
-                    System.out.println("(Cliente) Attendo che " + order + " sia pronto");
                     takeOrder.println(order);
 
                     // waits for the order and eats it
@@ -333,9 +327,6 @@ public class CustomerController {
                     // adds the order to the customer's list and its price to the bill
                     totalOrdered.append(order).append("\n");
                     bill += checkOrder(order);
-
-                    // eats the order
-                    System.out.println("(Cliente) Mangio " + order);
                 }
             }
 

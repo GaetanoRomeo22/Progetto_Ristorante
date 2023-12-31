@@ -34,7 +34,7 @@
 
     <!-- Menu -->
     <Label text="MENU" style="-fx-font-size: 18px; -fx-text-fill: #333333;"/>
-    <TextArea fx:id="menuArea" wrapText="true" editable="false" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;"/>
+    <TextArea fx:id="clientMenuArea" wrapText="true" editable="false" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;"/>
     <Label text="Scrivi l'ordine che intendi effettuare" style="-fx-font-size: 18px; -fx-text-fill: #333333;"/>
     <TextField fx:id="orderField" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;" maxWidth="150"/>
     <!-- Menu -->

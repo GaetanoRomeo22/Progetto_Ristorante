@@ -25,11 +25,9 @@ public class Waiter {
                     waiter.start();
                 }
             } catch (IOException exc) {
-                System.out.println("(Cameriere Principale) Impossibile comunicare con il cuoco");
                 throw new RuntimeException(exc);
             }
         } catch (IOException exc) {
-            System.out.println("(Cameriere Principale) Impossibile comunicare con il cliente");
             throw new RuntimeException(exc);
         }
     }
@@ -74,7 +72,6 @@ public class Waiter {
                 } while (true);
 
             } catch (IOException exc) {
-                System.out.println("(Cameriere " + Thread.currentThread().threadId() + ") Errore lettura/scrittura dalla socket");
                 throw new RuntimeException(exc);
             } finally {
 
@@ -87,7 +84,6 @@ public class Waiter {
         private void processOrder(String order, PrintWriter sendOrder, BufferedReader readReadyOrder, PrintWriter sendReadyOrder) throws IOException {
 
             // sends the order to the chef to prepare it
-            System.out.println("(Cameriere " + Thread.currentThread().threadId() + ")" + order + ", mando l'ordine allo chef per prepararlo e attendo");
             sendOrder.println(order);
 
             // gets the order once it's ready
@@ -95,25 +91,21 @@ public class Waiter {
 
             // if the customer has done
             if (order == null || order.equalsIgnoreCase("fine")) {
-                System.out.println("(Cameriere " + Thread.currentThread().threadId() + ")" + "Il cliente se ne è andato");
                 sendOrder.println(order);
             }
 
             // else sends the order back to the customer
             else {
-                System.out.println("(Cameriere " + Thread.currentThread().threadId() + ")" + order + " pronto, lo porto al cliente");
                 sendReadyOrder.println(order);
             }
         }
 
         private void closeConnections() {
             try {
-                System.out.println("(Cameriere " + Thread.currentThread().threadId() + ") Sto chiudendo la socket");
                 customerSocket.close();
                 readOrder.close();
                 sendReadyOrder.close();
             } catch (IOException exc) {
-                System.out.println("(Cameriere) Impossibile chiudere la connessione");
                 throw new RuntimeException(exc);
             }
         }
