@@ -12,7 +12,7 @@
 <?import javafx.scene.control.TextArea?>
 <VBox alignment="CENTER" spacing="5.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.ChefController"
-      style="-fx-background-color: white;">
+      style="-fx-background-color: #f4f4f4; -fx-padding: 20; -fx-border-color: #ccc; -fx-border-width: 2; -fx-border-radius: 5;">
 
     <!-- Distance Among Elements -->
     <padding>
@@ -27,7 +27,7 @@
     <!-- Logo -->
 
     <!-- Title -->
-    <Text fx:id="menuTitle" text="Scrivi il menu" style="-fx-font-size: 28px; -fx-fill: black; -fx-padding: 10 0 20 0;"/>
+    <Text text="Scrivi il menu" style="-fx-font-size: 28px; -fx-fill: black; -fx-padding: 10 0 20 0;"/>
     <!-- Title -->
 
     <!-- Order and Price Writing -->

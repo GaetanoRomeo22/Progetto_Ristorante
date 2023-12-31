@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 
 public class CustomerController {
@@ -52,77 +53,116 @@ public class CustomerController {
     @FXML
     private Button stopButton;
 
+    // allows a customer to login himself by entering a username and a password
     @FXML
-    private void login() {
+    private void login() throws SQLException, IOException, NoSuchAlgorithmException {
 
         // gets username and password from the interface
         String username = loginUsername.getText(),
                password = loginPassword.getText();
 
-        // encrypts the password with a hash algorithm
-        String hashedPassword = hashPassword(password);
+        // checks if the user has entered valid username and password
+        if (username.isEmpty() || password.isEmpty()) {
+            loginError.setText("Username o password mancante");
+            loginError.setVisible(true);
+        } else {
 
-        // connection to the database
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
+            // encrypts the password with a hash algorithm
+            String hashedPassword = hashPassword(password);
 
-            // query to check if the user is registered
-            String query = "SELECT * FROM UTENTI WHERE USERNAME = ? AND PASSWORD = ?";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setString(1, username);
-                preparedStatement.setString(2, hashedPassword);
+            // connection to the database
+            try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
 
-                // checks if the login works
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        showSeatsInterface();
-                    } else {
-                        loginError.setVisible(true);
+                // query to check if the user is registered
+                String query = "SELECT * FROM UTENTI WHERE USERNAME = ? AND PASSWORD = ?";
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+                    // substitutes ? with username and password
+                    preparedStatement.setString(1, username);
+                    preparedStatement.setString(2, hashedPassword);
+
+                    // checks if the login works
+                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                        if (resultSet.next()) {
+                            showSeatsInterface();
+                        } else {
+                            loginError.setText("Credenziali errate, riprovare");
+                            loginError.setVisible(true);
+                        }
                     }
-                } catch (SQLException | IOException exc) {
-                    throw new RuntimeException(exc);
                 }
             }
-
-        } catch (SQLException exc) {
-            exc.printStackTrace();
         }
     }
 
+    // allows a customer to register himself by entering a username and a password
     @FXML
-    private void register() {
+    private void register() throws SQLException, IOException, NoSuchAlgorithmException {
 
         // gets username and password from the interface
         String username = registerUsername.getText();
         String password = registerPassword.getText();
 
-        // encrypts the password with a hash algorithm
-        String hashedPassword = hashPassword(password);
+        // checks if the user has entered valid username and password
+        if (username.isEmpty() || password.isEmpty()) {
+            registerError.setText("Username o password mancante");
+            registerError.setVisible(true);
+        } else {
 
-        // connection to the database
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
+            // encrypts the password with a hash algorithm
+            String hashedPassword = hashPassword(password);
 
-            // query to insert a new uses into the database
-            String insertQuery = "INSERT INTO UTENTI (USERNAME, PASSWORD) VALUES (?, ?)";
-            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
-                insertStatement.setString(1, username);
-                insertStatement.setString(2, hashedPassword);
+            // connection to the database
+            try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
 
-                // performs the insert
-                int rowsAffected = insertStatement.executeUpdate();
+                // check if the username already exists
+                if (usernameAvailable(connection, username)) {
 
-                // if it works, show login's interface, otherwise shows an error message
-                if (rowsAffected > 0) {
-                    showLoginInterface();
-                } else {
-                    registerError.setVisible(true);
+                    // query to insert a new uses into the database
+                    String query = "INSERT IGNORE INTO UTENTI (USERNAME, PASSWORD) VALUES (?, ?)";
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+                        // substitutes ? with username and password
+                        preparedStatement.setString(1, username);
+                        preparedStatement.setString(2, hashedPassword);
+
+                        // performs the insert
+                        preparedStatement.executeUpdate();
+                        showLoginInterface();
+                    }
                 }
             }
-
-        } catch (SQLException | IOException exc) {
-            exc.printStackTrace();
         }
     }
 
+    // checks if the username is available (is not used by another customer)
+    private boolean usernameAvailable (Connection connection, String username) throws SQLException {
+
+        // query to count how many users have the same username
+        String query = "SELECT COUNT(*) FROM UTENTI WHERE USERNAME = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            // substitutes ? with the username
+            preparedStatement.setString(1, username);
+
+            // checks if there is at least a user that has the same username
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+
+                    // if the username is already used, shows the error message, otherwise sends the user to the login
+                    int count = resultSet.getInt(1);
+                    if (count == 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+        registerError.setText("Username già utilizzato");
+        registerError.setVisible(true);
+        return false;
+    }
+
+    // allows a customer to require seats
     @FXML
     private void getRequiredSeats() {
 
@@ -199,7 +239,7 @@ public class CustomerController {
         }
     }
 
-    // allows customer to say how many seats he needs and to get a table if there are one available and there are enough seats
+    // allows customers to say how many seats he needs and to get a table if there are one available and there are enough seats
     private int getTable(Socket receptionSocket) throws IOException {
 
         // used to gets customer's required seats and to say it to the receptionist
@@ -224,7 +264,7 @@ public class CustomerController {
         return tableNumber;
     }
 
-    // simulates menu's scanning by the customer and shows it
+    // simulates menu's scanning by customers and shows it
     private void getMenu() {
 
         // opens the files that contains the menu in read mode
@@ -256,7 +296,7 @@ public class CustomerController {
         }
     }
 
-    // checks if customer's requested order is in the menù and returns true if the order is available and false otherwise
+    // checks if customers' requested order is in the menù and returns true if the order is available and false otherwise
     private float checkOrder(String order) {
 
         // opens the file that contains the menu in read mode
@@ -283,7 +323,7 @@ public class CustomerController {
         }
     }
 
-    // simulates a customer order
+    // simulates customers' orders
     @FXML
     private void getOrder() {
         final int WAITER_PORT = 1316;           // used to communicate with the waiter
@@ -338,6 +378,7 @@ public class CustomerController {
         }
     }
 
+    // switches the interface to the login
     @FXML
     private void showLoginInterface() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("LoginInterface.fxml"));
@@ -353,6 +394,7 @@ public class CustomerController {
         stage.show();
     }
 
+    // switches the interface to the register form
     @FXML
     private void showRegisterInterface() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("RegisterInterface.fxml"));
@@ -404,25 +446,21 @@ public class CustomerController {
     }
 
     // encrypts the password using a hash algorithm
-    private String hashPassword(String password) {
-        try {
+    private String hashPassword(String password) throws NoSuchAlgorithmException {
 
-            // gets an instance of Message Digest (Java package that establishes hash functionalities)
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        // gets an instance of Message Digest (Java package that establishes hash functionalities)
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
-            // calculates the array of byte that contains the hashed password
-            byte[] hashedBytes = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+        // calculates the array of byte that contains the hashed password
+        byte[] hashedBytes = digest.digest(password.getBytes(StandardCharsets.UTF_8));
 
-            // converts the array of byte into hexadecimal
-            StringBuilder stringBuilder = new StringBuilder();
-            for (byte b : hashedBytes) {
-                stringBuilder.append(String.format("%02x", b));
-            }
-
-            // returns it as string
-            return stringBuilder.toString();
-        } catch (NoSuchAlgorithmException exc) {
-            throw new RuntimeException(exc);
+        // converts the array of byte into hexadecimal
+        StringBuilder stringBuilder = new StringBuilder();
+        for (byte b : hashedBytes) {
+            stringBuilder.append(String.format("%02x", b));
         }
+
+        // returns it as string
+        return stringBuilder.toString();
     }
 }
