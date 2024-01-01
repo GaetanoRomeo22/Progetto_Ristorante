@@ -1,6 +1,7 @@
 package org.progetto_ristorante.progetto_ristorante;
 
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -25,14 +26,13 @@ import java.sql.SQLException;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 
 public class CustomerController {
 
     @FXML
     private TextArea totalOrderedArea,
-                     clientMenuArea;
+                     menuArea;
 
     @FXML
     private Text billText,
@@ -60,6 +60,7 @@ public class CustomerController {
         // gets username and password from the interface
         String username = loginUsername.getText(),
                password = loginPassword.getText();
+
 
         // checks if the user has entered valid username and password
         if (username.isEmpty() || password.isEmpty()) {
@@ -187,7 +188,7 @@ public class CustomerController {
                 showOrderInterface();
 
                 // shows the menu
-                getMenu();
+                Platform.runLater(this::getMenu);
 
                 // orders, waits for the order and eats it
                 getOrder();
@@ -286,7 +287,7 @@ public class CustomerController {
             }
 
             // shows the menu into the interface's text area
-            clientMenuArea.setText(menu.toString());
+            menuArea.setText(menu.toString());
 
             // closes the connection to the file
             bufferedReader.close();
@@ -387,10 +388,6 @@ public class CustomerController {
         Stage stage = (Stage) registerUsername.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true);
-        FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000));
-        fadeTransition.setFromValue(0.0);
-        fadeTransition.setToValue(1.0);
-        fadeTransition.play();
         stage.show();
     }
 
@@ -403,10 +400,6 @@ public class CustomerController {
         Stage stage = (Stage) loginUsername.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true);
-        FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000));
-        fadeTransition.setFromValue(0.0);
-        fadeTransition.setToValue(1.0);
-        fadeTransition.play();
         stage.show();
     }
 
@@ -417,10 +410,6 @@ public class CustomerController {
         Stage stage = (Stage) loginUsername.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true);
-        FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000));
-        fadeTransition.setFromValue(0.0);
-        fadeTransition.setToValue(1.0);
-        fadeTransition.play();
         stage.show();
     }
 
@@ -431,10 +420,6 @@ public class CustomerController {
         Stage stage = (Stage) requiredSeatsField.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true);
-        FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000));
-        fadeTransition.setFromValue(0.0);
-        fadeTransition.setToValue(1.0);
-        fadeTransition.play();
         stage.show();
     }
 

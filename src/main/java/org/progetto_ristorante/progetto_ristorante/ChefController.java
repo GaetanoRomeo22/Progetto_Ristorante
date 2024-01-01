@@ -21,7 +21,7 @@ public class ChefController implements Initializable {
             orderPriceField;
 
     @FXML
-    private TextArea chefMenuArea;
+    private TextArea menuArea;
 
     @FXML
     private static Text orderStatus;
@@ -35,7 +35,7 @@ public class ChefController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         menuOrderField.setFocusTraversable(false);
         orderPriceField.setFocusTraversable(false);
-        chefMenuArea.setFocusTraversable(false);
+        menuArea.setFocusTraversable(false);
         orderStatus = new Text();
     }
 
@@ -179,9 +179,9 @@ public class ChefController implements Initializable {
             // shows the menu
             while ((order = bufferedReader.readLine()) != null) {
                 price = Float.parseFloat(bufferedReader.readLine());
-                chefMenuArea.appendText("Piatto: " + order + System.lineSeparator());
-                chefMenuArea.appendText("Prezzo: " + price + System.lineSeparator());
-                chefMenuArea.appendText("\n");
+                menuArea.appendText("Piatto: " + order + System.lineSeparator());
+                menuArea.appendText("Prezzo: " + price + System.lineSeparator());
+                menuArea.appendText("\n");
             }
         } catch (Exception exc) {
             throw new RuntimeException(exc);

@@ -20,10 +20,6 @@ public class Customer extends Application {
         Scene scene = new Scene(fxmlLoader.load());
         stage.setScene(scene);
         stage.setMaximized(true);
-        FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000));
-        fadeTransition.setFromValue(0.0);
-        fadeTransition.setToValue(1.0);
-        fadeTransition.play();
         stage.show();
     }
 }

@@ -12,7 +12,7 @@
 <?import javafx.scene.control.TextArea?>
 <VBox alignment="CENTER" spacing="5.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.ChefController"
-      style="-fx-background-color: white;">
+      style="-fx-background-color: #ffc244;">
 
     <!-- Distance Among Elements -->
     <padding>
@@ -21,36 +21,36 @@
     <!-- Distance Among Elements -->
 
     <!-- Logo -->
-    <ImageView fitHeight="150" fitWidth="150">
+    <ImageView fitHeight="250" fitWidth="250">
         <Image url="@images/logo.png"/>
     </ImageView>
     <!-- Logo -->
 
     <!-- Title -->
-    <Text fx:id="menuTitle" text="Scrivi il menu" style="-fx-font-size: 28px; -fx-fill: black; -fx-padding: 10 0 20 0;"/>
+    <Text text="Scrivi il menù" style="-fx-font-size: 20px; -fx-fill: black; -fx-font-weight: bold; -fx-padding: 10 0 20 0;"/>
     <!-- Title -->
 
     <!-- Order and Price Writing -->
     <HBox spacing="5.0" alignment="CENTER">
-        <TextField fx:id="menuOrderField" style="-fx-font-size: 20px; -fx-padding: 20px; -fx-border-radius: 20px; -fx-border-color: grey; -fx-prompt-text-fill: grey; -fx-background-color: white; -fx-font-family: 'sans-serif'"
+        <TextField fx:id="menuOrderField" style="-fx-font-size: 20px; -fx-padding: 20px; -fx-border-radius: 20px; -fx-background-radius: 20px; -fx-prompt-text-fill: grey; -fx-background-color: white; -fx-font-family: 'sans-serif'"
                    minWidth="0" prefWidth="700" maxWidth="700" promptText="Piatto"/>
-        <TextField fx:id="orderPriceField" style="-fx-font-size: 20px; -fx-padding: 20px; -fx-border-radius: 20px; -fx-border-color: grey; -fx-prompt-text-fill: grey; -fx-background-color: white; -fx-font-family: 'sans-serif'"
+        <TextField fx:id="orderPriceField" style="-fx-font-size: 20px; -fx-padding: 20px; -fx-border-radius: 20px; -fx-background-radius: 20px; -fx-prompt-text-fill: white; -fx-background-color: #00a082; -fx-font-family: 'sans-serif'"
                    minWidth="0" prefWidth="104" maxWidth="104" promptText="Prezzo"/>
     </HBox>
     <!-- Order and Price Writing -->
 
     <!-- Menu -->
-    <TextArea fx:id="chefMenuArea" wrapText="true" editable="false"
-              style="-fx-font-size: 20px; -fx-border-radius: 20px; -fx-border-color: grey; -fx-padding: 5 5 5 5; -fx-background-color: transparent"
-              minWidth="0" prefWidth="814" maxWidth="814"/>
+    <TextArea fx:id="menuArea" wrapText="true" editable="false"
+              style="-fx-font-size: 20px; -fx-border-radius: 20px; -fx-background-radius: 20px; -fx-padding: 6 6 6 6; -fx-background-color: white;"
+              minWidth="0" prefWidth="808" maxWidth="808"/>
     <!-- Menu -->
 
     <!-- Commit Buttons -->
     <HBox spacing="5.0" alignment="CENTER">
-        <Button fx:id="commitOrderButton" text="Conferma piatto" onAction="#addOrder" style="-fx-font-size: 20px; -fx-background-radius: 20px; -fx-background-color: #ec3853; -fx-text-fill: white; -fx-font-family: 'sans-serif'" prefWidth="170"/>
-        <Button fx:id="stopWriteButton" text="Fine" onAction="#cook"
-                style="-fx-font-size: 20px; -fx-border-radius: 20px; -fx-background-color: white; -fx-text-fill: gray; -fx-font-family: 'sans-serif'; -fx-border-color: gray;"
-                prefWidth="70"/>
+    <Button fx:id="commitOrderButton" text="Conferma piatto" onAction="#addOrder" style="-fx-font-size: 20px; -fx-background-color: #00a082; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: white; -fx-font-family: 'sans-serif'" prefWidth="180"/>
+    <Button fx:id="stopWriteButton" text="Fine" onAction="#cook"
+            style="-fx-font-size: 20px; -fx-background-color: white; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: gray; -fx-font-family: 'sans-serif';"
+            prefWidth="70"/>
     </HBox>
     <!-- Commit Buttons -->
 </VBox>
