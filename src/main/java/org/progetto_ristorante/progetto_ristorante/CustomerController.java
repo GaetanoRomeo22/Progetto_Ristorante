@@ -1,6 +1,8 @@
 package org.progetto_ristorante.progetto_ristorante;
 
 import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -30,28 +33,39 @@ import java.util.concurrent.*;
 
 public class CustomerController {
 
+    // FXML annotations for injecting UI elements
     @FXML
     private TextArea totalOrderedArea,
-                     menuArea;
+            menuArea;
 
     @FXML
     private Text billText,
-                 loginError,
-                 registerError,
-                 unavailableOrder;
+            unavailableOrder,
+            waitingTimeText,
+            loginError,
+            registerError;
 
     @FXML
     private TextField loginUsername,
-                      registerUsername,
-                      orderField,
-                      requiredSeatsField;
+            registerUsername,
+            orderField,
+            requiredSeatsField;
 
-    @FXML
-    private PasswordField loginPassword,
-                          registerPassword;
 
     @FXML
     private Button stopButton;
+
+    @FXML
+    private VBox waitingBox;
+
+    // Variables for managing communication with the receptionist
+    private BufferedReader checkSeats2;
+    private int waitingTime; // time the customer has to wait to enter
+
+    @FXML
+    private PasswordField loginPassword,
+            registerPassword;
+
 
     // allows a customer to login himself by entering a username and a password
     @FXML
@@ -59,7 +73,7 @@ public class CustomerController {
 
         // gets username and password from the interface
         String username = loginUsername.getText(),
-               password = loginPassword.getText();
+                password = loginPassword.getText();
 
 
         // checks if the user has entered valid username and password
@@ -158,103 +172,133 @@ public class CustomerController {
                 }
             }
         }
-        registerError.setText("Username già utilizzato");
+        registerError.setText("Username giÃ  utilizzato");
         registerError.setVisible(true);
         return false;
     }
 
-    // allows a customer to require seats
+    // Method to handle the action when the customer requests seats
     @FXML
     private void getRequiredSeats() {
-
         try {
-            final int RECEPTIONIST_PORT = 1313;     // used to communicate with the receptionist
+            final int RECEPTIONIST_PORT = 1313; // used to communicate with the receptionist
 
             // creates a socket to communicate with the receptionist
             Socket receptionSocket = new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT);
-            int waitingTime;                   // time the customer has to wait to enter
-            String answerWaitingTime;          // used to check if the user wants waiting
 
             // says how many seats he needs to the receptionist and gets a table
             int tableNumber = getTable(receptionSocket);
 
             // if there are available seats, the customer takes them
             if (tableNumber >= 0) {
+                // gets the menu
+                System.out.println("(Cliente) Prendo posto al tavolo " + tableNumber + " e scannerizzo il menù");
 
-                // closes connection with receptionist
+                // closes connection with the receptionist
                 receptionSocket.close();
 
                 // shows second interface's elements
                 showOrderInterface();
 
                 // shows the menu
-                Platform.runLater(this::getMenu);
+                getMenu();
 
                 // orders, waits for the order and eats it
                 getOrder();
-            }
-
-            // otherwise, he waits
-            /*
-            else {
+            } else {
+                // otherwise, he waits
                 try (Socket receptionSocket2 = new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT)) {
-
                     // used to read through the socket
-                    BufferedReader checkSeats2 = new BufferedReader(new InputStreamReader(receptionSocket2.getInputStream()));
-
-                    // used to read through the standard input
-                    BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+                    checkSeats2 = new BufferedReader(new InputStreamReader(receptionSocket2.getInputStream()));
 
                     // decides if waiting or not
                     waitingTime = Integer.parseInt(checkSeats2.readLine());
 
-                    System.out.println("(Reception) Vuoi attendere " + waitingTime + " minuti ?");
-                    answerWaitingTime = stdin.readLine();
+                    waitingBox.setVisible(true);
 
-                    if (answerWaitingTime.equalsIgnoreCase("si")) {
-
-                        // creates a scheduler to plan the periodic execution of tasks
-                        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
-                        // plans which task execute after a waiting time, and specifies the time unity
-                        ScheduledFuture<?> waitTask = scheduler.schedule(this::onWaitComplete, waitingTime, TimeUnit.SECONDS);
-
-                        // waits for the task to complete (the estimated wait time)
-                        try {
-                            waitTask.get();
-                        } catch (InterruptedException | ExecutionException exc) {
-                            throw new RuntimeException(exc);
-                        } finally {
-
-                            // deallocates used resources
-                            scheduler.shutdown();
-                            checkSeats2.close();
-                            stdin.close();
-                            stdin.close();
-                        }
-                    }
+                    // Set the waiting time message
+                    waitingTimeText.setText("(Reception) Vuoi attendere " + waitingTime + " minuti ?");
+                    waitingTimeText.setVisible(true);
                 }
-            } */
+            }
         } catch (IOException exc) {
+            System.out.println("(Cliente) Impossibile comunicare con il receptionist");
             throw new RuntimeException(exc);
         }
     }
 
-    // allows customers to say how many seats he needs and to get a table if there are one available and there are enough seats
-    private int getTable(Socket receptionSocket) throws IOException {
+    // Method to handle the action when the customer clicks the "Wait" button
+    @FXML
+    private void waitButton() throws IOException {
+        // creates a scheduler to plan the periodic execution of tasks
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-        // used to gets customer's required seats and to say it to the receptionist
+        // plans which task execute after a waiting time, and specifies the time unit
+        ScheduledFuture<?> waitTask = scheduler.schedule(this::onWaitComplete, waitingTime, TimeUnit.SECONDS);
+
+        // waits for the task to complete (the estimated wait time)
+        try {
+            waitTask.get();
+        } catch (InterruptedException | ExecutionException exc) {
+            System.out.println("(Cliente) Errore utilizzo scheduler");
+            throw new RuntimeException(exc);
+        } finally {
+            // deallocates used resources
+            scheduler.shutdown();
+            checkSeats2.close();
+        }
+    }
+
+    // Method to handle the completion of the waiting time
+    private void onWaitComplete() {
+        Platform.runLater(() -> {
+            // Example: show a message indicating that the wait is over
+            waitingTimeText.setText("Tempo di attesa terminato!");
+
+            // After a certain period of time, hide the waiting components and reload the first interface
+            Timeline timeline = new Timeline(
+                    new KeyFrame(Duration.seconds(1), event -> {
+                        waitingBox.setVisible(false);
+                        waitingTimeText.setVisible(false);
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("GetSeatsInterface.fxml"));
+                        Parent parent;
+                        try {
+                            parent = loader.load();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        try {
+                            showSeatsInterface();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+            );
+            timeline.play();
+        });
+    }
+
+    // Method to handle the action when the customer clicks the "Leave" button
+    @FXML
+    private void leaveButton() {
+        // Close the interface
+        Stage stage = (Stage) requiredSeatsField.getScene().getWindow();
+        stage.close();
+    }
+
+    // Method to allow the customer to specify how many seats they need and get a table if available
+    private int getTable(Socket receptionSocket) throws IOException {
+        // used to get customer's required seats and to send it to the receptionist
         BufferedReader checkSeats = new BufferedReader(new InputStreamReader(receptionSocket.getInputStream()));
         PrintWriter sendSeats = new PrintWriter(receptionSocket.getOutputStream(), true);
 
-        // gets user's required seats from interface
         String input = requiredSeatsField.getText();
         int requiredSeats = Integer.parseInt(input);
 
         // says how many seats he requires to the receptionist
         sendSeats.println(requiredSeats);
 
-        // gets the table number by the receptionist if it's possible
+        // gets the table number from the receptionist if it's possible
         int tableNumber = Integer.parseInt(checkSeats.readLine());
 
         // closes used resources
@@ -262,15 +306,14 @@ public class CustomerController {
         sendSeats.close();
         receptionSocket.close();
 
+        System.out.println(requiredSeats);
         return tableNumber;
     }
 
-    // simulates menu's scanning by customers and shows it
+    // Method to simulate menu scanning by the customer and display it
     private void getMenu() {
-
-        // opens the files that contains the menu in read mode
+        // opens the files that contain the menu in read mode
         try (FileReader fileReader = new FileReader("menu.txt")) {
-
             // used to get each order and its price
             BufferedReader bufferedReader = new BufferedReader(fileReader);
 
@@ -297,12 +340,11 @@ public class CustomerController {
         }
     }
 
-    // checks if customers' requested order is in the menù and returns true if the order is available and false otherwise
+    // Method to check if the customer's requested order is in the menu
+    // Returns true if the order is available, false otherwise
     private float checkOrder(String order) {
-
         // opens the file that contains the menu in read mode
         try (FileReader fileReader = new FileReader("menu.txt")) {
-
             // used to read an order from the file
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             String menuOrder;
@@ -320,14 +362,15 @@ public class CustomerController {
             bufferedReader.close();
             return -1;
         } catch (Exception exc) {
+            System.out.println("(Cliente) Errore apertura menù");
             throw new RuntimeException(exc);
         }
     }
 
-    // simulates customers' orders
+    // Method to simulate a customer order
     @FXML
     private void getOrder() {
-        final int WAITER_PORT = 1316;           // used to communicate with the waiter
+        final int WAITER_PORT = 1316; // used to communicate with the waiter
 
         try {
             // creates a socket to communicate with the waiter
@@ -353,13 +396,13 @@ public class CustomerController {
                 stage.close();
             } else if (!order.isEmpty()) { // Check if the order is not empty before checking its availability
 
-                // if the requested order isn't in the menù, shows an error message
+                // if the requested order isn't in the menu, shows an error message
                 if (checkOrder(order) < 0.50f) {
                     unavailableOrder.setVisible(true);
                 } else {
-
                     // sends the order to the waiter
                     unavailableOrder.setVisible(false);
+                    System.out.println("(Cliente) Attendo che " + order + " sia pronto");
                     takeOrder.println(order);
 
                     // waits for the order and eats it
@@ -368,6 +411,9 @@ public class CustomerController {
                     // adds the order to the customer's list and its price to the bill
                     totalOrdered.append(order).append("\n");
                     bill += checkOrder(order);
+
+                    // eats the order
+                    System.out.println("(Cliente) Mangio " + order);
                 }
             }
 
@@ -413,6 +459,7 @@ public class CustomerController {
         stage.show();
     }
 
+    // Method to show the interface that allows users to get orders
     private void showOrderInterface() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GetOrderInterface.fxml"));
         Parent parent = loader.load();
@@ -420,10 +467,16 @@ public class CustomerController {
         Stage stage = (Stage) requiredSeatsField.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true);
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000));
+        fadeTransition.setFromValue(0.0);
+        fadeTransition.setToValue(1.0);
+        fadeTransition.play();
         stage.show();
+
+        menuArea = (TextArea) scene.lookup("#menuArea");
     }
 
-    // closes customer's interface once he has done
+    // Method to close the customer's interface once they are done
     @FXML
     private void closeInterface() {
         Stage stage = (Stage) stopButton.getScene().getWindow();
@@ -449,3 +502,4 @@ public class CustomerController {
         return stringBuilder.toString();
     }
 }
+

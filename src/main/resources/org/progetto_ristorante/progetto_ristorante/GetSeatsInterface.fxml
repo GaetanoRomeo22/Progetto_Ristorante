@@ -6,6 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
+<?import javafx.scene.text.Text?>
 
 <VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController"
@@ -22,4 +23,16 @@
     <TextField fx:id="requiredSeatsField" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;" maxWidth="150"/>
     <Button text="Conferma" onAction="#getRequiredSeats" style="-fx-font-size: 14px; -fx-background-color: #32CD32; -fx-text-fill: white;"/>
     <!-- Required Seats -->
+
+    <!-- Additional Elements for Waiting -->
+    <VBox fx:id="waitingBox" spacing="10.0" visible="false">
+        <Text text="Non ci sono posti disponibili. Vuoi attendere?" style="-fx-font-size: 16px; -fx-text-fill: #333333;"/>
+        <Button text="Si, attendi" onAction="#waitButton" style="-fx-font-size: 14px; -fx-background-color: #32CD32; -fx-text-fill: white;"/>
+        <Button text="No, me ne vado" onAction="#leaveButton" style="-fx-font-size: 14px; -fx-background-color: #FF4500; -fx-text-fill: white;"/>
+        <!-- Aggiungi la Label per visualizzare il tempo di attesa rimanente -->
+        <Label fx:id="countdownLabel" style="-fx-font-size: 14px; -fx-text-fill: #333333;"/>
+    </VBox>
+    <Text fx:id="waitingTimeText" visible="false" style="-fx-font-size: 16px; -fx-text-fill: #333333;"/>
+    <!-- Additional Elements for Waiting -->
+
 </VBox>
