@@ -1,39 +1,52 @@
 package org.progetto_ristorante.progetto_ristorante;
 
+import java.io.IOException;
+
 public class Main {
+
     public static void main(String[] args) {
         try {
+            // Percorso del tuo progetto
+            String progettoPath = "C:/Users/figli/Documents/università/Terzo_anno/Programmazione_3/Progetto_Ristorante";
 
-            // executes chef process
-            ProcessBuilder chefBuilder = new ProcessBuilder("java", "org.progetto_ristorante.progetto_ristorante.Chef");
-            Process chefProcess = chefBuilder.start();
+            // Percorso delle librerie di JavaFX (aggiorna con il tuo percorso)
+            String javafxPath = "C:/Users/figli/javafx-sdk-21.0.1/lib";
 
-            // executes receptionist process
-            ProcessBuilder receptionistBuilder = new ProcessBuilder("java", "Receptionist");
-            Process receptionistProcess = receptionistBuilder.start();
+            // Compila il progetto
+            compileProject(progettoPath, javafxPath);
 
-            // executes waiter process
-            ProcessBuilder waiterBuilder = new ProcessBuilder("java", "Waiter");
-            Process waiterProcess = waiterBuilder.start();
+            // Esegui il main
+            runMainClass(progettoPath);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-            // executes customer process
-            ProcessBuilder customerBuilder = new ProcessBuilder("java", "Customer");
-            Process customerProcess = customerBuilder.start();
+    private static void compileProject(String progettoPath, String javafxPath) throws IOException {
+        ProcessBuilder processBuilder = new ProcessBuilder("javac", "--module-path", javafxPath,
+                "--add-modules", "javafx.controls,javafx.fxml", progettoPath + "/org/progetto_ristorante/progetto_ristorante/**/*.java");
+        Process process = processBuilder.start();
 
-            // waits for their termination
-            int chefExitCode = chefProcess.waitFor();
-            int receptionistExitCode = receptionistProcess.waitFor();
-            int waiterExitCode = waiterProcess.waitFor();
-            int customerExitCode = customerProcess.waitFor();
+        // Attendi la terminazione della compilazione
+        try {
+            int exitCode = process.waitFor();
+            System.out.println("Compilazione completata con codice di uscita: " + exitCode);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
-            System.out.println("Chef Exit Code: " + chefExitCode);
-            System.out.println("Receptionist Exit Code: " + receptionistExitCode);
-            System.out.println("Waiter Exit Code: " + waiterExitCode);
-            System.out.println("Customer Exit Code: " + customerExitCode);
-        } catch (Exception exc) {
-            throw new RuntimeException(exc);
+    private static void runMainClass(String progettoPath) throws IOException {
+        ProcessBuilder processBuilder = new ProcessBuilder("java", "--module-path", progettoPath,
+                "--add-modules", "javafx.controls,javafx.fxml", "org.progetto_ristorante.progetto_ristorante.Chef");
+        Process process = processBuilder.start();
+
+        // Attendi la terminazione dell'esecuzione
+        try {
+            int exitCode = process.waitFor();
+            System.out.println("Esecuzione completata con codice di uscita: " + exitCode);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }
-
-
