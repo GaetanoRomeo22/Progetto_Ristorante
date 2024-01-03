@@ -8,10 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -30,8 +27,6 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.concurrent.*;
-
-
 
 public class CustomerController {
 
@@ -59,6 +54,11 @@ public class CustomerController {
 
     @FXML
     private VBox waitingBox;
+
+    private int countdownTime;
+    private Timeline countdownTimer;
+    @FXML
+    private Label countdownLabel;
 
     // Variables for managing communication with the receptionist
     private BufferedReader checkSeats2;
@@ -223,6 +223,7 @@ public class CustomerController {
                     // Set the waiting time message
                     waitingTimeText.setText("(Reception) Vuoi attendere " + waitingTime + " minuti ?");
                     waitingTimeText.setVisible(true);
+
                 }
             }
         } catch (IOException exc) {
@@ -231,9 +232,19 @@ public class CustomerController {
         }
     }
 
+
+
+
     // Method to handle the action when the customer clicks the "Wait" button
     @FXML
-    private void waitButton() throws IOException, InterruptedException {
+    private void waitButton() throws IOException {
+
+        waitingTimeText.setVisible(false);
+
+        // Initialize countdown
+        countdownTime = waitingTime;
+        countdownLabel.setText("Tempo rimanente: " + countdownTime);
+
         // creates a scheduler to plan the periodic execution of tasks
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -242,10 +253,23 @@ public class CustomerController {
 
         // waits for the task to complete (the estimated wait time)
         try {
-            waitTask.get();
-        } catch (InterruptedException | ExecutionException exc) {
-            System.out.println("(Cliente) Errore utilizzo scheduler");
-            throw new RuntimeException(exc);
+            countdownTimer = new Timeline(
+                    new KeyFrame(Duration.seconds(1), event -> {
+                        countdownTime--;
+                        countdownLabel.setText("Tempo rimanente: " + countdownTime);
+
+                        if (countdownTime <= 0) {
+                            countdownTimer.stop();
+                            try {
+                                waitTask.get();
+                            } catch (InterruptedException | ExecutionException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    })
+            );
+            countdownTimer.setCycleCount(Timeline.INDEFINITE);
+            countdownTimer.play();
         } finally {
             // deallocates used resources
             scheduler.shutdown();
@@ -256,6 +280,7 @@ public class CustomerController {
     // Method to handle the completion of the waiting time
     private void onWaitComplete() {
         Platform.runLater(() -> {
+
             // Example: show a message indicating that the wait is over
             waitingTimeText.setText("Tempo di attesa terminato!");
 
