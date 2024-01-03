@@ -31,6 +31,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.concurrent.*;
 
+
+
 public class CustomerController {
 
     // FXML annotations for injecting UI elements
@@ -61,6 +63,8 @@ public class CustomerController {
     // Variables for managing communication with the receptionist
     private BufferedReader checkSeats2;
     private int waitingTime; // time the customer has to wait to enter
+
+    private float bill = 0.0f;
 
     @FXML
     private PasswordField loginPassword,
@@ -229,7 +233,7 @@ public class CustomerController {
 
     // Method to handle the action when the customer clicks the "Wait" button
     @FXML
-    private void waitButton() throws IOException {
+    private void waitButton() throws IOException, InterruptedException {
         // creates a scheduler to plan the periodic execution of tasks
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -260,13 +264,6 @@ public class CustomerController {
                     new KeyFrame(Duration.seconds(1), event -> {
                         waitingBox.setVisible(false);
                         waitingTimeText.setVisible(false);
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("GetSeatsInterface.fxml"));
-                        Parent parent;
-                        try {
-                            parent = loader.load();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
                         try {
                             showSeatsInterface();
                         } catch (IOException e) {
@@ -382,7 +379,6 @@ public class CustomerController {
 
             StringBuilder totalOrdered = new StringBuilder();
             String order;
-            float bill = 0.0f;
 
             // gets customer's order
             order = orderField.getText();
@@ -410,7 +406,8 @@ public class CustomerController {
 
                     // adds the order to the customer's list and its price to the bill
                     totalOrdered.append(order).append("\n");
-                    bill += checkOrder(order);
+                    bill = bill + checkOrder(order);
+                    System.out.println("Conto:" +  bill);
 
                     // eats the order
                     System.out.println("(Cliente) Mangio " + order);
@@ -474,6 +471,10 @@ public class CustomerController {
         stage.show();
 
         menuArea = (TextArea) scene.lookup("#menuArea");
+        orderField = (TextField) scene.lookup("#orderField");
+        totalOrderedArea = (TextArea) scene.lookup("#totalOrderedArea");
+        billText = (Text) scene.lookup("#billText");
+
     }
 
     // Method to close the customer's interface once they are done
