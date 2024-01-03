@@ -14,11 +14,11 @@
 <VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController" style="-fx-background-color: #F5F5DC;">
 
-    <!-- Logo -->
+    <!-- Logo
     <ImageView fitHeight="150" fitWidth="150">
-        <Image url="@images/logo.png"/>
+        <Image url="images/logo.png"/>
     </ImageView>
-    <!-- Logo -->
+    < Logo -->
 
     <!-- Distance Among Elements -->
     <padding>
@@ -34,17 +34,17 @@
 
     <!-- Menu -->
     <Label text="MENU" style="-fx-font-size: 18px; -fx-text-fill: #333333;"/>
-    <TextArea fx:id="clientMenuArea" wrapText="true" editable="false" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;"/>
+    <TextArea fx:id="menuArea" wrapText="true" editable="false" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;"/>
     <Label text="Scrivi l'ordine che intendi effettuare" style="-fx-font-size: 18px; -fx-text-fill: #333333;"/>
     <TextField fx:id="orderField" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;" maxWidth="150"/>
     <!-- Menu -->
 
-    <!-- Commit Buttons -->
+    <!-- Commit Button -->
     <HBox spacing="10.0" alignment="CENTER">
         <Button text="Conferma Ordine" onAction="#getOrder" style="-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white;"/>
         <Button fx:id="stopButton"  text="Fine" onAction="#closeInterface" style="-fx-font-size: 14px; -fx-background-color: #FF6347; -fx-text-fill: white;"/>
     </HBox>
-    <!-- Commit Buttons -->
+    <!-- Commit Button -->
 
     <!-- Error Messages -->
     <Text fx:id="unavailableOrder" text="L'ordine non è presente nel menù, riprovare" visible="false" fill="red"/>
