@@ -1,12 +1,10 @@
 package org.progetto_ristorante.progetto_ristorante;
 
-import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import java.io.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 public class Chef extends Application {
 

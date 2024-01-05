@@ -14,11 +14,11 @@
 <VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController" style="-fx-background-color: #F5F5DC;">
 
-    <!-- Logo
+    <!-- Logo -->
     <ImageView fitHeight="150" fitWidth="150">
-        <Image url="images/logo.png"/>
+        <Image url="@images/logo.png"/>
     </ImageView>
-    < Logo -->
+    <!-- Logo -->
 
     <!-- Distance Among Elements -->
     <padding>
@@ -47,6 +47,6 @@
     <!-- Commit Button -->
 
     <!-- Error Messages -->
-    <Text fx:id="unavailableOrder" text="L'ordine non è presente nel menù, riprovare" visible="false" fill="red"/>
+    <Text fx:id="unavailableOrder" text="L'ordine non e' presente nel menu, riprovare" visible="false" fill="red"/>
     <!-- Error Messages -->
 </VBox>

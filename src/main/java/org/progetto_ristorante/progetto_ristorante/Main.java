@@ -17,36 +17,22 @@ public class Main {
 
             // Esegui il main
             runMainClass(progettoPath);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
         }
     }
 
-    private static void compileProject(String progettoPath, String javafxPath) throws IOException {
+    private static void compileProject(String progettoPath, String javafxPath) throws IOException, InterruptedException {
         ProcessBuilder processBuilder = new ProcessBuilder("javac", "--module-path", javafxPath,
                 "--add-modules", "javafx.controls,javafx.fxml", progettoPath + "/org/progetto_ristorante/progetto_ristorante/**/*.java");
         Process process = processBuilder.start();
-
-        // Attendi la terminazione della compilazione
-        try {
-            int exitCode = process.waitFor();
-            System.out.println("Compilazione completata con codice di uscita: " + exitCode);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        process.waitFor();
     }
 
-    private static void runMainClass(String progettoPath) throws IOException {
+    private static void runMainClass(String progettoPath) throws IOException, InterruptedException {
         ProcessBuilder processBuilder = new ProcessBuilder("java", "--module-path", progettoPath,
                 "--add-modules", "javafx.controls,javafx.fxml", "org.progetto_ristorante.progetto_ristorante.Chef");
         Process process = processBuilder.start();
-
-        // Attendi la terminazione dell'esecuzione
-        try {
-            int exitCode = process.waitFor();
-            System.out.println("Esecuzione completata con codice di uscita: " + exitCode);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        process.waitFor();
     }
 }

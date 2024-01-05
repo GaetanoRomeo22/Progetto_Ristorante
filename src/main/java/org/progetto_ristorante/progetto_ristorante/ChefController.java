@@ -24,7 +24,8 @@ public class ChefController implements Initializable {
     private TextArea menuArea;
 
     @FXML
-    private static Text orderStatus;
+    private static Text orderStatus,
+                        invalidData;
 
     @FXML
     private Button commitOrderButton,
@@ -37,6 +38,7 @@ public class ChefController implements Initializable {
         orderPriceField.setFocusTraversable(false);
         menuArea.setFocusTraversable(false);
         orderStatus = new Text();
+        invalidData = new Text();
     }
 
     public static void updateOrderStatus(String status) {
@@ -87,25 +89,24 @@ public class ChefController implements Initializable {
                     inputPrice = orderPriceField.getText();
             inputPrice = inputPrice.replace(',', '.');
 
-            // checks if the chef has entered an order
-            if (!order.isEmpty()) {
+            // checks if the chef has entered an order and a price
+            if (!order.isEmpty() && !inputPrice.isEmpty()) {
 
-                // checks if the chef has entered order's price
-                if (!inputPrice.isEmpty()) {
-
-                    // writes order's name and order's price into the file separated by a line
-                    float price = Float.parseFloat(inputPrice);
-                    writer.println(order);
-                    writer.println(price);
-                }
-
-                // clears previous text
-                menuOrderField.setText("");
-                orderPriceField.setText("");
-
-                // shows written menu
-                showMenu();
+                // writes order's name and order's price into the file separated by a line
+                invalidData.setVisible(false);
+                float price = Float.parseFloat(inputPrice);
+                writer.println(order);
+                writer.println(price);
+            } else {
+                invalidData.setVisible(true);
             }
+
+            // clears previous text
+            menuOrderField.setText("");
+            orderPriceField.setText("");
+
+            // shows written menu
+            showMenu();
         } catch (IOException exc) {
             throw new RuntimeException(exc);
         }
@@ -115,15 +116,6 @@ public class ChefController implements Initializable {
     public static String getOrder(Socket acceptedOrder) throws IOException {
         BufferedReader takeOrder = new BufferedReader(new InputStreamReader(acceptedOrder.getInputStream()));
         return takeOrder.readLine();
-    }
-
-    // simulates the preparation of an order by the chef
-    public static void prepareOrder() {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException exc) {
-            throw new RuntimeException(exc);
-        }
     }
 
     // sends a ready order to the waiter who has required to prepare it
@@ -148,9 +140,6 @@ public class ChefController implements Initializable {
                         if (order.equalsIgnoreCase("fine")) {
                             break;
                         }
-
-                        // prepares the order
-                        prepareOrder();
 
                         String finalOrder = order;
                         Platform.runLater(() -> updateOrderStatus(finalOrder + " pronto"));
@@ -190,13 +179,10 @@ public class ChefController implements Initializable {
 
     // hides the interface once the chef has finished to write the menu
     private void hideInterface() {
-        menuOrderField.setManaged(false);
         menuOrderField.setVisible(false);
-        orderPriceField.setManaged(false);
+        menuArea.setVisible(false);
         orderPriceField.setVisible(false);
-        stopWriteButton.setManaged(false);
         stopWriteButton.setVisible(false);
-        commitOrderButton.setManaged(false);
         commitOrderButton.setVisible(false);
     }
 }

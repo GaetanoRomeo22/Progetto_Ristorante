@@ -26,10 +26,6 @@
     </ImageView>
     <!-- Logo -->
 
-    <!-- Title -->
-    <Text text="Scrivi il menù" style="-fx-font-size: 20px; -fx-fill: black; -fx-font-weight: bold; -fx-padding: 10 0 20 0;"/>
-    <!-- Title -->
-
     <!-- Order and Price Writing -->
     <HBox spacing="5.0" alignment="CENTER">
         <TextField fx:id="menuOrderField" style="-fx-font-size: 20px; -fx-padding: 20px; -fx-border-radius: 20px; -fx-background-radius: 20px; -fx-prompt-text-fill: grey; -fx-background-color: white; -fx-font-family: 'sans-serif'"
@@ -53,4 +49,8 @@
             prefWidth="70"/>
     </HBox>
     <!-- Commit Buttons -->
+
+    <!-- Error message -->
+    <Text fx:id="invalidData" text="Ordine o prezzo mancante" visible="false" fill="red"/>
+    <!-- Error message -->
 </VBox>

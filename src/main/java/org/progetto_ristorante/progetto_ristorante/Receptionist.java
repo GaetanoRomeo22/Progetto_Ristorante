@@ -20,6 +20,7 @@ public class Receptionist {
     static int [] tables = new int[MAX_TABLES];          // 0 in a cell means free table, 1 means occupied table
     static BufferedReader readSeatsNumber;               // used to read customer requested seats
     static PrintWriter giveTableNumber;                  // used to assign a table to the customer
+
     public static void main(String [] args) throws IOException {
         final int PORT = 1313;                           // used for the communication with customers
 
@@ -56,7 +57,6 @@ public class Receptionist {
                         try (Socket waitingTimeSocket = receptionSocket.accept()) {
                             PrintWriter waitingTimeWriter = new PrintWriter(waitingTimeSocket.getOutputStream(), true);
                             int waitingTime = randomWaitingTime();
-                            System.out.println("(Receptionist) Il tempo finché un tavolo si liberi è " + waitingTime + " minuti");
                             waitingTimeWriter.println(waitingTime);
                         } catch (IOException exc) {
                             throw new RuntimeException(exc);
