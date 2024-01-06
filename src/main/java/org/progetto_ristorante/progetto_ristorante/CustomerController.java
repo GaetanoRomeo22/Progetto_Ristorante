@@ -303,33 +303,32 @@ public class CustomerController {
         return tableNumber;
     }
 
-    // method to simulate menu scanning by the customer and display it
+    // shows the menu in real time
     private void getMenu() {
 
-        // opens the files that contain the menu in read mode
-        try (FileReader fileReader = new FileReader("menu.txt")) {
+        // connection to the database
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
 
-            // used to get each order and its price
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            // query to get each menu's orders
+            String selectQuery = "SELECT * FROM ORDINI";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
 
-            // menu contains each order and its price
-            StringBuilder menu = new StringBuilder();
-            String order;
-            float price;
+                // performs the select
+                ResultSet resultSet = preparedStatement.executeQuery();
 
-            // shows each menu order and its price on the screen
-            while ((order = bufferedReader.readLine()) != null) {
-                price = Float.parseFloat(bufferedReader.readLine());
-                menu.append("Ordine: ").append(order).append("\n");
-                menu.append("Prezzo: ").append(price).append("\n");
+                menuArea.clear();
+
+                // shows the menu
+                while (resultSet.next()) {
+                    String order = resultSet.getString("NOME");
+                    float price = resultSet.getFloat("PREZZO");
+
+                    menuArea.appendText("Piatto: " + order + System.lineSeparator());
+                    menuArea.appendText("Prezzo: " + price + System.lineSeparator());
+                    menuArea.appendText("\n");
+                }
             }
-
-            // shows the menu into the interface's text area
-            menuArea.setText(menu.toString());
-
-            // closes the connection to the file
-            bufferedReader.close();
-        } catch (Exception exc) {
+        } catch (SQLException exc) {
             throw new RuntimeException(exc);
         }
     }
@@ -444,7 +443,7 @@ public class CustomerController {
         stage.show();
     }
 
-    // Method to show the interface that allows users to get orders
+    // method to show the interface that allows users to get orders
     private void showOrderInterface() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GetOrderInterface.fxml"));
         Parent parent = loader.load();
@@ -453,7 +452,11 @@ public class CustomerController {
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.show();
+
         menuArea = (TextArea) scene.lookup("#menuArea");
+        orderField = (TextField) scene.lookup("#orderField");
+        totalOrderedArea = (TextArea) scene.lookup("#totalOrderedArea");
+        billText = (Text) scene.lookup("#billText");
     }
 
     // Method to close the customer's interface once they are done
