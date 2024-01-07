@@ -64,7 +64,8 @@ public class CustomerController {
     private PasswordField loginPassword,
             registerPassword;
 
-    private float bill = 0.0f;
+    // customer's bill
+    protected float bill = 0.0f;
 
     // allows a customer to login himself by entering a username and a password
     @FXML

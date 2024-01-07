@@ -16,8 +16,8 @@ public class Main {
 
             // Esegui il main
             runMainClass(progettoPath);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
         }
     }
 
@@ -30,8 +30,8 @@ public class Main {
         try {
             int exitCode = process.waitFor();
             System.out.println("Compilazione completata con codice di uscita: " + exitCode);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException exc) {
+            throw new RuntimeException(exc);
         }
     }
 
@@ -44,8 +44,8 @@ public class Main {
         try {
             int exitCode = process.waitFor();
             System.out.println("Esecuzione completata con codice di uscita: " + exitCode);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException exc) {
+            throw new RuntimeException(exc);
         }
     }
 }
