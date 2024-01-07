@@ -35,4 +35,8 @@
     <Text fx:id="waitingTimeText" visible="false" style="-fx-font-size: 16px; -fx-text-fill: #333333;"/>
     <!-- Additional Elements for Waiting -->
 
+    <!-- Error Message -->
+    <Text fx:id="unavailableReceptionist" visible="false" fill="red"/>
+    <!-- Error Message -->
+
 </VBox>

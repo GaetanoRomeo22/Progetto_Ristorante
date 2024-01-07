@@ -35,19 +35,19 @@ public class CustomerController {
     // FXML annotations for injecting UI elements
     @FXML
     private TextArea totalOrderedArea,
-            menuArea;
+            menu;
 
     @FXML
     private Text billText,
-            unavailableOrder,
             waitingTimeText,
             loginError,
-            registerError;
+            registerError,
+            unavailableReceptionist,
+            unavailableWaiter;
 
     @FXML
     private TextField loginUsername,
             registerUsername,
-            orderField,
             requiredSeatsField;
 
     @FXML
@@ -183,6 +183,7 @@ public class CustomerController {
 
             // creates a socket to communicate with the receptionist
             Socket receptionSocket = new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT);
+            unavailableReceptionist.setVisible(false);
 
             // says how many seats he needs to the receptionist and gets a table
             int tableNumber = getTable(receptionSocket);
@@ -198,9 +199,6 @@ public class CustomerController {
 
                 // shows the menu
                 getMenu();
-
-                // orders, waits for the order and eats it
-                getOrder();
             } else {
                 // otherwise, he waits
                 try (Socket receptionSocket2 = new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT)) {
@@ -217,6 +215,8 @@ public class CustomerController {
                 }
             }
         } catch (IOException exc) {
+            unavailableReceptionist.setText("Receptionist non disponibile al momento");
+            unavailableReceptionist.setVisible(true);
             throw new RuntimeException(exc);
         }
     }
@@ -316,16 +316,16 @@ public class CustomerController {
                 // performs the select
                 ResultSet resultSet = preparedStatement.executeQuery();
 
-                menuArea.clear();
+                menu.clear();
 
                 // shows the menu
                 while (resultSet.next()) {
                     String order = resultSet.getString("NOME");
                     float price = resultSet.getFloat("PREZZO");
 
-                    menuArea.appendText("Piatto: " + order + System.lineSeparator());
-                    menuArea.appendText("Prezzo: " + price + System.lineSeparator());
-                    menuArea.appendText("\n");
+                    menu.appendText(order + System.lineSeparator());
+                    menu.appendText(price + System.lineSeparator());
+                    menu.appendText("\n");
                 }
             }
         } catch (SQLException exc) {
@@ -333,37 +333,9 @@ public class CustomerController {
         }
     }
 
-    // method to check if the customer's requested order is in the menu
-    // returns true if the order is available, false otherwise
-    private float checkOrder(String order) {
-
-        // opens the file that contains the menu in read mode
-        try (FileReader fileReader = new FileReader("menu.txt")) {
-
-            // used to read an order from the file
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String menuOrder;
-            float price;
-
-            // reads each order stored into the menu while it finds the customer's requested one or until it realizes that it isn't available
-            while ((menuOrder = bufferedReader.readLine()) != null){
-                price = Float.parseFloat(bufferedReader.readLine());
-                if (menuOrder.equals(order)) {
-                    return price;
-                }
-            }
-
-            // closes the connection to the file
-            bufferedReader.close();
-            return -1;
-        } catch (Exception exc) {
-            throw new RuntimeException(exc);
-        }
-    }
-
-    // Method to simulate a customer order
+    // simulates a customer's order
     @FXML
-    private void getOrder() {
+    private void getOrder(String order, float price) {
         final int WAITER_PORT = 1316; // used to communicate with the waiter
 
         try {
@@ -375,36 +347,25 @@ public class CustomerController {
             PrintWriter takeOrder = new PrintWriter(waiterSocket.getOutputStream(), true);
 
             StringBuilder totalOrdered = new StringBuilder();
-            String order;
 
-            // gets customer's order
-            order = orderField.getText();
+            unavailableWaiter.setVisible(false);
 
-            if (!order.isEmpty()) { // Check if the order is not empty before checking its availability
+            // sends the order to the waiter
+            takeOrder.println(order);
 
-                // if the requested order isn't in the menu, shows an error message
-                if (checkOrder(order) < 0.50f) {
-                    unavailableOrder.setVisible(true);
-                } else {
+            // waits for the order and eats it
+            order = eatOrder.readLine();
 
-                    // sends the order to the waiter
-                    unavailableOrder.setVisible(false);
-                    orderField.setText("");
-                    takeOrder.println(order);
-
-                    // waits for the order and eats it
-                    order = eatOrder.readLine();
-
-                    // adds the order to the customer's list and its price to the bill
-                    totalOrdered.append(order).append("\n");
-                    bill += checkOrder(order);
-                }
-            }
+            // adds the order to the customer's list and its price to the bill
+            totalOrdered.append(order).append("\n");
 
             // shows orders and total bill
             totalOrderedArea.appendText(totalOrdered + "\n");
+            bill += price;
             billText.setText("CONTO: " + String.format("%.2f", bill) + "€");
         } catch (IOException exc) {
+            unavailableWaiter.setText("Nessun cameriere disponibile al momento");
+            unavailableWaiter.setVisible(true);
             throw new RuntimeException(exc);
         }
     }
@@ -451,12 +412,41 @@ public class CustomerController {
         Stage stage = (Stage) requiredSeatsField.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true);
-        stage.show();
 
-        menuArea = (TextArea) scene.lookup("#menuArea");
-        orderField = (TextField) scene.lookup("#orderField");
+        menu = (TextArea) scene.lookup("#menu");
         totalOrderedArea = (TextArea) scene.lookup("#totalOrderedArea");
         billText = (Text) scene.lookup("#billText");
+
+        // Aggiungi un gestore di eventi per catturare i clic sulla TextArea del menu
+        menu.setOnMouseClicked(event -> {
+            String order = menu.getSelectedText();
+            if (order != null && !order.isEmpty()) {
+
+                // connection to the database
+                try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
+
+                    // query to get order's price
+                    String selectQuery = "SELECT PREZZO FROM ORDINI WHERE NOME = ?";
+                    try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) {
+
+                        // substitutes ? with order's name
+                        selectStatement.setString(1, order);
+
+                        // gets order's price and calls getOrder to allow the customer to order
+                        try (ResultSet resultSet = selectStatement.executeQuery()) {
+                            if (resultSet.next()) {
+                                float price = resultSet.getFloat("PREZZO");
+                                getOrder(order, price);
+                            }
+                        }
+                    }
+                } catch (SQLException exc) {
+                    throw new RuntimeException(exc);
+                }
+            }
+        });
+
+        stage.show();
     }
 
     // Method to close the customer's interface once they are done
@@ -485,4 +475,3 @@ public class CustomerController {
         return stringBuilder.toString();
     }
 }
-

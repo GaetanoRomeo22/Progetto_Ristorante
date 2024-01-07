@@ -110,5 +110,3 @@ public class Receptionist {
         tables[tableNumber] = 0;
     }
 }
-
-

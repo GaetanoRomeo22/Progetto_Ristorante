@@ -21,5 +21,3 @@ public class Customer extends Application {
         stage.show();
     }
 }
-
-

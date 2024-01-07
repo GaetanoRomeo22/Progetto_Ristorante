@@ -1,6 +1,5 @@
 package org.progetto_ristorante.progetto_ristorante;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -27,7 +26,7 @@ public class ChefController implements Initializable {
             orderPriceField;
 
     @FXML
-    private TextArea menuArea;
+    private TextArea menu;
 
     @FXML
     private static Text invalidData;
@@ -39,9 +38,6 @@ public class ChefController implements Initializable {
     // disables automatic focus on interface's elements
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        menuOrderField.setFocusTraversable(false);
-        orderPriceField.setFocusTraversable(false);
-        menuArea.setFocusTraversable(false);
         // shows written menu
         showMenu();
     }
@@ -189,16 +185,16 @@ public class ChefController implements Initializable {
                 // performs the select
                 ResultSet resultSet = preparedStatement.executeQuery();
 
-                menuArea.clear();
+                menu.clear();
 
                 // shows the menu
                 while (resultSet.next()) {
                     String order = resultSet.getString("NOME");
                     float price = resultSet.getFloat("PREZZO");
 
-                    menuArea.appendText("Piatto: " + order + System.lineSeparator());
-                    menuArea.appendText("Prezzo: " + price + System.lineSeparator());
-                    menuArea.appendText("\n");
+                    menu.appendText(order + System.lineSeparator());
+                    menu.appendText(price + System.lineSeparator());
+                    menu.appendText("\n");
                 }
             }
         } catch (SQLException exc) {
@@ -209,11 +205,9 @@ public class ChefController implements Initializable {
     // hides the interface once the chef has finished to write the menu
     private void hideInterface() {
         menuOrderField.setVisible(false);
-        menuArea.setVisible(false);
+        menu.setVisible(false);
         orderPriceField.setVisible(false);
         stopWriteButton.setVisible(false);
         commitOrderButton.setVisible(false);
     }
 }
-
-
