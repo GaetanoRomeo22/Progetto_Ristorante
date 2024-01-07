@@ -1,10 +1,12 @@
 package org.progetto_ristorante.progetto_ristorante;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
 import java.io.*;
@@ -13,12 +15,6 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 public class ChefController implements Initializable {
 
     @FXML
@@ -26,20 +22,30 @@ public class ChefController implements Initializable {
             orderPriceField;
 
     @FXML
-    private TextArea menu;
+    private TextArea menuArea;
 
     @FXML
-    private static Text invalidData;
+    private static Text orderStatus;
 
     @FXML
     private Button commitOrderButton,
                    stopWriteButton;
 
+    @FXML
+    private HBox order,
+                 orderButton;
+
     // disables automatic focus on interface's elements
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // shows written menu
-        showMenu();
+        menuOrderField.setFocusTraversable(false);
+        orderPriceField.setFocusTraversable(false);
+        menuArea.setFocusTraversable(false);
+        orderStatus = new Text();
+    }
+
+    public static void updateOrderStatus(String status) {
+        orderStatus.setText(status);
     }
 
     @FXML
@@ -75,66 +81,54 @@ public class ChefController implements Initializable {
 
     // adds an order into the menu
     @FXML
-    private void addOrder() throws SQLException {
+    private void addOrder() {
 
-        // reads order's name and price
-        String order = menuOrderField.getText(),
-                inputPrice = orderPriceField.getText();
+        // tries to open the file in read mode
+        try (FileWriter menuWriter = new FileWriter("menu.txt")) {
+            PrintWriter writer = new PrintWriter(menuWriter, true);   // object to write into the file
 
-        // checks if the chef has entered an order and a price
-        if (!order.isEmpty() && !inputPrice.isEmpty()) {
-
+            // reads order's name and price
+            String order = menuOrderField.getText(),
+                    inputPrice = orderPriceField.getText();
             inputPrice = inputPrice.replace(',', '.');
 
-            // connection to the database
-            try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
+            // checks if the chef has entered an order
+            if (!order.isEmpty()) {
 
-                // query to check if the user is registered
-                String selectQuery = "SELECT * FROM ORDINI WHERE NOME = ?";
-                try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) {
+                // checks if the chef has entered order's price
+                if (!inputPrice.isEmpty()) {
 
-                    // substitutes ? with order's name
-                    selectStatement.setString(1, order);
-
-                    // if the order is already in the menu, shows an error message, otherwise inserts it into the menu
-                    try (ResultSet resultSet = selectStatement.executeQuery()) {
-                        if (resultSet.next()) {
-                            invalidData.setText("Ordine gia presente nel menu");
-                            invalidData.setVisible(true);
-                        } else {
-
-                            // query to insert the order into the menu
-                            String insertQuery = "INSERT INTO ORDINI (NOME, PREZZO) VALUES (?, ?)";
-                            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
-
-                                // substitutes ? with username and password
-                                insertStatement.setString(1, order);
-                                insertStatement.setString(2, inputPrice);
-
-                                // performs the insert
-                                insertStatement.executeUpdate();
-
-                                // clears previous text
-                                menuOrderField.setText("");
-                                orderPriceField.setText("");
-                            }
-                        }
-                    }
+                    // writes order's name and order's price into the file separated by a line
+                    float price = Float.parseFloat(inputPrice);
+                    writer.println(order);
+                    writer.println(price);
                 }
-            }
-        } else {
-            invalidData.setText("Ordine o prezzo mancante");
-            invalidData.setVisible(true);
-        }
 
-        // shows written menu
-        showMenu();
+                // clears previous text
+                menuOrderField.setText("");
+                orderPriceField.setText("");
+
+                // shows written menu
+                showMenu();
+            }
+        } catch (IOException exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
     // gets an order to prepare by a waiter
     public static String getOrder(Socket acceptedOrder) throws IOException {
         BufferedReader takeOrder = new BufferedReader(new InputStreamReader(acceptedOrder.getInputStream()));
         return takeOrder.readLine();
+    }
+
+    // simulates the preparation of an order by the chef
+    public static void prepareOrder() {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
     // sends a ready order to the waiter who has required to prepare it
@@ -160,6 +154,12 @@ public class ChefController implements Initializable {
                             break;
                         }
 
+                        // prepares the order
+                        prepareOrder();
+
+                        String finalOrder = order;
+                        Platform.runLater(() -> updateOrderStatus(finalOrder + " pronto"));
+
                         // gives back the order to the waiter
                         giveOrder(currentSocket, order);
                     } catch (IOException exc) {
@@ -175,39 +175,35 @@ public class ChefController implements Initializable {
     // shows the menu in real time
     private void showMenu() {
 
-        // connection to the database
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
+        // reads menu from file
+        try (FileReader fileReader = new FileReader("menu.txt")) {
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String order;
+            float price;
 
-            // query to get each menu's orders
-            String selectQuery = "SELECT * FROM ORDINI";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
-
-                // performs the select
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                menu.clear();
-
-                // shows the menu
-                while (resultSet.next()) {
-                    String order = resultSet.getString("NOME");
-                    float price = resultSet.getFloat("PREZZO");
-
-                    menu.appendText(order + System.lineSeparator());
-                    menu.appendText(price + System.lineSeparator());
-                    menu.appendText("\n");
-                }
+            // shows the menu
+            while ((order = bufferedReader.readLine()) != null) {
+                price = Float.parseFloat(bufferedReader.readLine());
+                menuArea.appendText("Piatto: " + order + System.lineSeparator());
+                menuArea.appendText("Prezzo: " + price + System.lineSeparator());
+                menuArea.appendText("\n");
             }
-        } catch (SQLException exc) {
+        } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
     }
 
     // hides the interface once the chef has finished to write the menu
     private void hideInterface() {
-        menuOrderField.setVisible(false);
-        menu.setVisible(false);
-        orderPriceField.setVisible(false);
-        stopWriteButton.setVisible(false);
-        commitOrderButton.setVisible(false);
+
+        order.getChildren().remove(menuOrderField);
+        order.getChildren().remove(orderPriceField);
+
+        orderButton.getChildren().remove(stopWriteButton);
+        orderButton.getChildren().remove(commitOrderButton);
+
     }
+
 }
+
+

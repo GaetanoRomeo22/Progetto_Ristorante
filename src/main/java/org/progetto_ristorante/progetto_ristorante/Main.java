@@ -1,5 +1,4 @@
 package org.progetto_ristorante.progetto_ristorante;
-
 import java.io.IOException;
 
 public class Main {
@@ -17,22 +16,36 @@ public class Main {
 
             // Esegui il main
             runMainClass(progettoPath);
-        } catch (Exception exc) {
-            throw new RuntimeException(exc);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    private static void compileProject(String progettoPath, String javafxPath) throws IOException, InterruptedException {
+    private static void compileProject(String progettoPath, String javafxPath) throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder("javac", "--module-path", javafxPath,
-                "--add-modules", "javafx.controls,javafx.fxml", progettoPath + "/org/progetto_ristorante/progetto_ristorante/**/*.java");
+                "--add-modules", "javafx.controls,javafx.fxml", progettoPath + "Chef.java");
         Process process = processBuilder.start();
-        process.waitFor();
+
+        // Attendi la terminazione della compilazione
+        try {
+            int exitCode = process.waitFor();
+            System.out.println("Compilazione completata con codice di uscita: " + exitCode);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
-    private static void runMainClass(String progettoPath) throws IOException, InterruptedException {
+    private static void runMainClass(String progettoPath) throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder("java", "--module-path", progettoPath,
                 "--add-modules", "javafx.controls,javafx.fxml", "org.progetto_ristorante.progetto_ristorante.Chef");
         Process process = processBuilder.start();
-        process.waitFor();
+
+        // Attendi la terminazione dell'esecuzione
+        try {
+            int exitCode = process.waitFor();
+            System.out.println("Esecuzione completata con codice di uscita: " + exitCode);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
