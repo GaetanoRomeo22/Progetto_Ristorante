@@ -39,6 +39,7 @@ public class CustomerController {
 
     @FXML
     private Text billText,
+            tableNumber,
             waitingTimeText,
             loginError,
             registerError,
@@ -66,6 +67,9 @@ public class CustomerController {
 
     // customer's bill
     protected float bill = 0.0f;
+
+    // customer's table's number
+    protected int table;
 
     // allows a customer to login himself by entering a username and a password
     @FXML
@@ -187,10 +191,10 @@ public class CustomerController {
             unavailableReceptionist.setVisible(false);
 
             // says how many seats he needs to the receptionist and gets a table
-            int tableNumber = getTable(receptionSocket);
+            table = getTable(receptionSocket);
 
             // if there are available seats, the customer takes them
-            if (tableNumber >= 0) {
+            if (table >= 0) {
 
                 // closes connection with the receptionist
                 receptionSocket.close();
@@ -347,6 +351,7 @@ public class CustomerController {
             BufferedReader eatOrder = new BufferedReader(new InputStreamReader(waiterSocket.getInputStream()));
             PrintWriter takeOrder = new PrintWriter(waiterSocket.getOutputStream(), true);
 
+            // contains each customer's order
             StringBuilder totalOrdered = new StringBuilder();
 
             unavailableWaiter.setVisible(false);
@@ -363,7 +368,7 @@ public class CustomerController {
             // shows orders and total bill
             totalOrderedArea.appendText(totalOrdered + "\n");
             bill += price;
-            billText.setText("CONTO: " + String.format("%.2f", bill) + "€");
+            billText.setText(String.format("%.2f", bill) + "€");
         } catch (IOException exc) {
             unavailableWaiter.setText("Nessun cameriere disponibile al momento");
             unavailableWaiter.setVisible(true);
@@ -416,7 +421,10 @@ public class CustomerController {
 
         menu = (TextArea) scene.lookup("#menu");
         totalOrderedArea = (TextArea) scene.lookup("#totalOrderedArea");
+        tableNumber = (Text) scene.lookup("#tableNumber");
+        tableNumber.setText(String.valueOf(table));
         billText = (Text) scene.lookup("#billText");
+        billText.setText("0€");
 
         // Aggiungi un gestore di eventi per catturare i clic sulla TextArea del menu
         menu.setOnMouseClicked(event -> {
