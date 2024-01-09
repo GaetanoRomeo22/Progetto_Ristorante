@@ -48,7 +48,7 @@ public class Receptionist {
 
                         // creates a scheduler to plan the periodic releasing of tables
                         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-                        scheduler.schedule(() -> releaseTable(requiredSeats, tableNumber), 5, TimeUnit.SECONDS);
+                        scheduler.schedule(() -> releaseTable(requiredSeats, tableNumber), rand.nextInt(), TimeUnit.SECONDS);
                     } else {
                         giveTableNumber.println(-1);
                         acceptedClient.close();
@@ -75,8 +75,7 @@ public class Receptionist {
     }
 
     public static int randomWaitingTime() {
-        Random random = new Random();
-        return random.nextInt(30) + 1;
+        return rand.nextInt(5) + 1;
     }
 
     // allows receptionist to assign a seat to the customer and to update available seats and tables

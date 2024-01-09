@@ -40,7 +40,7 @@ public class CustomerController {
     @FXML
     private Text billText,
             tableNumber,
-            waitingTimeText,
+            waitingMessage,
             loginError,
             registerError,
             unavailableReceptionist,
@@ -55,7 +55,8 @@ public class CustomerController {
     private Button stopButton;
 
     @FXML
-    private VBox waitingBox;
+    private VBox seatsBox,
+            waitingBox;
 
     // variables to manage communication with the receptionist
     private BufferedReader checkSeats2;
@@ -212,11 +213,12 @@ public class CustomerController {
 
                     // decides if waiting or not
                     waitingTime = Integer.parseInt(checkSeats2.readLine());
+                    seatsBox.setVisible(false);
                     waitingBox.setVisible(true);
 
                     // Set the waiting time message
-                    waitingTimeText.setText("(Reception) Vuoi attendere " + waitingTime + " minuti ?");
-                    waitingTimeText.setVisible(true);
+                    waitingMessage.setText("Non ci sono abbastanza posti disponibili, vuoi attendere " + waitingTime + " minuti ?");
+                    waitingMessage.setVisible(true);
                 }
             }
         } catch (IOException exc) {
@@ -250,24 +252,14 @@ public class CustomerController {
     // Method to handle the completion of the waiting time
     private void onWaitComplete() {
         Platform.runLater(() -> {
-            // Example: show a message indicating that the wait is over
-            waitingTimeText.setText("Tempo di attesa terminato!");
 
             // After a certain period of time, hide the waiting components and reload the first interface
             Timeline timeline = new Timeline(
                     new KeyFrame(Duration.seconds(1), event -> {
-                        waitingBox.setVisible(false);
-                        waitingTimeText.setVisible(false);
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("GetSeatsInterface.fxml"));
                         try {
-                            loader.load();
+                            showOrderInterface();
                         } catch (IOException e) {
                             throw new RuntimeException(e);
-                        }
-                        try {
-                            showSeatsInterface();
-                        } catch (IOException exc) {
-                            throw new RuntimeException(exc);
                         }
                     })
             );
@@ -292,6 +284,7 @@ public class CustomerController {
         PrintWriter sendSeats = new PrintWriter(receptionSocket.getOutputStream(), true);
 
         String input = requiredSeatsField.getText();
+        requiredSeatsField.setText("");
         int requiredSeats = Integer.parseInt(input);
 
         // says how many seats he requires to the receptionist
@@ -415,7 +408,7 @@ public class CustomerController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GetOrderInterface.fxml"));
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
-        Stage stage = (Stage) requiredSeatsField.getScene().getWindow();
+        Stage stage = (Stage) seatsBox.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true);
 
