@@ -425,6 +425,7 @@ public class CustomerController {
         tableNumber.setText(String.valueOf(table));
         billText = (Text) scene.lookup("#billText");
         billText.setText("0€");
+        unavailableWaiter = (Text) scene.lookup("#unavailableWaiter");
 
         // Aggiungi un gestore di eventi per catturare i clic sulla TextArea del menu
         menu.setOnMouseClicked(event -> {
@@ -454,7 +455,6 @@ public class CustomerController {
                 }
             }
         });
-
         stage.show();
     }
 

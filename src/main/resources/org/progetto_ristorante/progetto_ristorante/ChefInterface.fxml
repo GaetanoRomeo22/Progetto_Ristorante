@@ -5,11 +5,9 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
-
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.TextArea?>
+
 <VBox alignment="CENTER" spacing="5.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.ChefController"
       style="-fx-background-color: #f4f4f4; -fx-padding: 20; -fx-border-color: #ccc; -fx-border-width: 2; -fx-border-radius: 5;">
@@ -19,16 +17,6 @@
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
     <!-- Distance Among Elements -->
-
-    <!-- Logo -->
-    <ImageView fitHeight="250" fitWidth="250">
-        <Image url="@images/logo.png"/>
-    </ImageView>
-    <!-- Logo -->
-
-    <!-- Title -->
-    <Text text="Scrivi il menù" style="-fx-font-size: 20px; -fx-fill: black; -fx-font-weight: bold; -fx-padding: 10 0 20 0;"/>
-    <!-- Title -->
 
     <!-- Order and Price Writing -->
     <HBox fx:id="order" spacing="5.0" alignment="CENTER">
@@ -47,10 +35,14 @@
 
     <!-- Commit Buttons -->
     <HBox fx:id="orderButton" spacing="5.0" alignment="CENTER">
-    <Button fx:id="commitOrderButton" text="Conferma piatto" onAction="#addOrder" style="-fx-font-size: 20px; -fx-background-color: #00a082; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: white; -fx-font-family: 'sans-serif'" prefWidth="180"/>
-    <Button fx:id="stopWriteButton" text="Conferma il menu" onAction="#cook"
-            style="-fx-font-size: 20px; -fx-background-color: #3498db; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: white; -fx-font-family: 'sans-serif';"
-            prefWidth="70"/>
+        <Button text="Conferma piatto" onAction="#addOrder" style="-fx-font-size: 20px; -fx-background-color: #00a082; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: white; -fx-font-family: 'sans-serif'" prefWidth="180"/>
+        <Button text="Conferma menu" onAction="#cook"
+                style="-fx-font-size: 20px; -fx-background-color: #3498db; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: white; -fx-font-family: 'sans-serif';"
+                prefWidth="180"/>
     </HBox>
     <!-- Commit Buttons -->
+
+    <!-- Error Message -->
+    <Text fx:id="invalidData" visible="false" fill="red"/>
+    <!-- Error Message -->
 </VBox>

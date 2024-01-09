@@ -4,16 +4,15 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 
-<?import javafx.scene.control.ListView?>
 <VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController" style="-fx-background-color: #F5F5DC;">
+      fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController"
+      style="-fx-background-color: #f4f4f4; -fx-padding: 20; -fx-border-color: #ccc; -fx-border-width: 2; -fx-border-radius: 5;">
 
     <!-- Logo -->
     <ImageView fitHeight="150" fitWidth="150">
@@ -28,9 +27,18 @@
     <!-- Distance Among Elements -->
 
     <!-- Orders and Bill -->
+    <HBox spacing="10.0" alignment="CENTER">
+        <Text text="TAVOLO: " style="-fx-font-size: 14px; -fx-fill: #333333; -fx-font-family: 'sans-serif'"/>
+        <Text fx:id="tableNumber" style="-fx-font-size: 14px; -fx-fill: #008000; -fx-font-family: 'sans-serif'"/>
+    </HBox>
+
+    <HBox spacing="10.0" alignment="CENTER">
+        <Text text="CONTO: " style="-fx-font-size: 14px; -fx-fill: #333333; -fx-font-family: 'sans-serif'"/>
+        <Text fx:id="billText" style="-fx-font-size: 14px; -fx-fill: #008000; -fx-font-family: 'sans-serif'"/>
+    </HBox>
+
     <Text text="ORDINI EFFETTUATI" style="-fx-font-size: 18px; -fx-text-fill: #333333; -fx-font-family: 'sans-serif'"/>
     <TextArea fx:id="totalOrderedArea" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA; -fx-font-family: 'sans-serif'" editable="false"/>
-    <Text fx:id="billText" style="-fx-font-size: 14px; -fx-fill: #008000; -fx-font-family: 'sans-serif'"/>
     <!-- Orders and Bill -->
 
     <!-- Menu -->
@@ -40,7 +48,7 @@
 
     <!-- Stop Button -->
     <HBox spacing="10.0" alignment="CENTER">
-        <Button fx:id="stopButton"  text="Fine" onAction="#closeInterface" style="-fx-font-size: 14px; -fx-background-color: #FF6347; -fx-text-fill: white; -fx-font-family: 'sans-serif'"/>
+        <Button fx:id="stopButton" text="Chiedi il conto" onAction="#closeInterface" style="-fx-font-size: 14px; -fx-background-color: #3498db; -fx-text-fill: white; -fx-font-family: 'sans-serif'"/>
     </HBox>
     <!-- Stop Button -->
 

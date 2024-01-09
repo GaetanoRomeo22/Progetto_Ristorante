@@ -32,11 +32,8 @@
     <!-- Title -->
 
     <!-- Username and Password -->
-    <TextField fx:id="registerUsername"     promptText="Username" style="-fx-font-size: 14px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'sans-serif'" maxWidth="150"/>
-    <HBox spacing="5.0" alignment="CENTER">
-        <PasswordField fx:id="registerPassword" promptText="Password" style="-fx-font-size: 14px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8" maxWidth="150"/>
-        <CheckBox onAction="#togglePasswordVisibility" style="-fx-font-size: 14px; -fx-font-family: 'sans-serif'">Mostra Password</CheckBox>
-    </HBox>
+    <TextField fx:id="registerUsername" promptText="Username" style="-fx-font-size: 14px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'sans-serif'" maxWidth="150"/>
+    <PasswordField fx:id="registerPassword" promptText="Password" style="-fx-font-size: 14px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8" maxWidth="150"/>
     <!-- Username and Password -->
 
     <!-- Commit Buttons -->
