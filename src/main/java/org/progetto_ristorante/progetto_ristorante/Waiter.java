@@ -50,10 +50,15 @@ public class Waiter {
 
         public void run() {
             try{
+
+                // used to get a customer's order and to send it to the chef to prepare it
                 readOrder = new BufferedReader(new InputStreamReader(customerSocket.getInputStream()));
                 sendOrder = new PrintWriter(chefSocket.getOutputStream(), true);
+
+                // used to get a ready order from the chef and to send it back to the customer who ordered it
                 readReadyOrder = new BufferedReader(new InputStreamReader(chefSocket.getInputStream()));
                 sendReadyOrder = new PrintWriter(customerSocket.getOutputStream(), true);
+
                 String order;
 
                 do {
@@ -68,7 +73,6 @@ public class Waiter {
 
                     // sends the order to the chef to prepare it, waits and sends it back to the customer once it's ready
                     processOrder(order, sendOrder, readReadyOrder, sendReadyOrder);
-
                 } while (true);
 
             } catch (IOException exc) {
@@ -100,6 +104,7 @@ public class Waiter {
             }
         }
 
+        // closes each used connection
         private void closeConnections() {
             try {
                 customerSocket.close();

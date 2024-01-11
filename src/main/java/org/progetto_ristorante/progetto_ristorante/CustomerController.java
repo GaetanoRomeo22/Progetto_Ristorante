@@ -202,9 +202,6 @@ public class CustomerController {
 
                 // shows second interface's elements
                 showOrderInterface();
-
-                // shows the menu
-                getMenu();
             } else {
                 // otherwise, he waits
                 try (Socket receptionSocket2 = new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT)) {
@@ -253,7 +250,7 @@ public class CustomerController {
     private void onWaitComplete() {
         Platform.runLater(() -> {
 
-            // After a certain period of time, hide the waiting components and reload the first interface
+            // after a certain period of time, hides the waiting components and sends the customer to the interface to take orders
             Timeline timeline = new Timeline(
                     new KeyFrame(Duration.seconds(1), event -> {
                         try {
@@ -269,7 +266,7 @@ public class CustomerController {
 
     // method to handle the action when the customer clicks the "Leave" button
     @FXML
-    private void leaveButton() {
+    private void leave() {
 
         // closes the interface
         Stage stage = (Stage) requiredSeatsField.getScene().getWindow();
@@ -419,6 +416,9 @@ public class CustomerController {
         billText = (Text) scene.lookup("#billText");
         billText.setText("0€");
         unavailableWaiter = (Text) scene.lookup("#unavailableWaiter");
+
+        // shows the menu
+        getMenu();
 
         // Aggiungi un gestore di eventi per catturare i clic sulla TextArea del menu
         menu.setOnMouseClicked(event -> {

@@ -37,7 +37,7 @@ public class ChefController implements Initializable {
     }
 
     @FXML
-    private void cook() throws IOException {
+    private void cook() {
 
         // hides the interface
         hideInterface();
@@ -134,15 +134,6 @@ public class ChefController implements Initializable {
         return takeOrder.readLine();
     }
 
-    // simulates the preparation of an order by the chef
-    public static void prepareOrder() {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException exc) {
-            throw new RuntimeException(exc);
-        }
-    }
-
     // sends a ready order to the waiter who has required to prepare it
     public static void giveOrder(Socket acceptedOrder, String order) throws IOException {
         PrintWriter sendOrder = new PrintWriter(acceptedOrder.getOutputStream(), true);
@@ -165,9 +156,6 @@ public class ChefController implements Initializable {
                         if (order.equalsIgnoreCase("fine")) {
                             break;
                         }
-
-                        // prepares the order
-                        //prepareOrder();
 
                         // gives back the order to the waiter
                         giveOrder(currentSocket, order);
@@ -194,6 +182,7 @@ public class ChefController implements Initializable {
                 // performs the select
                 ResultSet resultSet = preparedStatement.executeQuery();
 
+                // clears previous menu
                 menuArea.clear();
 
                 // shows the menu
@@ -212,7 +201,7 @@ public class ChefController implements Initializable {
     }
 
     // hides the interface once the chef has finished to write the menu
-    private void hideInterface() throws IOException {
+    private void hideInterface() {
         order.setVisible(false);
         menuArea.setVisible(false);
         orderButton.setVisible(false);

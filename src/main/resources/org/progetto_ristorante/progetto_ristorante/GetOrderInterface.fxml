@@ -43,7 +43,7 @@
 
     <!-- Menu -->
     <Label text="MENU" style="-fx-font-size: 18px; -fx-text-fill: #333333; -fx-font-family: 'sans-serif'"/>
-    <TextArea fx:id="menu" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;"/>
+    <TextArea fx:id="menu" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;" editable="false"/>
     <!-- Menu -->
 
     <!-- Stop Button -->

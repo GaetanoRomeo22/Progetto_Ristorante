@@ -30,8 +30,7 @@
     <VBox fx:id="waitingBox" spacing="10.0" visible="false" alignment="CENTER">
         <Text fx:id="waitingMessage" visible="false" style="-fx-font-size: 16px; -fx-text-fill: #333333;"/>
         <Button text="Si, attendo" onAction="#waitButton" style="-fx-font-size: 14px; -fx-background-color: #32CD32; -fx-text-fill: white;"/>
-        <Button text="No, me ne vado" onAction="#leaveButton" style="-fx-font-size: 14px; -fx-background-color: #FF4500; -fx-text-fill: white;"/>
-        <!-- Aggiungi la Label per visualizzare il tempo di attesa rimanente -->
+        <Button text="No, me ne vado" onAction="#leave" style="-fx-font-size: 14px; -fx-background-color: #FF4500; -fx-text-fill: white;"/>
         <Label fx:id="countdownLabel" style="-fx-font-size: 14px; -fx-text-fill: #333333;"/>
     </VBox>
     <!-- Additional Elements for Waiting -->
@@ -39,5 +38,4 @@
     <!-- Error Message -->
     <Text fx:id="unavailableReceptionist" visible="false" fill="red"/>
     <!-- Error Message -->
-
 </VBox>
