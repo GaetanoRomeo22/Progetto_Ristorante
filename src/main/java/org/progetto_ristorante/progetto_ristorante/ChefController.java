@@ -1,9 +1,10 @@
 package org.progetto_ristorante.progetto_ristorante;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
@@ -21,7 +22,7 @@ public class ChefController implements Initializable {
             orderPriceField;
 
     @FXML
-    private TextArea menuArea;
+    private ListView<Order> menuArea;
 
     @FXML
     private Text invalidData;
@@ -33,7 +34,40 @@ public class ChefController implements Initializable {
     // shows current menu when the interface is loaded
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        // shows the menu
         showMenu();
+
+        // adds an event manager to get customer's order by clicking onto the menu
+        menuArea.setOnMouseClicked(event -> {
+
+            // gets chef's clicked order
+            Order order = menuArea.getSelectionModel().getSelectedItem();
+
+            // shows a window to get customers confirm
+            Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmationDialog.setTitle("Conferma eliminazione ordine");
+            confirmationDialog.setHeaderText(null);
+            confirmationDialog.setGraphic(null);
+            confirmationDialog.setContentText("Sei sicuro di voler eliminare " + order.getName() + " dal menu ?");
+
+            // adds confirm and deny buttons
+            confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+
+            // waits for customer's response
+            confirmationDialog.showAndWait().ifPresent(response -> {
+
+                // if the chef confirms, deletes the order from the menu and shows updated menu
+                if (response == ButtonType.OK) {
+                    try {
+                        deleteOrder(order.getName());
+                        showMenu();
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+        });
     }
 
     @FXML
@@ -128,6 +162,25 @@ public class ChefController implements Initializable {
         showMenu();
     }
 
+    // deletes an order from the menu
+    private void deleteOrder(String name) throws SQLException {
+
+        // connection to the database
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
+
+            // query to delete the order from the database
+            String deleteQuery = "DELETE FROM ORDINI WHERE NOME = ?";
+            try (PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) {
+
+                // substitutes ? with order's name
+                deleteStatement.setString(1, name);
+
+                // executes the query
+                deleteStatement.executeUpdate();
+            }
+        }
+    }
+
     // gets an order to prepare by a waiter
     public static String getOrder(Socket acceptedOrder) throws IOException {
         BufferedReader takeOrder = new BufferedReader(new InputStreamReader(acceptedOrder.getInputStream()));
@@ -182,18 +235,15 @@ public class ChefController implements Initializable {
                 // performs the select
                 ResultSet resultSet = preparedStatement.executeQuery();
 
-                // clears previous menu
-                menuArea.clear();
-
-                // shows the menu
+                // makes the menu viewable
+                ObservableList<Order> menuItems = FXCollections.observableArrayList();
                 while (resultSet.next()) {
-                    String order = resultSet.getString("NOME");
+                    String name = resultSet.getString("NOME");
                     float price = resultSet.getFloat("PREZZO");
-
-                    menuArea.appendText("Piatto: " + order + System.lineSeparator());
-                    menuArea.appendText("Prezzo: " + price + System.lineSeparator());
-                    menuArea.appendText("\n");
+                    Order order = new Order(name, price);
+                    menuItems.add(order);
                 }
+                menuArea.setItems(menuItems);
             }
         } catch (SQLException exc) {
             throw new RuntimeException(exc);

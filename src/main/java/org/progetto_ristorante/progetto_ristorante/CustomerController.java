@@ -3,14 +3,13 @@ package org.progetto_ristorante.progetto_ristorante;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -34,8 +33,10 @@ public class CustomerController {
 
     // FXML annotations for injecting UI elements
     @FXML
-    private TextArea totalOrderedArea,
-            menu;
+    private ListView<String> totalOrderedArea;
+
+    @FXML
+    private ListView<Order> menu;
 
     @FXML
     private Text billText,
@@ -134,10 +135,10 @@ public class CustomerController {
             // connection to the database
             try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
 
-                // check if the username already exists
+                // check if the username is already used
                 if (usernameAvailable(connection, username)) {
 
-                    // query to insert a new uses into the database
+                    // query to insert a new user into the database
                     String query = "INSERT IGNORE INTO UTENTI (USERNAME, PASSWORD) VALUES (?, ?)";
                     try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -311,17 +312,15 @@ public class CustomerController {
                 // performs the select
                 ResultSet resultSet = preparedStatement.executeQuery();
 
-                menu.clear();
-
-                // shows the menu
+                // makes the menu viewable
+                ObservableList<Order> menuItems = FXCollections.observableArrayList();
                 while (resultSet.next()) {
-                    String order = resultSet.getString("NOME");
+                    String name = resultSet.getString("NOME");
                     float price = resultSet.getFloat("PREZZO");
-
-                    menu.appendText(order + System.lineSeparator());
-                    menu.appendText(price + System.lineSeparator());
-                    menu.appendText("\n");
+                    Order order = new Order(name, price);
+                    menuItems.add(order);
                 }
+                menu.setItems(menuItems);
             }
         } catch (SQLException exc) {
             throw new RuntimeException(exc);
@@ -356,7 +355,7 @@ public class CustomerController {
             totalOrdered.append(order).append("\n");
 
             // shows orders and total bill
-            totalOrderedArea.appendText(totalOrdered + "\n");
+            totalOrderedArea.getItems().add(totalOrdered.toString());
             bill += price;
             billText.setText(String.format("%.2f", bill) + "€");
         } catch (IOException exc) {
@@ -409,8 +408,9 @@ public class CustomerController {
         stage.setScene(scene);
         stage.setMaximized(true);
 
-        menu = (TextArea) scene.lookup("#menu");
-        totalOrderedArea = (TextArea) scene.lookup("#totalOrderedArea");
+        // initializes interface's elements
+        menu = (ListView<Order>) scene.lookup("#menu");
+        totalOrderedArea = (ListView<String>) scene.lookup("#totalOrderedArea");
         tableNumber = (Text) scene.lookup("#tableNumber");
         tableNumber.setText(String.valueOf(table));
         billText = (Text) scene.lookup("#billText");
@@ -420,42 +420,58 @@ public class CustomerController {
         // shows the menu
         getMenu();
 
-        // Aggiungi un gestore di eventi per catturare i clic sulla TextArea del menu
+        // adds an event manager to get customer's order by clicking onto the menu
         menu.setOnMouseClicked(event -> {
-            String order = menu.getSelectedText();
-            if (order != null && !order.isEmpty()) {
 
-                // connection to the database
-                try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
+            // gets customer's clicked order
+            Order order = menu.getSelectionModel().getSelectedItem();
 
-                    // query to get order's price
-                    String selectQuery = "SELECT PREZZO FROM ORDINI WHERE NOME = ?";
-                    try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) {
+            // shows a window to get customers confirm
+            Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmationDialog.setTitle("Conferma ordine");
+            confirmationDialog.setHeaderText(null);
+            confirmationDialog.setGraphic(null);
+            confirmationDialog.setContentText("Sei sicuro di voler ordinare " + order.getName() + " ?");
 
-                        // substitutes ? with order's name
-                        selectStatement.setString(1, order);
+            // adds confirm and deny buttons
+            confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
 
-                        // gets order's price and calls getOrder to allow the customer to order
-                        try (ResultSet resultSet = selectStatement.executeQuery()) {
-                            if (resultSet.next()) {
-                                float price = resultSet.getFloat("PREZZO");
-                                getOrder(order, price);
-                            }
-                        }
-                    }
-                } catch (SQLException exc) {
-                    throw new RuntimeException(exc);
+            // waits for customer's response
+            confirmationDialog.showAndWait().ifPresent(response -> {
+
+                // if the customer confirms, sends the order to the waiter
+                if (response == ButtonType.OK) {
+                    getOrder(order.getName(), order.getPrice());
                 }
-            }
+            });
         });
         stage.show();
     }
 
-    // Method to close the customer's interface once they are done
+    // method to close customers' interface once they've done
     @FXML
-    private void closeInterface() {
-        Stage stage = (Stage) stopButton.getScene().getWindow();
-        stage.close();
+    private void askBill() {
+
+        // shows a window to get customers confirm
+        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmationDialog.setTitle("Conferma richiesta conto");
+        confirmationDialog.setGraphic(null);
+        confirmationDialog.setHeaderText(null);
+
+        confirmationDialog.setContentText("Sei sicuro di voler chiedere il conto?");
+
+        // adds confirm and deny buttons
+        confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+
+        // waits for customer's response
+        confirmationDialog.showAndWait().ifPresent(response -> {
+
+            // if the customer confirms, closes the interface
+            if (response == ButtonType.OK) {
+                Stage stage = (Stage) stopButton.getScene().getWindow();
+                stage.close();
+            }
+        });
     }
 
     // encrypts the password using a hash algorithm

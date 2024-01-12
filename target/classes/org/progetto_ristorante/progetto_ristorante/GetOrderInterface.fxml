@@ -10,6 +10,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 
+<?import javafx.scene.control.ListView?>
 <VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController"
       style="-fx-background-color: #f4f4f4; -fx-padding: 20; -fx-border-color: #ccc; -fx-border-width: 2; -fx-border-radius: 5;">
@@ -38,17 +39,17 @@
     </HBox>
 
     <Text text="ORDINI EFFETTUATI" style="-fx-font-size: 18px; -fx-text-fill: #333333; -fx-font-family: 'sans-serif'"/>
-    <TextArea fx:id="totalOrderedArea" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA; -fx-font-family: 'sans-serif'" editable="false"/>
+    <ListView fx:id="totalOrderedArea" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA; -fx-font-family: 'sans-serif'" editable="false"/>
     <!-- Orders and Bill -->
 
     <!-- Menu -->
     <Label text="MENU" style="-fx-font-size: 18px; -fx-text-fill: #333333; -fx-font-family: 'sans-serif'"/>
-    <TextArea fx:id="menu" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;"/>
+    <ListView fx:id="menu" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;"/>
     <!-- Menu -->
 
     <!-- Stop Button -->
     <HBox spacing="10.0" alignment="CENTER">
-        <Button fx:id="stopButton" text="Chiedi il conto" onAction="#closeInterface" style="-fx-font-size: 14px; -fx-background-color: #3498db; -fx-text-fill: white; -fx-font-family: 'sans-serif'"/>
+        <Button fx:id="stopButton" text="Chiedi il conto" onAction="#askBill" style="-fx-font-size: 14px; -fx-background-color: #3498db; -fx-text-fill: white; -fx-font-family: 'sans-serif'"/>
     </HBox>
     <!-- Stop Button -->
 
