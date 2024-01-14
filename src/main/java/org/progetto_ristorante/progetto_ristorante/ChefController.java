@@ -25,7 +25,8 @@ public class ChefController implements Initializable {
     private ListView<Order> menuArea;
 
     @FXML
-    private Text invalidData;
+    private Text chefTitle,
+                 invalidData;
 
     @FXML
     private HBox order,
@@ -133,6 +134,7 @@ public class ChefController implements Initializable {
                             invalidData.setText("Ordine gia presente nel menu");
                             invalidData.setVisible(true);
                         } else {
+                            invalidData.setVisible(false);
 
                             // query to insert the order into the menu
                             String insertQuery = "INSERT INTO ORDINI (NOME, PREZZO) VALUES (?, ?)";
@@ -252,6 +254,7 @@ public class ChefController implements Initializable {
 
     // hides the interface once the chef has finished to write the menu
     private void hideInterface() {
+        chefTitle.setVisible(false);
         order.setVisible(false);
         menuArea.setVisible(false);
         orderButton.setVisible(false);

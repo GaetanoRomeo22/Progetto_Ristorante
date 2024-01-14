@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ListView?>
 
 <VBox alignment="CENTER" spacing="5.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.ChefController"
@@ -18,6 +18,10 @@
     </padding>
     <!-- Distance Among Elements -->
 
+    <!-- Title -->
+    <Text fx:id="chefTitle" text="Scrivi il menu o clicca su di un ordine per rimuoverlo" style="-fx-font-size: 28px; -fx-fill: #008000; -fx-padding: 10 0 20 0; -fx-font-family: 'sans-serif'"/>
+    <!-- Title -->
+
     <!-- Order and Price Writing -->
     <HBox fx:id="order" spacing="5.0" alignment="CENTER">
         <TextField fx:id="menuOrderField" style="-fx-font-size: 20px; -fx-padding: 20px; -fx-border-radius: 20px; -fx-background-radius: 20px; -fx-prompt-text-fill: grey; -fx-background-color: white; -fx-font-family: 'sans-serif'"
@@ -28,7 +32,7 @@
     <!-- Order and Price Writing -->
 
     <!-- Menu -->
-    <TextArea fx:id="menuArea" wrapText="true" editable="false"
+    <ListView fx:id="menuArea"
               style="-fx-font-size: 20px; -fx-border-radius: 20px; -fx-background-radius: 20px; -fx-padding: 6 6 6 6; -fx-background-color: white;"
               minWidth="0" prefWidth="808" maxWidth="808"/>
     <!-- Menu -->
@@ -43,6 +47,6 @@
     <!-- Commit Buttons -->
 
     <!-- Error Message -->
-    <Text fx:id="invalidData" visible="false" fill="red"/>
+    <Text fx:id="invalidData" visible="false" fill="red" style="-fx-font-family: 'sans-serif'; -fx-font-size: 20px"/>
     <!-- Error Message -->
 </VBox>

@@ -22,7 +22,7 @@ public class Order {
         return price;
     }
 
-    // returns the order as a string
+    // returns the order as a string (override of the method toString)
     public String toString() {
         return "Piatto: " + name + " - Prezzo: " + price;
     }

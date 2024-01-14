@@ -36,6 +36,6 @@
     <!-- Additional Elements for Waiting -->
 
     <!-- Error Message -->
-    <Text fx:id="unavailableReceptionist" visible="false" fill="red"/>
+    <Text fx:id="unavailableReceptionist" visible="false" fill="red" style="-fx-font-family: 'sans-serif'; -fx-font-size: 20px"/>
     <!-- Error Message -->
 </VBox>

@@ -13,7 +13,7 @@
 <?import javafx.scene.control.CheckBox?>
 <VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController"
-      style="-fx-background-color: #f4f4f4; -fx-padding: 20; -fx-border-color: #ccc; -fx-border-width: 2; -fx-border-radius: 5;">
+      style="-fx-background-color: #f4f4f4; -fx-padding: 20; -fx-border-color: #ccc;">
 
     <!-- Distance Among Elements -->
     <padding>
@@ -44,6 +44,6 @@
     <!-- Commit Buttons -->
 
     <!-- Error Messages -->
-    <Text fx:id="registerError" visible="false" fill="red" style="-fx-font-family: 'sans-serif'"/>
+    <Text fx:id="registerError" visible="false" fill="red" style="-fx-font-family: 'sans-serif'; -fx-font-size: 20px"/>
     <!-- Error Messages -->
 </VBox>
