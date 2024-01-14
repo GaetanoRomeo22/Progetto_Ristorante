@@ -28,6 +28,8 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.concurrent.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CustomerController {
 
@@ -65,7 +67,8 @@ public class CustomerController {
 
     @FXML
     private PasswordField loginPassword,
-            registerPassword;
+            registerPassword,
+            confirmPassword;
 
     // customer's bill
     protected float bill = 0.0f;
@@ -120,35 +123,50 @@ public class CustomerController {
     private void register() throws SQLException, IOException, NoSuchAlgorithmException {
 
         // gets username and password from the interface
-        String username = registerUsername.getText();
-        String password = registerPassword.getText();
+        String username = registerUsername.getText(),
+        password = registerPassword.getText(),
+        confirmedPassword = confirmPassword.getText();
 
         // checks if the user has entered valid username and password
-        if (username.isEmpty() || password.isEmpty()) {
+        if (username.isEmpty() || password.isEmpty() || confirmedPassword.isEmpty()) {
             registerError.setText("Username o password mancante");
             registerError.setVisible(true);
         } else {
 
-            // encrypts the password with a hash algorithm
-            String hashedPassword = hashPassword(password);
+            // checks if the password respects the standard
+            if (!validPassword(password)) {
+                registerError.setText("La password deve contenere almeno 8 caratteri, tra cui una lettera maiuscola, un numero e un carattere speciale");
+                registerError.setVisible(true);
+            } else {
 
-            // connection to the database
-            try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
+                // checks if the confirmed password is equal to the password
+                if (!password.equals(confirmedPassword)) {
+                    registerError.setText("Password e conferma password non corrispondono");
+                    registerError.setVisible(true);
+                } else {
 
-                // check if the username is already used
-                if (usernameAvailable(connection, username)) {
+                    // encrypts the password with a hash algorithm
+                    String hashedPassword = hashPassword(password);
 
-                    // query to insert a new user into the database
-                    String query = "INSERT IGNORE INTO UTENTI (USERNAME, PASSWORD) VALUES (?, ?)";
-                    try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                    // connection to the database
+                    try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
 
-                        // substitutes ? with username and password
-                        preparedStatement.setString(1, username);
-                        preparedStatement.setString(2, hashedPassword);
+                        // check if the username is already used
+                        if (usernameAvailable(connection, username)) {
 
-                        // performs the insert
-                        preparedStatement.executeUpdate();
-                        showLoginInterface();
+                            // query to insert a new user into the database
+                            String query = "INSERT IGNORE INTO UTENTI (USERNAME, PASSWORD) VALUES (?, ?)";
+                            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+                                // substitutes ? with username and password
+                                preparedStatement.setString(1, username);
+                                preparedStatement.setString(2, hashedPassword);
+
+                                // performs the insert
+                                preparedStatement.executeUpdate();
+                                showLoginInterface();
+                            }
+                        }
                     }
                 }
             }
@@ -180,6 +198,23 @@ public class CustomerController {
         registerError.setText("Username gia' utilizzato");
         registerError.setVisible(true);
         return false;
+    }
+
+    // checks if the password respects the standard
+    private boolean validPassword(String password) {
+
+        // checks if the length of the password is at least 8
+        if (password.length() < 8) {
+            return false;
+        }
+
+        // checks if the password contains at least a number and a special character
+        String regex = "^(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\",.<>?])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(password);
+
+        // returns true if the password respects the standard and false otherwise
+        return matcher.matches();
     }
 
     // Method to handle the action when the customer requests seats
