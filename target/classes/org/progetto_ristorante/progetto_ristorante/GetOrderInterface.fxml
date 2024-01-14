@@ -54,6 +54,6 @@
     <!-- Stop Button -->
 
     <!-- Error Message -->
-    <Text fx:id="unavailableWaiter" visible="false" fill="red"/>
+    <Text fx:id="unavailableWaiter" visible="false" fill="red" style="-fx-font-family: 'sans-serif'; -fx-font-size: 20px"/>
     <!-- Error Message -->
 </VBox>
