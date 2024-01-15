@@ -208,7 +208,7 @@ public class CustomerController {
             return false;
         }
 
-        // checks if the password contains at least a number and a special character
+        // checks if the password contains at least a number, a special character and an upper case letter
         String regex = "^(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\",.<>?])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(password);
@@ -264,6 +264,7 @@ public class CustomerController {
     // Method to handle the action when the customer clicks the "Wait" button
     @FXML
     private void waitButton() throws IOException {
+
         // creates a scheduler to plan the periodic execution of tasks
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 

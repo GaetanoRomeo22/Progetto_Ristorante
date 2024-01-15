@@ -10,16 +10,16 @@ import java.util.Random;
 import java.util.concurrent.*;
 
 public class Receptionist {
-    final static int MAX_TABLES = 20;                    // number of restaurant's tables
-    final static Object lock = new Object();             // lock to synchronize the access to the receptionist by many customers
-    static Random rand = new Random();                   // used to generate random numbers
-    static int availableSeats = 100,                     // number of available seats for customers
-               availableTables = 20,                     // number of available tables for customers
-               requiredSeats,                            // number of customer's required seats
-               tableNumber;                              // customer's table number
-    static int [] tables = new int[MAX_TABLES];          // 0 in a cell means free table, 1 means occupied table
-    static BufferedReader readSeatsNumber;               // used to read customer requested seats
-    static PrintWriter giveTableNumber;                  // used to assign a table to the customer
+    final static int MAX_TABLES = 20;                               // number of restaurant's tables
+    final static Semaphore semaphore = new Semaphore(1);    // semaphore to synchronize processes
+    static Random rand = new Random();                              // used to generate random numbers
+    static int availableSeats = 100,                                // number of available seats for customers
+               availableTables = 20,                                // number of available tables for customers
+               requiredSeats,                                       // number of customer's required seats
+               tableNumber;                                         // customer's table number
+    static int [] tables = new int[MAX_TABLES];                     // 0 in a cell means free table, 1 means occupied table
+    static BufferedReader readSeatsNumber;                          // used to read customer requested seats
+    static PrintWriter giveTableNumber;                             // used to assign a table to the customer
 
     public static void main(String [] args) throws IOException {
         final int PORT = 1313;                           // used for the communication with customers
@@ -32,7 +32,10 @@ public class Receptionist {
                 Socket acceptedClient = receptionSocket.accept();
 
                 // synchronizes the access to the receptionist by many customers
-                synchronized (lock) {
+                try {
+
+                    // acquire the semaphore to manage client's request
+                    semaphore.acquire();
 
                     // reads customer's required seats
                     readSeatsNumber = new BufferedReader(new InputStreamReader(acceptedClient.getInputStream()));
@@ -62,6 +65,11 @@ public class Receptionist {
                             throw new RuntimeException(exc);
                         }
                     }
+                } catch (InterruptedException exc) {
+                    throw new RuntimeException(exc);
+                // releases the semaphore to manage next customer's request
+                } finally {
+                    semaphore.release();
                 }
             } while (true);
         } catch (IOException exc) {
