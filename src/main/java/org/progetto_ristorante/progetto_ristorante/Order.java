@@ -24,6 +24,6 @@ public class Order {
 
     // returns the order as a string (override of the method toString)
     public String toString() {
-        return "Piatto: " + name + " - Prezzo: " + price;
+        return String.format("%-30s%10.2f €", name, price);
     }
 }
