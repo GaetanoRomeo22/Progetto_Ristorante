@@ -4,16 +4,15 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
-
 <?import javafx.scene.control.ListView?>
+
 <VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController"
-      style="-fx-background-color: #f4f4f4; -fx-padding: 20; -fx-border-color: #ccc; -fx-border-width: 2; -fx-border-radius: 5;">
+      style="-fx-background-color: #f4f4f4; -fx-padding: 20; -fx-border-color: #ccc;">
 
     <!-- Logo -->
     <ImageView fitHeight="150" fitWidth="150">
@@ -38,13 +37,17 @@
         <Text fx:id="billText" style="-fx-font-size: 14px; -fx-fill: #008000; -fx-font-family: 'sans-serif'"/>
     </HBox>
 
-    <Text text="ORDINI EFFETTUATI" style="-fx-font-size: 18px; -fx-text-fill: #333333; -fx-font-family: 'sans-serif'"/>
-    <ListView fx:id="totalOrderedArea" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA; -fx-font-family: 'sans-serif'" editable="false"/>
+    <VBox spacing="10.0" alignment="CENTER">
+        <Text text="ORDINI EFFETTUATI" style="-fx-font-size: 18px; -fx-text-fill: #333333; -fx-font-family: 'sans-serif'"/>
+        <ListView fx:id="totalOrderedArea" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA; -fx-font-family: 'sans-serif'; -fx-pref-width: 400px;"/>
+    </VBox>
     <!-- Orders and Bill -->
 
     <!-- Menu -->
-    <Label text="MENU" style="-fx-font-size: 18px; -fx-text-fill: #333333; -fx-font-family: 'sans-serif'"/>
-    <ListView fx:id="menu" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA;"/>
+    <VBox spacing="10.0" alignment="CENTER">
+        <Label text="MENU" style="-fx-font-size: 18px; -fx-text-fill: #333333; -fx-font-family: 'sans-serif'"/>
+        <ListView fx:id="menu" style="-fx-font-size: 14px; -fx-background-color: #E6E6FA; -fx-pref-width: 400px;"/>
+    </VBox>
     <!-- Menu -->
 
     <!-- Stop Button -->

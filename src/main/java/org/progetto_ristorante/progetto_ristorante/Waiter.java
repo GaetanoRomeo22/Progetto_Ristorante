@@ -18,9 +18,11 @@ public class Waiter {
             try (Socket chefSocket = new Socket(InetAddress.getLocalHost(), PORT_TO_CHEF)) {
 
                 while (true) {
+
+                    // accepts a connection
                     Socket acceptedCustomer = serverSocket.accept();
 
-                    // Creazione di un nuovo thread per gestire la richiesta
+                    // creates a new thread to manage the request
                     Thread waiter = new Thread(new WaiterHandler(acceptedCustomer, chefSocket));
                     waiter.start();
                 }
@@ -32,7 +34,7 @@ public class Waiter {
         }
     }
 
-
+    // waiter thread's class
     public static class WaiterHandler implements Runnable {
 
         protected final Socket customerSocket,        // identifies which client is connected
@@ -48,6 +50,7 @@ public class Waiter {
             this.chefSocket = chefSocket;
         }
 
+        // main of the thread (when it's created, it starts from here)
         public void run() {
             try{
 
@@ -59,48 +62,35 @@ public class Waiter {
                 readReadyOrder = new BufferedReader(new InputStreamReader(chefSocket.getInputStream()));
                 sendReadyOrder = new PrintWriter(customerSocket.getOutputStream(), true);
 
+                // customer's order
                 String order;
 
+                // the thread continues until customer has finished ordering
                 do {
 
                     // gets a customer's order
                     order = readOrder.readLine();
 
                     // if the customer has done
-                    if (order == null || order.equalsIgnoreCase("fine")) {
+                    if (order == null) {
                         break;
                     }
 
-                    // sends the order to the chef to prepare it, waits and sends it back to the customer once it's ready
-                    processOrder(order, sendOrder, readReadyOrder, sendReadyOrder);
-                } while (true);
+                    // sends the order to the chef to prepare it
+                    sendOrder.println(order);
 
+                    // gets the order once it's ready
+                    order = readReadyOrder.readLine();
+
+                    // sends the order back to the customer
+                    sendReadyOrder.println(order);
+                } while (true);
             } catch (IOException exc) {
                 throw new RuntimeException(exc);
             } finally {
 
                 // closes the connection when the customer has done
                 closeConnections();
-            }
-        }
-
-
-        private void processOrder(String order, PrintWriter sendOrder, BufferedReader readReadyOrder, PrintWriter sendReadyOrder) throws IOException {
-
-            // sends the order to the chef to prepare it
-            sendOrder.println(order);
-
-            // gets the order once it's ready
-            order = readReadyOrder.readLine();
-
-            // if the customer has done
-            if (order == null || order.equalsIgnoreCase("fine")) {
-                sendOrder.println(order);
-            }
-
-            // else sends the order back to the customer
-            else {
-                sendReadyOrder.println(order);
             }
         }
 

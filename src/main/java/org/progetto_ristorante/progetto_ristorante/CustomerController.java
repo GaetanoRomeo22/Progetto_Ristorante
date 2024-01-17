@@ -84,7 +84,7 @@ public class CustomerController {
         String username = loginUsername.getText(),
                password = loginPassword.getText();
 
-        // checks if the user has entered valid username and password
+        // shows an error message if username or password are null
         if (username.isEmpty() || password.isEmpty()) {
             loginError.setText("Username o password mancante");
             loginError.setVisible(true);
@@ -104,8 +104,10 @@ public class CustomerController {
                     preparedStatement.setString(1, username);
                     preparedStatement.setString(2, hashedPassword);
 
-                    // checks if the login works
+                    // performs the login
                     try (ResultSet resultSet = preparedStatement.executeQuery()) {
+
+                        // if it works, sends the user to the interface to get required seats, otherwise shown an error message
                         if (resultSet.next()) {
                             showSeatsInterface();
                         } else {
@@ -127,7 +129,7 @@ public class CustomerController {
         password = registerPassword.getText(),
         confirmedPassword = confirmPassword.getText();
 
-        // checks if the user has entered valid username and password
+        // shows an error message if one of them are null
         if (username.isEmpty() || password.isEmpty() || confirmedPassword.isEmpty()) {
             registerError.setText("Username o password mancante");
             registerError.setVisible(true);
@@ -151,7 +153,7 @@ public class CustomerController {
                     // connection to the database
                     try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
 
-                        // check if the username is already used
+                        // check if the username isn't already used
                         if (usernameAvailable(connection, username)) {
 
                             // query to insert a new user into the database
@@ -183,21 +185,18 @@ public class CustomerController {
             // substitutes ? with the username
             preparedStatement.setString(1, username);
 
-            // checks if there is at least a user that has the same username
+            // performs the query
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
 
-                    // if the username is already used, shows the error message, otherwise sends the user to the login
-                    int count = resultSet.getInt(1);
-                    if (count == 0) {
-                        return true;
-                    }
+                // shows an error message if the username is already used
+                if (resultSet.next()) {
+                    registerError.setText("Username non disponibile");
+                    registerError.setVisible(true);
+                    return false;
                 }
             }
         }
-        registerError.setText("Username gia' utilizzato");
-        registerError.setVisible(true);
-        return false;
+        return true;
     }
 
     // checks if the password respects the standard
@@ -249,7 +248,7 @@ public class CustomerController {
                     seatsBox.setVisible(false);
                     waitingBox.setVisible(true);
 
-                    // Set the waiting time message
+                    // sets the waiting time message
                     waitingMessage.setText("Non ci sono abbastanza posti disponibili, vuoi attendere " + waitingTime + " minuti ?");
                     waitingMessage.setVisible(true);
                 }
@@ -493,7 +492,6 @@ public class CustomerController {
         confirmationDialog.setTitle("Conferma richiesta conto");
         confirmationDialog.setGraphic(null);
         confirmationDialog.setHeaderText(null);
-
         confirmationDialog.setContentText("Sei sicuro di voler chiedere il conto?");
 
         // adds confirm and deny buttons
@@ -502,7 +500,7 @@ public class CustomerController {
         // waits for customer's response
         confirmationDialog.showAndWait().ifPresent(response -> {
 
-            // if the customer confirms, closes the interface
+            // if customer confirms, closes the interface
             if (response == ButtonType.OK) {
                 Stage stage = (Stage) stopButton.getScene().getWindow();
                 stage.close();

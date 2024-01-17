@@ -17,6 +17,7 @@ import java.util.ResourceBundle;
 
 public class ChefController implements Initializable {
 
+    // FXML annotations for injecting UI elements
     @FXML
     private TextField menuOrderField,
             orderPriceField;
@@ -32,20 +33,20 @@ public class ChefController implements Initializable {
     private HBox order,
                  orderButton;
 
-    // shows current menu when the interface is loaded
+    // shows current menu when the interface is loaded and sets the action to perform when the customer clicks on buttons
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         // shows the menu
         showMenu();
 
-        // adds an event manager to get customer's order by clicking onto the menu
+        // adds an event manager to get the order the chef wants to remove from the menu
         menuArea.setOnMouseClicked(event -> {
 
             // gets chef's clicked order
             Order order = menuArea.getSelectionModel().getSelectedItem();
 
-            // shows a window to get customers confirm
+            // shows a window to get chef confirm
             Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
             confirmationDialog.setTitle("Conferma eliminazione ordine");
             confirmationDialog.setHeaderText(null);
@@ -55,16 +56,16 @@ public class ChefController implements Initializable {
             // adds confirm and deny buttons
             confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
 
-            // waits for customer's response
+            // waits chef's response
             confirmationDialog.showAndWait().ifPresent(response -> {
 
-                // if the chef confirms, deletes the order from the menu and shows updated menu
+                // if chef confirms, deletes the order from the menu and shows the updated menu
                 if (response == ButtonType.OK) {
                     try {
                         deleteOrder(order.getName());
                         showMenu();
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
+                    } catch (SQLException exc) {
+                        throw new RuntimeException(exc);
                     }
                 }
             });
@@ -109,27 +110,30 @@ public class ChefController implements Initializable {
         // shows current menu
         showMenu();
 
-        // reads order's name and price
+        // reads order's name and price from the interface
         String order = menuOrderField.getText(),
                 inputPrice = orderPriceField.getText();
 
-        // checks if the chef has entered an order and a price
+        // checks if the chef has entered a valid order and a valid price
         if (!order.isEmpty() && !inputPrice.isEmpty()) {
 
+            // replaces ',' with '.'
             inputPrice = inputPrice.replace(',', '.');
 
             // connection to the database
             try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
 
-                // query to check if the user is registered
+                // query to check if the order is already into the menu
                 String selectQuery = "SELECT * FROM ORDINI WHERE NOME = ?";
                 try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) {
 
                     // substitutes ? with order's name
                     selectStatement.setString(1, order);
 
-                    // if the order is already in the menu, shows an error message, otherwise inserts it into the menu
+                    // performs the query
                     try (ResultSet resultSet = selectStatement.executeQuery()) {
+
+                        // if the order is already into the menu, shows an error message
                         if (resultSet.next()) {
                             invalidData.setText("Ordine gia presente nel menu");
                             invalidData.setVisible(true);
@@ -199,27 +203,27 @@ public class ChefController implements Initializable {
     record ChefHandler(Socket accepted) implements Runnable {
 
         public void run() {
-            try (Socket currentSocket = accepted) {
 
-                // gets the order to prepare by the waiter
-                String order;
-                while (true) {
-                    try {
+            // customer's order
+            String order;
 
-                        // gets an order
-                        order = getOrder(currentSocket);
-                        if (order.equalsIgnoreCase("fine")) {
-                            break;
-                        }
+            // keep preparing orders until customer has finished ordering
+            while (true) {
+                try {
 
-                        // gives back the order to the waiter
-                        giveOrder(currentSocket, order);
-                    } catch (IOException exc) {
-                        throw new RuntimeException(exc);
+                    // gets an order
+                    order = getOrder(accepted);
+
+                    // if the customer has finished ordering, stops the chef thread
+                    if (order == null) {
+                        break;
                     }
+
+                    // gives back the order to the waiter once it's ready
+                    giveOrder(ChefHandler.this.accepted, order);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (IOException exc) {
-                throw new RuntimeException(exc);
             }
         }
     }
@@ -230,14 +234,14 @@ public class ChefController implements Initializable {
         // connection to the database
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
 
-            // query to get each menu's orders
+            // query to get each menu's order
             String selectQuery = "SELECT * FROM ORDINI";
             try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
 
                 // performs the select
                 ResultSet resultSet = preparedStatement.executeQuery();
 
-                // makes the menu viewable
+                // makes the menu viewable as list of Order elements (name-price)
                 ObservableList<Order> menuItems = FXCollections.observableArrayList();
                 while (resultSet.next()) {
                     String name = resultSet.getString("NOME");

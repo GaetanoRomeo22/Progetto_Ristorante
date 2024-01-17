@@ -37,9 +37,13 @@ public class Receptionist {
                     // acquire the semaphore to manage client's request
                     semaphore.acquire();
 
-                    // reads customer's required seats
+                    // used to get customer's required seats
                     readSeatsNumber = new BufferedReader(new InputStreamReader(acceptedClient.getInputStream()));
+
+                    // used to send to the customer his table number
                     giveTableNumber = new PrintWriter(acceptedClient.getOutputStream(), true);
+
+                    // gets customer's required seats from the interface and parses it into an integer
                     requiredSeats = Integer.parseInt(readSeatsNumber.readLine());
 
                     // checks if there are enough available tables and seats
@@ -47,19 +51,31 @@ public class Receptionist {
 
                         // assigns a table to the customer and updates number of available tables and seats
                         assignTable();
+
+                        // closes the connection with the customer
                         acceptedClient.close();
 
                         // creates a scheduler to plan the periodic releasing of tables
                         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
                         scheduler.schedule(() -> releaseTable(requiredSeats, tableNumber), rand.nextInt(), TimeUnit.SECONDS);
                     } else {
+
+                        // if there aren't available seats, communicates it to the customer
                         giveTableNumber.println(-1);
+
+                        // closes the connection with the customer
                         acceptedClient.close();
 
-                        // creare una seconda connessione per comunicare il tempo di attesa
+                        // creates a second connection to get if the customer wants to wait to get seats or wants to leave
                         try (Socket waitingTimeSocket = receptionSocket.accept()) {
+
+                            // used to communicate to the customer the time he has to wait
                             PrintWriter waitingTimeWriter = new PrintWriter(waitingTimeSocket.getOutputStream(), true);
-                            int waitingTime = randomWaitingTime();
+
+                            // generates a random waiting time
+                            int waitingTime = rand.nextInt(5) + 1;
+
+                            // communicates it to the customer
                             waitingTimeWriter.println(waitingTime);
                         } catch (IOException exc) {
                             throw new RuntimeException(exc);
@@ -67,6 +83,7 @@ public class Receptionist {
                     }
                 } catch (InterruptedException exc) {
                     throw new RuntimeException(exc);
+
                 // releases the semaphore to manage next customer's request
                 } finally {
                     semaphore.release();
@@ -82,10 +99,6 @@ public class Receptionist {
         }
     }
 
-    public static int randomWaitingTime() {
-        return rand.nextInt(5) + 1;
-    }
-
     // allows receptionist to assign a seat to the customer and to update available seats and tables
     public static void assignTable() {
 
@@ -93,7 +106,7 @@ public class Receptionist {
         availableTables--;
         availableSeats -= requiredSeats;
 
-        // assigns a table to the customer generating a random number not already assigned
+        // assigns a npt assigned table to the customer generating a random number
         do {
             tableNumber = rand.nextInt(MAX_TABLES);
         }
