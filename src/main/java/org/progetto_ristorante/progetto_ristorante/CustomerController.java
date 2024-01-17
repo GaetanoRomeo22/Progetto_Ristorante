@@ -62,7 +62,7 @@ public class CustomerController {
             waitingBox;
 
     // variables to manage communication with the receptionist
-    private BufferedReader checkSeats2;
+    private BufferedReader getWaitingTime;
     private int waitingTime; // time the customer has to wait to enter
 
     @FXML
@@ -232,19 +232,18 @@ public class CustomerController {
             // if there are available seats, the customer takes them
             if (table >= 0) {
 
-                // closes connection with the receptionist
-                receptionSocket.close();
-
                 // shows second interface's elements
                 showOrderInterface();
             } else {
-                // otherwise, he waits
-                try (Socket receptionSocket2 = new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT)) {
-                    // used to read through the socket
-                    checkSeats2 = new BufferedReader(new InputStreamReader(receptionSocket2.getInputStream()));
 
-                    // decides if waiting or not
-                    waitingTime = Integer.parseInt(checkSeats2.readLine());
+                // otherwise, opens a second socket
+                try (Socket receptionSocket2 = new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT)) {
+
+                    // used to read the time to wait communicated by the receptionist
+                    getWaitingTime = new BufferedReader(new InputStreamReader(receptionSocket2.getInputStream()));
+
+                    // read the time to wait from the socket and parses it to integer
+                    waitingTime = Integer.parseInt(getWaitingTime.readLine());
                     seatsBox.setVisible(false);
                     waitingBox.setVisible(true);
 
@@ -278,7 +277,7 @@ public class CustomerController {
         } finally {
             // deallocates used resources
             scheduler.shutdown();
-            checkSeats2.close();
+            getWaitingTime.close();
         }
     }
 

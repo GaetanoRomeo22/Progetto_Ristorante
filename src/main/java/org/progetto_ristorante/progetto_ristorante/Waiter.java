@@ -50,7 +50,7 @@ public class Waiter {
             this.chefSocket = chefSocket;
         }
 
-        // main of the thread (when it's created, it starts from here)
+        // thread's main (when it's created, it starts from here)
         public void run() {
             try{
 

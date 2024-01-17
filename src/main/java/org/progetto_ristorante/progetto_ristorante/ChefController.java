@@ -98,8 +98,6 @@ public class ChefController implements Initializable {
                 throw new RuntimeException(exc);
             }
         });
-
-        serverThread.setDaemon(true); // Imposta il thread come daemon per terminarlo con l'applicazione
         serverThread.start();
     }
 
