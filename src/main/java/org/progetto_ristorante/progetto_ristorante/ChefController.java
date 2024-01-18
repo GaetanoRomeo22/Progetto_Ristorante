@@ -218,7 +218,7 @@ public class ChefController implements Initializable {
                     }
 
                     // gives back the order to the waiter once it's ready
-                    giveOrder(ChefHandler.this.accepted, order);
+                    giveOrder(accepted, order);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
