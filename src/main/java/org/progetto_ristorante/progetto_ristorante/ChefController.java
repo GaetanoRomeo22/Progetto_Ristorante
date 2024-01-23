@@ -198,8 +198,16 @@ public class ChefController implements Initializable {
     }
 
     // chef thread code
-    record ChefHandler(Socket accepted) implements Runnable {
+    public static class ChefHandler implements Runnable {
 
+        protected final Socket customerSocket;      // identifies which customer is connected
+
+        // constructor
+        public ChefHandler(Socket accepted) {
+            this.customerSocket = accepted;
+        }
+
+        // thread's main (when it's created, it starts from here)
         public void run() {
 
             // customer's order
@@ -210,7 +218,7 @@ public class ChefController implements Initializable {
                 try {
 
                     // gets an order
-                    order = getOrder(accepted);
+                    order = getOrder(customerSocket);
 
                     // if the customer has finished ordering, stops the chef thread
                     if (order == null) {
@@ -218,7 +226,7 @@ public class ChefController implements Initializable {
                     }
 
                     // gives back the order to the waiter once it's ready
-                    giveOrder(accepted, order);
+                    giveOrder(customerSocket, order);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

@@ -37,7 +37,7 @@ public class Waiter {
     // waiter thread's class
     public static class WaiterHandler implements Runnable {
 
-        protected final Socket customerSocket,        // identifies which client is connected
+        protected final Socket customerSocket,        // identifies which customer is connected
                                chefSocket;            // socket to communicate with the chef
         BufferedReader readOrder,                     // used to read an order from a customer
                        readReadyOrder;                // used to get a ready order from the chef
