@@ -61,20 +61,15 @@ public class CustomerController {
     private VBox seatsBox,
             waitingBox;
 
-    // variables to manage communication with the receptionist
-    private BufferedReader getWaitingTime;
-    private int waitingTime; // time the customer has to wait to enter
-
     @FXML
     private PasswordField loginPassword,
             registerPassword,
             confirmPassword;
 
-    // customer's bill
-    protected float bill = 0.0f;
-
-    // customer's table's number
-    protected int table;
+    private BufferedReader getWaitingTime;
+    private int waitingTime;                  // time the customer has to wait to enter
+    private float bill = 0.0f;                // customer's bill
+    private int table;                        // customer's table's number
 
     // allows a customer to login himself by entering a username and a password
     @FXML
@@ -275,6 +270,7 @@ public class CustomerController {
         } catch (InterruptedException | ExecutionException exc) {
             throw new RuntimeException(exc);
         } finally {
+
             // deallocates used resources
             scheduler.shutdown();
             getWaitingTime.close();
@@ -301,17 +297,13 @@ public class CustomerController {
 
     // method to handle the action when the customer clicks the "Leave" button
     @FXML
-    private void leave() {
-
-        // closes the interface
+    private void leave() { // closes the interface
         Stage stage = (Stage) requiredSeatsField.getScene().getWindow();
         stage.close();
     }
 
     // Method to allow the customer to specify how many seats they need and get a table if available
-    private int getTable(Socket receptionSocket) throws IOException {
-
-        // used to get customer's required seats and to send it to the receptionist
+    private int getTable(Socket receptionSocket) throws IOException { // used to get customer's required seats and to send it to the receptionist
         BufferedReader checkSeats = new BufferedReader(new InputStreamReader(receptionSocket.getInputStream()));
         PrintWriter sendSeats = new PrintWriter(receptionSocket.getOutputStream(), true);
 
@@ -329,7 +321,6 @@ public class CustomerController {
         checkSeats.close();
         sendSeats.close();
         receptionSocket.close();
-
         return tableNumber;
     }
 
@@ -367,6 +358,7 @@ public class CustomerController {
         final int WAITER_PORT = 1316; // used to communicate with the waiter
 
         try {
+
             // creates a socket to communicate with the waiter
             Socket waiterSocket = new Socket(InetAddress.getLocalHost(), WAITER_PORT);
 

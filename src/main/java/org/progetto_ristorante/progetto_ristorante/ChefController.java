@@ -162,7 +162,7 @@ public class ChefController implements Initializable {
             invalidData.setVisible(true);
         }
 
-        // shows upgraded menu
+        // shows updated menu
         showMenu();
     }
 

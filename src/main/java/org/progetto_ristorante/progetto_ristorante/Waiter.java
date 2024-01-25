@@ -87,9 +87,7 @@ public class Waiter {
                 } while (true);
             } catch (IOException exc) {
                 throw new RuntimeException(exc);
-            } finally {
-
-                // closes the connection when the customer has done
+            } finally { // closes the connection when the customer has done
                 closeConnections();
             }
         }

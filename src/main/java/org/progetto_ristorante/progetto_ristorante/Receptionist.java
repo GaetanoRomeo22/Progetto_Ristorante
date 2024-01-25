@@ -83,17 +83,13 @@ public class Receptionist {
                     }
                 } catch (InterruptedException exc) {
                     throw new RuntimeException(exc);
-
-                // releases the semaphore to manage next customer's request
-                } finally {
+                } finally { // releases the semaphore to manage next customer's request
                     semaphore.release();
                 }
             } while (true);
         } catch (IOException exc) {
             throw new RuntimeException(exc);
-        } finally {
-
-            // closes used resources
+        } finally { // closes used resources
             readSeatsNumber.close();
             giveTableNumber.close();
         }
@@ -109,8 +105,7 @@ public class Receptionist {
         // assigns a npt assigned table to the customer generating a random number
         do {
             tableNumber = rand.nextInt(MAX_TABLES);
-        }
-        while (tables[tableNumber] == 1);
+        } while (tables[tableNumber] == 1);
 
         // sets the table as occupied
         tables[tableNumber] = 1;
