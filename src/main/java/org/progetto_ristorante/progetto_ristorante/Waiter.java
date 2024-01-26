@@ -13,21 +13,14 @@ public class Waiter {
 
         // creates a socket to communicate with customers
         try (ServerSocket serverSocket = new ServerSocket(PORT_TO_CUSTOMER)) {
+            while (true) {
 
-            // creates a socket to communicate with the chef
-            try (Socket chefSocket = new Socket(InetAddress.getLocalHost(), PORT_TO_CHEF)) {
+                // accepts a connection
+                Socket acceptedCustomer = serverSocket.accept();
 
-                while (true) {
-
-                    // accepts a connection
-                    Socket acceptedCustomer = serverSocket.accept();
-
-                    // creates a new thread to manage the request
-                    Thread waiter = new Thread(new WaiterHandler(acceptedCustomer, chefSocket));
-                    waiter.start();
-                }
-            } catch (IOException exc) {
-                throw new RuntimeException(exc);
+                // creates a new thread to manage the request
+                Thread waiter = new Thread(new WaiterHandler(acceptedCustomer, PORT_TO_CHEF));
+                waiter.start();
             }
         } catch (IOException exc) {
             throw new RuntimeException(exc);
@@ -37,22 +30,24 @@ public class Waiter {
     // waiter thread's class
     public static class WaiterHandler implements Runnable {
 
-        protected final Socket customerSocket,        // identifies which customer is connected
-                               chefSocket;            // socket to communicate with the chef
+        protected final Socket customerSocket;        // identifies which customer is connected
+        protected final int PORT_TO_CHEF;                 // port to communicate with the chef
         BufferedReader readOrder,                     // used to read an order from a customer
                        readReadyOrder;                // used to get a ready order from the chef
         PrintWriter sendOrder,                        // used to send an order to the chef to prepare it
                     sendReadyOrder;                   // used to send a ready order to the customer who's ordered it
 
         // constructor
-        public WaiterHandler(Socket accepted, Socket chefSocket) {
+        public WaiterHandler(Socket accepted, int PORT_TO_CHEF) {
             this.customerSocket = accepted;
-            this.chefSocket = chefSocket;
+            this.PORT_TO_CHEF= PORT_TO_CHEF;
         }
 
         // thread's main (when it's created, it starts from here)
         public void run() {
-            try{
+
+            // creates a socket to communicate with the chef
+            try (Socket chefSocket = new Socket(InetAddress.getLocalHost(), PORT_TO_CHEF)) {
 
                 // used to get a customer's order and to send it to the chef to prepare it
                 readOrder = new BufferedReader(new InputStreamReader(customerSocket.getInputStream()));

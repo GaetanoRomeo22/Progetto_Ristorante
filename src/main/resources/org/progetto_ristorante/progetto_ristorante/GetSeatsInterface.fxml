@@ -8,7 +8,8 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
+<?import javafx.scene.layout.HBox?>
+<VBox alignment="CENTER" spacing="15.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController"
       style="-fx-background-color: #f4f4f4; -fx-padding: 20; -fx-border-color: #ccc; -fx-border-width: 2; -fx-border-radius: 5;">
 
@@ -29,12 +30,14 @@
     <!-- Additional Elements for Waiting -->
     <VBox fx:id="waitingBox" spacing="10.0" visible="false" alignment="CENTER">
         <Text fx:id="waitingMessage" visible="false" style="-fx-font-size: 16px; -fx-text-fill: #333333;"/>
-        <Button text="Si, attendo" onAction="#waitButton" style="-fx-font-size: 14px; -fx-background-color: #32CD32; -fx-text-fill: white;"/>
-        <Button text="No, me ne vado" onAction="#leave" style="-fx-font-size: 14px; -fx-background-color: #FF4500; -fx-text-fill: white;"/>
+        <HBox spacing="10.0" alignment="CENTER">
+            <Button text="Si, attendo" onAction="#waitButton" style="-fx-font-size: 14px; -fx-background-color: #32CD32; -fx-text-fill: white;"/>
+            <Button text="No, me ne vado" onAction="#leave" style="-fx-font-size: 14px; -fx-background-color: #FF4500; -fx-text-fill: white;"/>
+        </HBox>
     </VBox>
     <!-- Additional Elements for Waiting -->
 
     <!-- Error Message -->
-    <Text fx:id="unavailableReceptionist" visible="false" fill="red" style="-fx-font-family: 'sans-serif'; -fx-font-size: 20px"/>
+    <Text fx:id="unavailableReceptionist" visible="false" fill="red" style="-fx-font-family: 'sans-serif'; -fx-font-size: 16px;"/>
     <!-- Error Message -->
 </VBox>

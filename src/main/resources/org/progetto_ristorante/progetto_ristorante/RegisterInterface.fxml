@@ -7,10 +7,9 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
-
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.CheckBox?>
+
 <VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController"
       style="-fx-background-color: #f4f4f4; -fx-padding: 20; -fx-border-color: #ccc;">
