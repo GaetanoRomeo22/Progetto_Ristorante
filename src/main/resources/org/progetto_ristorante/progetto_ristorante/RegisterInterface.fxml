@@ -27,19 +27,19 @@
     <!-- Logo -->
 
     <!-- Title -->
-    <Text text="REGISTRAZIONE" style="-fx-font-size: 28px; -fx-fill: #008000; -fx-padding: 10 0 20 0; -fx-font-family: 'sans-serif'"/>
+    <Text text="REGISTRAZIONE" style="-fx-font-size: 28px; -fx-fill: #008000; -fx-padding: 10 0 20 0; -fx-font-family: 'sans-serif'; -fx-font-weight: bold"/>
     <!-- Title -->
 
     <!-- Username and Password -->
-    <TextField fx:id="registerUsername" promptText="Username" style="-fx-font-size: 14px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'sans-serif'" maxWidth="150"/>
-    <PasswordField fx:id="registerPassword" promptText="Password" style="-fx-font-size: 14px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8" maxWidth="150"/>
-    <PasswordField fx:id="confirmPassword" promptText="Conferma Password" style="-fx-font-size: 14px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8" maxWidth="150"/>
+    <TextField fx:id="registerUsername" promptText="Username" style="-fx-font-size: 20px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'sans-serif'" maxWidth="150"/>
+    <PasswordField fx:id="registerPassword" promptText="Password" style="-fx-font-size: 20px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8" maxWidth="150"/>
+    <PasswordField fx:id="confirmPassword" promptText="Conferma Password" style="-fx-font-size: 20px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8" maxWidth="150"/>
     <!-- Username and Password -->
 
     <!-- Commit Buttons -->
     <HBox spacing="5.0" alignment="CENTER">
-        <Button text="Registrati" onAction="#register" style="-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 5; -fx-padding: 10; -fx-font-family: 'sans-serif'"/>
-        <Button text="Accedi" onAction="#showLoginInterface" style="-fx-font-size: 14px; -fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-padding: 10; -fx-font-family: 'sans-serif'"/>
+        <Button text="Registrati" onAction="#register" style="-fx-font-size: 20px; -fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 5; -fx-padding: 10; -fx-font-family: 'sans-serif'"/>
+        <Button text="Accedi" onAction="#showLoginInterface" style="-fx-font-size: 20px; -fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-padding: 10; -fx-font-family: 'sans-serif'"/>
     </HBox>
     <!-- Commit Buttons -->
 

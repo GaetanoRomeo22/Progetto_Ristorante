@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import javafx.util.Callback;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -255,6 +256,26 @@ public class ChefController implements Initializable {
                     Order order = new Order(name, price);
                     menuItems.add(order);
                 }
+
+                // applies a border to each menu's order
+                menuArea.setCellFactory(new Callback<>() {
+                    @Override
+                    public ListCell<Order> call(ListView<Order> param) {
+                        return new ListCell<>() {
+                            @Override
+                            protected void updateItem(Order item, boolean empty) {
+                                super.updateItem(item, empty);
+                                if (empty || item == null) {
+                                    setText(null);
+                                    setStyle(null);
+                                } else {
+                                    setText(item.getName() + " - €" + item.getPrice());
+                                    setStyle("-fx-border-color: #D2B48C; -fx-border-width: 1;");
+                                }
+                            }
+                        };
+                    }
+                });
                 menuArea.setItems(menuItems);
             }
         } catch (SQLException exc) {

@@ -12,8 +12,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.Duration;
 
 import java.nio.charset.StandardCharsets;
@@ -195,20 +195,13 @@ public class CustomerController {
         return true;
     }
 
-    // checks if the password respects the standard
+    // returns true if the password respects the standard and false otherwise
     private boolean validPassword(String password) {
 
-        // checks if the length of the password is at least 8
-        if (password.length() < 8) {
-            return false;
-        }
-
-        // checks if the password contains at least a number, a special character and an upper case letter
+        // checks if the password contains at least 8 characters, a number, a special character and an upper case letter
         String regex = "^(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\",.<>?])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(password);
-
-        // returns true if the password respects the standard and false otherwise
         return matcher.matches();
     }
 
@@ -296,15 +289,17 @@ public class CustomerController {
         });
     }
 
-    // method to handle the action when the customer clicks the "Leave" button
+    // closes the interface when the customer clicks the "Leave" button
     @FXML
-    private void leave() { // closes the interface
+    private void leave() {
         Stage stage = (Stage) requiredSeatsField.getScene().getWindow();
         stage.close();
     }
 
     // Method to allow the customer to specify how many seats they need and get a table if available
-    private int getTable(Socket receptionSocket) throws IOException { // used to get customer's required seats and to send it to the receptionist
+    private int getTable(Socket receptionSocket) throws IOException {
+
+        // used to get customer's required seats and to send it to the receptionist
         BufferedReader checkSeats = new BufferedReader(new InputStreamReader(receptionSocket.getInputStream()));
         PrintWriter sendSeats = new PrintWriter(receptionSocket.getOutputStream(), true);
 
@@ -346,6 +341,26 @@ public class CustomerController {
                     Order order = new Order(name, price);
                     menuItems.add(order);
                 }
+
+                // applies a border to each menu's order
+                menu.setCellFactory(new Callback<>() {
+                    @Override
+                    public ListCell<Order> call(ListView<Order> param) {
+                        return new ListCell<>() {
+                            @Override
+                            protected void updateItem(Order item, boolean empty) {
+                                super.updateItem(item, empty);
+                                if (empty || item == null) {
+                                    setText(null);
+                                    setStyle(null);
+                                } else {
+                                    setText(item.getName() + " - €" + item.getPrice());
+                                    setStyle("-fx-border-color: #D2B48C; -fx-border-width: 1;");
+                                }
+                            }
+                        };
+                    }
+                });
                 menu.setItems(menuItems);
             }
         } catch (SQLException exc) {
@@ -356,12 +371,10 @@ public class CustomerController {
     // simulates a customer's order
     @FXML
     private void getOrder(String order, float price) {
-        final int WAITER_PORT = 1316; // used to communicate with the waiter
+        final int WAITER_PORT = 1316;  // used to communicate with the waiter
 
-        try {
-
-            // creates a socket to communicate with the waiter
-            Socket waiterSocket = new Socket(InetAddress.getLocalHost(), WAITER_PORT);
+        // creates a socket to communicate with the waiter
+        try (Socket waiterSocket = new Socket(InetAddress.getLocalHost(), WAITER_PORT)) {
 
             // used to get a customer's order and to send it to a waiter
             BufferedReader eatOrder = new BufferedReader(new InputStreamReader(waiterSocket.getInputStream()));
@@ -380,6 +393,26 @@ public class CustomerController {
 
             // adds the order to the customer's list and its price to the bill
             totalOrdered.append(order).append("\n");
+
+            // applies a border to each customer's order
+            totalOrderedArea.setCellFactory(new Callback<>() {
+                @Override
+                public ListCell<String> call(ListView<String> param) {
+                    return new ListCell<>() {
+                        @Override
+                        protected void updateItem(String item, boolean empty) {
+                            super.updateItem(item, empty);
+                            if (empty || item == null) {
+                                setText(null);
+                                setStyle(null);
+                            } else {
+                                setText(item);
+                                setStyle("-fx-border-color: #D2B48C; -fx-border-width: 1;");
+                            }
+                        }
+                    };
+                }
+            });
 
             // shows orders and total bill
             totalOrderedArea.getItems().add(totalOrdered.toString());

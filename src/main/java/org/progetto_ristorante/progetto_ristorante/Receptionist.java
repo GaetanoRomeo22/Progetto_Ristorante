@@ -34,7 +34,7 @@ public class Receptionist {
                 // synchronizes the access to the receptionist by many customers
                 try {
 
-                    // acquire the semaphore to manage client's request
+                    // acquires the semaphore to manage client's request
                     semaphore.acquire();
 
                     // used to get customer's required seats
