@@ -2,6 +2,7 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/src/main/java/org/progetto_ristorante/progetto_ristorante/CustomerController.java" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/org/progetto_ristorante/progetto_ristorante/CustomerModell.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/resources/org/progetto_ristorante/progetto_ristorante/DatabaseCreationScript.sql" dialect="GenericSQL" />
   </component>
   <component name="SqlResolveMappings">

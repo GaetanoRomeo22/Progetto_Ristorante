@@ -34,13 +34,6 @@ import java.util.regex.Pattern;
 
 public class CustomerController {
 
-    // FXML annotations for injecting UI elements
-    @FXML
-    private ListView<String> totalOrderedArea;
-
-    @FXML
-    private ListView<Order> menu;
-
     @FXML
     private Text billText,
             tableNumber,
@@ -51,9 +44,20 @@ public class CustomerController {
             unavailableWaiter;
 
     @FXML
+    private ListView<String> totalOrderedArea;
+
+    @FXML
+    private ListView<Order> menu;
+
+    @FXML
     private TextField loginUsername,
             registerUsername,
             requiredSeatsField;
+
+    @FXML
+    private PasswordField loginPassword,
+            registerPassword,
+            confirmPassword;
 
     @FXML
     private Button stopButton;
@@ -62,148 +66,41 @@ public class CustomerController {
     private VBox seatsBox,
             waitingBox;
 
-    @FXML
-    private PasswordField loginPassword,
-            registerPassword,
-            confirmPassword;
-
+    private CustomerModell model;
     private BufferedReader getWaitingTime;
-    private int waitingTime;                  // time the customer has to wait to enter
-    private float bill = 0.0f;                // customer's bill
-    private int table;                        // customer's table's number
+    private int waitingTime;
+    private float bill = 0.0f;
+    private int table;
 
-    // allows a customer to login himself by entering a username and a password
+    public CustomerController() {
+        model = CustomerModell.getIstance();
+    }
+
     @FXML
     private void login() throws SQLException, IOException, NoSuchAlgorithmException {
-
-        // gets username and password from the interface
-        String username = loginUsername.getText(),
-               password = loginPassword.getText();
-
-        // shows an error message if username or password are null
-        if (username.isEmpty() || password.isEmpty()) {
-            loginError.setText("Username o password mancante");
-            loginError.setVisible(true);
+        String username = loginUsername.getText();
+        String password = loginPassword.getText();
+        if (model.loginUser(username, password)) {
+            showSeatsInterface();
         } else {
-
-            // encrypts the password with a hash algorithm
-            String hashedPassword = hashPassword(password);
-
-            // connection to the database
-            try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
-
-                // query to check if the user is registered
-                String query = "SELECT * FROM UTENTI WHERE USERNAME = ? AND PASSWORD = ?";
-                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-                    // substitutes ? with username and password
-                    preparedStatement.setString(1, username);
-                    preparedStatement.setString(2, hashedPassword);
-
-                    // performs the login
-                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
-
-                        // if it works, sends the user to the interface to get required seats, otherwise shown an error message
-                        if (resultSet.next()) {
-                            showSeatsInterface();
-                        } else {
-                            loginError.setText("Credenziali errate, riprovare");
-                            loginError.setVisible(true);
-                        }
-                    }
-                }
-            }
+            loginError.setText("Credenziali errate, riprovare");
+            loginError.setVisible(true);
         }
     }
 
-    // allows a customer to register himself by entering a username and a password
     @FXML
     private void register() throws SQLException, IOException, NoSuchAlgorithmException {
-
-        // gets username and password from the interface
-        String username = registerUsername.getText(),
-        password = registerPassword.getText(),
-        confirmedPassword = confirmPassword.getText();
-
-        // shows an error message if one of them are null
-        if (username.isEmpty() || password.isEmpty() || confirmedPassword.isEmpty()) {
-            registerError.setText("Username o password mancante");
-            registerError.setVisible(true);
-        } else {
-
-            // checks if the password respects the standard
-            if (!validPassword(password)) {
-                registerError.setText("La password deve contenere almeno 8 caratteri, tra cui una lettera maiuscola, un numero e un carattere speciale");
-                registerError.setVisible(true);
-            } else {
-
-                // checks if the confirmed password is equal to the password
-                if (!password.equals(confirmedPassword)) {
-                    registerError.setText("Password e conferma password non corrispondono");
-                    registerError.setVisible(true);
-                } else {
-
-                    // encrypts the password with a hash algorithm
-                    String hashedPassword = hashPassword(password);
-
-                    // connection to the database
-                    try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
-
-                        // check if the username isn't already used
-                        if (usernameAvailable(connection, username)) {
-
-                            // query to insert a new user into the database
-                            String query = "INSERT IGNORE INTO UTENTI (USERNAME, PASSWORD) VALUES (?, ?)";
-                            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-                                // substitutes ? with username and password
-                                preparedStatement.setString(1, username);
-                                preparedStatement.setString(2, hashedPassword);
-
-                                // performs the insert
-                                preparedStatement.executeUpdate();
-                                showLoginInterface();
-                            }
-                        }
-                    }
-                }
-            }
+        String username = registerUsername.getText();
+        String password = registerPassword.getText();
+        String confirmedPassword = confirmPassword.getText();
+        if (model.registerUser(username, password, confirmedPassword)) {
+            showLoginInterface();
+        }else{
+            registerError.setText("Dati errati, controlla se la password contiente almeno 8 caratteri (lettera maiuscola, carattere speciale e numero) oppure l'username non è disponibile");
         }
     }
 
-    // checks if the username is available (is not used by another customer)
-    private boolean usernameAvailable (Connection connection, String username) throws SQLException {
 
-        // query to count how many users have the same username
-        String query = "SELECT COUNT(*) FROM UTENTI WHERE USERNAME = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-            // substitutes ? with the username
-            preparedStatement.setString(1, username);
-
-            // performs the query
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-
-                // shows an error message if the username is already used
-                if (resultSet.next()) {
-                    registerError.setText("Username non disponibile");
-                    registerError.setVisible(true);
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    // returns true if the password respects the standard and false otherwise
-    private boolean validPassword(String password) {
-
-        // checks if the password contains at least 8 characters, a number, a special character and an upper case letter
-        String regex = "^(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\",.<>?])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(password);
-        return matcher.matches();
-    }
 
     // Method to handle the action when the customer requests seats
     @FXML
@@ -533,22 +430,4 @@ public class CustomerController {
         });
     }
 
-    // encrypts the password using a hash algorithm
-    private String hashPassword(String password) throws NoSuchAlgorithmException {
-
-        // gets an instance of Message Digest (Java package that establishes hash functionalities)
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-
-        // calculates the array of byte that contains the hashed password
-        byte[] hashedBytes = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-
-        // converts the array of byte into hexadecimal
-        StringBuilder stringBuilder = new StringBuilder();
-        for (byte b : hashedBytes) {
-            stringBuilder.append(String.format("%02x", b));
-        }
-
-        // returns it as string
-        return stringBuilder.toString();
-    }
 }
