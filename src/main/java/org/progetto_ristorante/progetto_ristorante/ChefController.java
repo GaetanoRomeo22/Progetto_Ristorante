@@ -34,6 +34,8 @@ public class ChefController implements Initializable {
     private HBox order,
                  orderButton;
 
+    private final ChefModel chefModel = new ChefModel();
+
     // shows current menu when the interface is loaded and sets the action to perform when the customer clicks on buttons
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -75,31 +77,8 @@ public class ChefController implements Initializable {
 
     @FXML
     private void cook() {
-
-        // hides the interface
         hideInterface();
-
-        final int PORT = 1315; // used for communication with waiters
-
-        // starts a thread
-        Thread serverThread = new Thread(() -> {
-
-            // creates a server socket to communicate with waiters
-            try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-                while (true) {
-
-                    // waits for a waiter request
-                    Socket acceptedOrder = serverSocket.accept();
-
-                    // creates a new thread to manage the request
-                    Thread chef = new Thread(new ChefHandler(acceptedOrder));
-                    chef.start();
-                }
-            } catch (IOException exc) {
-                throw new RuntimeException(exc);
-            }
-        });
-        serverThread.start();
+        chefModel.startServer();
     }
 
     // adds an order into the menu
@@ -186,54 +165,6 @@ public class ChefController implements Initializable {
         }
     }
 
-    // gets an order to prepare by a waiter
-    public static String getOrder(Socket acceptedOrder) throws IOException {
-        BufferedReader takeOrder = new BufferedReader(new InputStreamReader(acceptedOrder.getInputStream()));
-        return takeOrder.readLine();
-    }
-
-    // sends a ready order to the waiter who has required to prepare it
-    public static void giveOrder(Socket acceptedOrder, String order) throws IOException {
-        PrintWriter sendOrder = new PrintWriter(acceptedOrder.getOutputStream(), true);
-        sendOrder.println(order);
-    }
-
-    // chef thread code
-    public static class ChefHandler implements Runnable {
-
-        protected final Socket customerSocket;      // identifies which customer is connected
-
-        // constructor
-        public ChefHandler(Socket accepted) {
-            this.customerSocket = accepted;
-        }
-
-        // thread's main (when it's created, it starts from here)
-        public void run() {
-
-            // customer's order
-            String order;
-
-            // keep preparing orders until customer has finished ordering
-            while (true) {
-                try {
-
-                    // gets an order
-                    order = getOrder(customerSocket);
-
-                    // if the customer has finished ordering, stops the chef thread
-                    if (order == null) {
-                        break;
-                    }
-
-                    // gives back the order to the waiter once it's ready
-                    giveOrder(customerSocket, order);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-    }
 
     // shows the menu in real time
     private void showMenu() {
