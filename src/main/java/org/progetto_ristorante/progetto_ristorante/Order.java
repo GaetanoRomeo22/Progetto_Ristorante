@@ -2,28 +2,23 @@ package org.progetto_ristorante.progetto_ristorante;
 
 public class Order {
 
-    // private variables
-    protected final String name;
-    protected final float price;
+    protected final String name; // order's name
+    protected final float price; // order's price
 
-    // default constructor
-    public Order (String name, float price) {
+    public Order (String name, float price) { // default constructor
         this.name = name;
         this.price = price;
     }
 
-    // returns order's name
-    public String getName() {
+    public String getName() { // returns order's name
         return name;
     }
 
-    // returns order's price
-    public float getPrice() {
+    public float getPrice() { // returns order's price
         return price;
     }
 
-    // returns the order as a string (override of the method toString)
-    public String toString() {
+    public String toString() { // returns the order as a string (override of the method toString)
         return String.format("%-30s%10.2f €", name, price);
     }
 }

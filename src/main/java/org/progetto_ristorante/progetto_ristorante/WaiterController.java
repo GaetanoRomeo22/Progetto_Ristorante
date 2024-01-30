@@ -7,17 +7,12 @@ import java.net.Socket;
 public class WaiterController {
 
     public void startServer() {
-        final int PORT_TO_CUSTOMER = 1316,  // used to communicate with customers
-                  PORT_TO_CHEF = 1315;      // used to communicate with the chef
-
-        // creates a socket to communicate with customers
-        try (ServerSocket serverSocket = new ServerSocket(PORT_TO_CUSTOMER)) {
-            while (true) {
-
-                // accepts a connection
+        final int CUSTOMER_PORT = 1316; // port to communicate with customers
+        final int CHEF_PORT     = 1315; // port to communicate with the chef
+        try (ServerSocket serverSocket = new ServerSocket(CUSTOMER_PORT)) { // creates a socket to communicate with customers
+            while (true) { // accepts a connection and creates a thread to manage the request
                 Socket acceptedCustomer = serverSocket.accept();
-
-                WaiterModel.WaiterHandler waiterHandler = new WaiterModel.WaiterHandler(acceptedCustomer, PORT_TO_CHEF);
+                WaiterModel.WaiterHandler waiterHandler = new WaiterModel.WaiterHandler(acceptedCustomer, CHEF_PORT);
                 Thread waiterThread = new Thread(waiterHandler);
                 waiterThread.start();
             }
@@ -30,5 +25,4 @@ public class WaiterController {
         WaiterController waiterController = new WaiterController();
         waiterController.startServer();
     }
-
 }

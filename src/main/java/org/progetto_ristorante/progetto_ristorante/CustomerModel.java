@@ -12,55 +12,34 @@ public class CustomerModel {
 
     private static CustomerModel instance = null;
 
-    // constructor with singleton pattern
-    public static CustomerModel getInstance(){
+    public static CustomerModel getInstance() { // constructor with singleton pattern
         if(instance == null)
             instance = new CustomerModel();
         return instance;
     }
 
-    // checks if the customer is registered
-    public boolean loginUser(String username, String password) throws SQLException, NoSuchAlgorithmException {
-
-        // encrypts the password
-        String hashedPassword = hashPassword(password);
-
-        // connection to the database
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
-
-            // query to check if the customer is registered
-            String query = "SELECT * FROM UTENTI WHERE USERNAME = ? AND PASSWORD = ?";
-
-            // substitutes "?" with username and password and performs the query
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+    public boolean loginUser(String username, String password) throws SQLException, NoSuchAlgorithmException { // checks if the customer is registered
+        String hashedPassword = hashPassword(password); // encrypts the password
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
+            String query = "SELECT * FROM UTENTI WHERE USERNAME = ? AND PASSWORD = ?"; // query to check if the customer is registered
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) { // substitutes "?" with username and password and performs the query
                 preparedStatement.setString(1, username);
                 preparedStatement.setString(2, hashedPassword);
-
-                // returns user's data if finds him
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) { // returns user's data if finds him
                     return resultSet.next();
                 }
             }
         }
     }
 
-    // manages the insertion of customer's data into the database once registered
-    public boolean registerUser(String username, String password) throws SQLException, NoSuchAlgorithmException {
-
-        // encrypts the password
-        String hashedPassword = hashPassword(password);
-
-        // connection to the database
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
+    public boolean registerUser(String username, String password) throws SQLException, NoSuchAlgorithmException { // manages the insertion of customer's data into the database once registered
+        String hashedPassword = hashPassword(password); // encrypts the password
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
             if (!usernameAvailable(connection, username)) { // checks if the username is available
                 return false;
             }
-
-            // query to insert the customer into the database
-            String query = "INSERT IGNORE INTO UTENTI (USERNAME, PASSWORD) VALUES (?, ?)";
-
-            // substitutes "?" with username and password and performs the query
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            String query = "INSERT IGNORE INTO UTENTI (USERNAME, PASSWORD) VALUES (?, ?)"; // query to insert the customer into the database
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) { // substitutes "?" with username and password and performs the query
                 preparedStatement.setString(1, username);
                 preparedStatement.setString(2, hashedPassword);
                 preparedStatement.executeUpdate();
@@ -69,24 +48,17 @@ public class CustomerModel {
         }
     }
 
-    // checks if the username is available
-    private boolean usernameAvailable(Connection connection, String username) throws SQLException {
-
-        // query to check if the username is available
-        String query = "SELECT COUNT(*) FROM UTENTI WHERE USERNAME = ?";
-
-        // substitutes "?" with username and performs the query
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+    private boolean usernameAvailable(Connection connection, String username) throws SQLException { // checks if the username is available
+        String query = "SELECT COUNT(*) FROM UTENTI WHERE USERNAME = ?"; // query to check if the username is available
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) { // substitutes "?" with username and performs the query
             preparedStatement.setString(1, username);
-
-            // returns true if the username is available and false otherwise
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) { // returns true if the username is available and false otherwise
                 return !resultSet.next();
             }
         }
     }
 
-    private String hashPassword(String password) throws NoSuchAlgorithmException {
+    private String hashPassword(String password) throws NoSuchAlgorithmException { // encrypts passwords with a hash algorithm
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hashedBytes = digest.digest(password.getBytes(StandardCharsets.UTF_8));
         StringBuilder stringBuilder = new StringBuilder();
@@ -95,5 +67,4 @@ public class CustomerModel {
         }
         return stringBuilder.toString();
     }
-
 }
