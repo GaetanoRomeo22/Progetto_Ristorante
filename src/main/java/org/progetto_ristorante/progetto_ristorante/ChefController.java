@@ -32,6 +32,7 @@ public class ChefController implements Initializable {
                  orderButton;
 
     private final ChefModel chefModel = new ChefModel();
+    private final OrderFactory orderFactory = new SimpleOrderFactory();
 
     // shows current menu when the interface is loaded and sets the action to perform when the customer clicks on buttons
     @Override
@@ -94,6 +95,7 @@ public class ChefController implements Initializable {
 
             // replaces ',' with '.'
             inputPrice = inputPrice.replace(',', '.');
+            Order order1 = orderFactory.createOrder(order, Float.parseFloat(inputPrice));
 
             // connection to the database
             try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
@@ -103,7 +105,7 @@ public class ChefController implements Initializable {
                 try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) {
 
                     // substitutes ? with order's name
-                    selectStatement.setString(1, order);
+                    selectStatement.setString(1, order1.getName());
 
                     // performs the query
                     try (ResultSet resultSet = selectStatement.executeQuery()) {
@@ -120,8 +122,8 @@ public class ChefController implements Initializable {
                             try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
 
                                 // substitutes ? with username and password
-                                insertStatement.setString(1, order);
-                                insertStatement.setString(2, inputPrice);
+                                insertStatement.setString(1, order1.getName());
+                                insertStatement.setFloat(2, order1.getPrice());
 
                                 // performs the insert
                                 insertStatement.executeUpdate();
