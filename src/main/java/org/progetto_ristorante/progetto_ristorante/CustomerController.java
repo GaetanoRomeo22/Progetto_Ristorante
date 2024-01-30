@@ -16,8 +16,6 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -29,8 +27,6 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.concurrent.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class CustomerController {
 
@@ -66,43 +62,71 @@ public class CustomerController {
     private VBox seatsBox,
             waitingBox;
 
-    private CustomerModell model;
-    private BufferedReader getWaitingTime;
-    private int waitingTime;
-    private float bill = 0.0f;
-    private int table;
+    private final CustomerModel model;
+    private BufferedReader getWaitingTime;      // used to get how much time has the customer to wait if there aren't available seats
+    private int waitingTime;                    // time the customer has to wait if there aren't available seats
+    private float bill = 0.0f;                  // customer's total bill
+    private int table;                          // customer's table's number
 
+    // constructor
     public CustomerController() {
-        model = CustomerModell.getIstance();
+        model = CustomerModel.getInstance();
     }
 
+    // manages customer's login
     @FXML
     private void login() throws SQLException, IOException, NoSuchAlgorithmException {
+
+        // gets username and password from the interface
         String username = loginUsername.getText();
         String password = loginPassword.getText();
-        if (model.loginUser(username, password)) {
+
+        // if the customer has entered null values, shows an error message
+        if (username.isEmpty() || password.isEmpty()) {
+            loginError.setText("Credenziali incomplete");
+            loginError.setVisible(true);
+        } else if (model.loginUser(username, password)) { // if the login works, shows next interface
             showSeatsInterface();
-        } else {
+        } else { // if the login doesn't work, shows an error message
             loginError.setText("Credenziali errate, riprovare");
             loginError.setVisible(true);
         }
     }
 
+    // manages customer's registration
     @FXML
     private void register() throws SQLException, IOException, NoSuchAlgorithmException {
+
+        // gets username and password from the interface
         String username = registerUsername.getText();
         String password = registerPassword.getText();
         String confirmedPassword = confirmPassword.getText();
-        if (model.registerUser(username, password, confirmedPassword)) {
+
+        // checks if the customer has entered null values
+        if (username.isEmpty() || password.isEmpty() || confirmedPassword.isEmpty()) {
+            loginError.setText("Credenziali incomplete");
+            loginError.setVisible(true);
+        } else if (!validPassword(password)) { // checks if the password doesn't respect the standard
+            loginError.setText("Password non contenente almeno 8 caratteri (lettera maiuscola, carattere speciale e numero");
+            loginError.setVisible(true);
+        } else if (!confirmedPassword.equals(password)) { // checks if the password isn't correctly confirmed
+            loginError.setText("Conferma password errata");
+            loginError.setVisible(true);
+        } else if (model.registerUser(username, password)) { // if the register works, sends the user to the login
             showLoginInterface();
-        }else{
-            registerError.setText("Dati errati, controlla se la password contiente almeno 8 caratteri (lettera maiuscola, carattere speciale e numero) oppure l'username non è disponibile");
+        } else { // checks if the username is available
+            loginError.setText("Username non disponibile");
+            loginError.setVisible(true);
         }
     }
 
+    // checks if the password respects the standard
+    private boolean validPassword(String password) {
+        String regex = "^(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\",.<>?])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
+        return password.matches(regex);
+    }
 
-
-    // Method to handle the action when the customer requests seats
+    // manages the request of seats by a customer
     @FXML
     private void getRequiredSeats() {
         try {
@@ -174,13 +198,13 @@ public class CustomerController {
 
             // after a certain period of time, hides the waiting components and sends the customer to the interface to take orders
             Timeline timeline = new Timeline(
-                    new KeyFrame(Duration.seconds(1), event -> {
-                        try {
-                            showOrderInterface();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    })
+                new KeyFrame(Duration.seconds(1), event -> {
+                    try {
+                        showOrderInterface();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
             );
             timeline.play();
         });

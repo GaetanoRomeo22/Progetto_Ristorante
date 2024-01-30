@@ -4,32 +4,28 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.Semaphore;
-
 
 public class ReceptionistController {
     private final ReceptionistModel model;
     private static final int PORT = 1313;
-     private ServerSocket receptionSocket;
-
+    private final ServerSocket receptionSocket;
 
     public ReceptionistController(ReceptionistModel model) {
         this.model = model;
         try {
             receptionSocket = new ServerSocket(PORT);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exc) {
+            throw new RuntimeException(exc);
         }
     }
 
     public void startServer() throws IOException {
-            while (true) {
-                Socket acceptedClient = receptionSocket.accept();
-                processRequest(acceptedClient);
-            }
+        while (true) {
+            Socket acceptedClient = receptionSocket.accept();
+            processRequest(acceptedClient);
+        }
     }
 
     private void processRequest(Socket acceptedClient) {
@@ -42,7 +38,7 @@ public class ReceptionistController {
             int tableNumber = model.assignTable(requiredSeats, giveTableNumber);
 
             if (tableNumber == -1) {
-                // Communicate to the customer that no table is available
+                // communicates to the customer that no table is available
                 giveTableNumber.println(-1);
                 readSeatsNumber.close();
                 giveTableNumber.close();
@@ -66,8 +62,8 @@ public class ReceptionistController {
                 giveTableNumber.close();
                 acceptedClient.close();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exc) {
+            throw new RuntimeException(exc);
         }
     }
 

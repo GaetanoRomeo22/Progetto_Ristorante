@@ -9,9 +9,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.URL;
 import java.sql.*;
 import java.util.ResourceBundle;
