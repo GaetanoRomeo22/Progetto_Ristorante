@@ -28,7 +28,7 @@ public class ReceptionistModel {
             semaphore.acquire();
             if (availableTables > 0 && availableSeats >= requiredSeats) { // checks if there are available seats and tables
                 int tableNumber = findFreeTable(); // assigns first free table to the customer
-                if (tableNumber != -1) { // if there is at least a free table and enough seats
+                if (tableNumber != 0) { // if there is at least a free table and enough seats
                     tables[tableNumber] = 1; // sets it as occupied
                     availableTables--; // decreases available tables
                     availableSeats -= requiredSeats; // decreases available seats
@@ -42,7 +42,7 @@ public class ReceptionistModel {
             Thread.currentThread().interrupt();
         } finally { // releases the semaphore to manage next request
             semaphore.release();
-        } return -1;
+        } return 0;
     }
 
     public  void releaseTable(int requiredSeats, int tableNumber) { // releases a table, setting it as free and increasing available seats
@@ -54,10 +54,10 @@ public class ReceptionistModel {
     private int findFreeTable() { // assigns first free table to the customer
         for (int i = 0; i < MAX_TABLES; i++) {
             if (tables[i] == 0) {
-                return i;
+                return i + 1;
             }
         }
-        return -1; // returns a negative number if there aren't enough seats or a free table
+        return 0; // returns 0 if there aren't enough seats or a free table
     }
 
     public  int generateWaitingTime() {  // generates a random number to simulates the time the customer has to wait

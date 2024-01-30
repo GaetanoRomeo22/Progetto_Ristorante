@@ -5,7 +5,7 @@ import java.net.Socket;
 public class ChefModel {
     private final int WAITER_PORT = 1315; // port to communicate with the waiter
 
-    public void startServer() { // creates a thread
+    public void startServer() { // creates a thread chef
         Thread serverThread = new Thread(() -> {
             try (ServerSocket serverSocket = new ServerSocket(WAITER_PORT)) { // creates a socket to communicate with the waiter
                 while (true) { // accepts a connection and creates a thread to manage the request

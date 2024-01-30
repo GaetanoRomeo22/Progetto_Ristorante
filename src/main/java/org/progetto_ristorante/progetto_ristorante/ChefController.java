@@ -5,7 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
@@ -24,12 +24,11 @@ public class ChefController implements Initializable {
     private ListView<Order> menuArea;
 
     @FXML
-    private Text chefTitle,
-                 invalidData;
+    private Text invalidData;
 
     @FXML
-    private HBox order,
-                 orderButton;
+    private VBox order,
+                 menu;
 
     private final ChefModel chefModel = new ChefModel();
     private final OrderFactory orderFactory = new SimpleOrderFactory();
@@ -52,7 +51,7 @@ public class ChefController implements Initializable {
             confirmationDialog.setTitle("Conferma eliminazione ordine");
             confirmationDialog.setHeaderText(null);
             confirmationDialog.setGraphic(null);
-            confirmationDialog.setContentText("Sei sicuro di voler eliminare " + order.getName() + " dal menu ?");
+            confirmationDialog.setContentText("Sei sicuro di voler eliminare " + order.getName() + " dal menu?");
 
             // adds confirm and deny buttons
             confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
@@ -213,13 +212,28 @@ public class ChefController implements Initializable {
         }
     }
 
-    // hides the interface once the chef has finished to write the menu
-    private void hideInterface() {
-        chefTitle.setVisible(false);
-        order.setVisible(false);
-        menuArea.setVisible(false);
-        orderButton.setVisible(false);
-        invalidData.setVisible(false);
+    private void hideInterface() { // hides the interface once the chef has finished to write the menu
+
+        // shows a window to get chef confirm
+        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmationDialog.setTitle("Conferma menu");
+        confirmationDialog.setHeaderText(null);
+        confirmationDialog.setGraphic(null);
+        confirmationDialog.setContentText("Sei sicuro di voler confermare il menu?");
+
+        // adds confirm and deny buttons
+        confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+
+        // waits chef's response
+        confirmationDialog.showAndWait().ifPresent(response -> {
+
+            // if chef confirms, confirms the menu and hides interface's elements
+            if (response == ButtonType.OK) {
+                order.setVisible(false);
+                menu.setVisible(false);
+                invalidData.setVisible(false);
+            }
+        });
     }
 }
 
