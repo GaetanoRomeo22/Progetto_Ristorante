@@ -36,8 +36,8 @@ public class ReceptionistController {
             int requiredSeats = Integer.parseInt(readSeatsNumber.readLine()); // gets customer's required seats
             int tableNumber = model.assignTable(requiredSeats, giveTableNumber); // assigns the table to the customer
 
-            if (tableNumber == -1) { // if the table isn't available
-                giveTableNumber.println(-1);
+            if (tableNumber == 0) { // if the table isn't available
+                giveTableNumber.println(0);
                 readSeatsNumber.close();
                 giveTableNumber.close();
                 acceptedClient.close();

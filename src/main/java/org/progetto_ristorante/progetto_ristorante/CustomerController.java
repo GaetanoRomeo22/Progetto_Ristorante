@@ -29,10 +29,7 @@ import java.net.Socket;
 import java.util.concurrent.*;
 
 public class CustomerController {
-
-    @FXML
-    private CheckBox showPasswordCheckbox;
-
+    
     @FXML
     private Text billText,
             tableNumber,
@@ -76,7 +73,7 @@ public class CustomerController {
     }
 
     @FXML
-    private void login() throws SQLException, IOException, NoSuchAlgorithmException { // manages customer's login
+    private void login() throws SQLException, NoSuchAlgorithmException, IOException { // manages customer's login
 
         // gets username and password from the interface
         String username = loginUsername.getText();
