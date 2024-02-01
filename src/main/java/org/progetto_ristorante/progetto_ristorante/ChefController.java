@@ -163,7 +163,7 @@ public class ChefController implements Initializable {
         }
     }
 
-
+    @FXML
     // shows the menu in real time
     private void showMenu() {
 
@@ -212,6 +212,7 @@ public class ChefController implements Initializable {
         }
     }
 
+    @FXML
     private void hideInterface() { // hides the interface once the chef has finished to write the menu
 
         // shows a window to get chef confirm

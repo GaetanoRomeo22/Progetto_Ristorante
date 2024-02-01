@@ -31,6 +31,9 @@ import java.util.concurrent.*;
 public class CustomerController {
 
     @FXML
+    private CheckBox showPasswordCheckbox;
+
+    @FXML
     private Text billText,
             tableNumber,
             waitingMessage,
@@ -208,6 +211,7 @@ public class CustomerController {
         return tableNumber;
     }
 
+    @FXML
     private void getMenu() { // shows the menu in real time
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
             String selectQuery = "SELECT * FROM ORDINI"; // query to get each menu's orders
@@ -316,6 +320,7 @@ public class CustomerController {
         stage.show();
     }
 
+    @FXML
     private void showSeatsInterface() throws IOException { // switches the interface to require seats
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GetSeatsInterface.fxml"));
         Parent parent = loader.load();
@@ -326,6 +331,7 @@ public class CustomerController {
         stage.show();
     }
 
+    @FXML
     private void showOrderInterface() throws IOException { // switches the interface to get orders
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GetOrderInterface.fxml"));
         Parent parent = loader.load();
@@ -383,5 +389,4 @@ public class CustomerController {
             }
         });
     }
-
 }

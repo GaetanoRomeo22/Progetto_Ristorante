@@ -27,11 +27,11 @@
     <!-- Logo -->
 
     <!-- Title -->
-    <Text text="REGISTRAZIONE" style="-fx-font-size: 28px; -fx-fill: #008000; -fx-padding: 10 0 20 0; -fx-font-family: 'sans-serif'; -fx-font-weight: bold"/>
+    <Text text="REGISTRAZIONE" style="-fx-font-size: 28px; -fx-fill: #008000; -fx-padding: 10 0 20 0; -fx-font-family: 'Arial'; -fx-font-weight: bold"/>
     <!-- Title -->
 
     <!-- Username and Password -->
-    <TextField fx:id="registerUsername" promptText="Username" style="-fx-font-size: 20px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'sans-serif'" maxWidth="250"/>
+    <TextField fx:id="registerUsername" promptText="Username" style="-fx-font-size: 20px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Arial'" maxWidth="250"/>
     <PasswordField fx:id="registerPassword" promptText="Password" style="-fx-font-size: 20px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8" maxWidth="250"/>
     <PasswordField fx:id="confirmPassword" promptText="Conferma Password" style="-fx-font-size: 20px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8" maxWidth="250"/>
     <!-- Username and Password -->
@@ -45,6 +45,6 @@
     <!-- Buttons -->
 
     <!-- Error Messages -->
-    <Text fx:id="registerError" visible="false" fill="red" style="-fx-font-family: 'sans-serif'; -fx-font-size: 20px"/>
+    <Text fx:id="registerError" visible="false" fill="red" style="-fx-font-family: 'Arial'; -fx-font-size: 20px"/>
     <!-- Error Messages -->
 </VBox>

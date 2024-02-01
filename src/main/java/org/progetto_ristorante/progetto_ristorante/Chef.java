@@ -12,6 +12,7 @@ public class Chef extends Application {
         launch();
     }
 
+    @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("Chef");
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ChefInterface.fxml"));

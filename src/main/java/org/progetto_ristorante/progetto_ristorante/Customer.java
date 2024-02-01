@@ -12,6 +12,7 @@ public class Customer extends Application {
         launch();
     }
 
+    @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("Customer");
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("LoginInterface.fxml"));
