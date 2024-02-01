@@ -127,12 +127,10 @@ public class CustomerController {
             Socket receptionSocket = new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT); // creates a socket to communicate with the receptionist
             unavailableReceptionist.setVisible(false);
             table = getTable(receptionSocket); // says how many seats he needs to the receptionist and gets a table
-
             if (table >= 0) { // if there are available seats, the customer takes them
                 showOrderInterface(); // shows second interface's elements
             } else { // otherwise, opens a second socket
                 try (Socket receptionSocket2 = new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT)) {
-
                     getWaitingTime = new BufferedReader(new InputStreamReader(receptionSocket2.getInputStream())); // used to read the time to wait communicated by the receptionist
 
                     // read the time to wait from the socket and parses it to integer
@@ -187,17 +185,20 @@ public class CustomerController {
         stage.close();
     }
 
+    @FXML
     private int getTable(Socket receptionSocket) throws IOException { // allows the customer to specify how many seats they need and to get a table if available
 
         // used to get customer's required seats and to send it to the receptionist
         BufferedReader checkSeats = new BufferedReader(new InputStreamReader(receptionSocket.getInputStream()));
         PrintWriter sendSeats = new PrintWriter(receptionSocket.getOutputStream(), true);
 
-        // gets customer's required seats from the interface
-        String input = requiredSeatsField.getText();
-        requiredSeatsField.setText("");
-        int requiredSeats = Integer.parseInt(input);
-
+        String input = requiredSeatsField.getText(); // gets customer's required seats from the interface
+        if (!input.matches("\\d+")) { // checks if the user's entered a number
+            unavailableReceptionist.setText("Numero di posti non valido");
+            unavailableReceptionist.setVisible(true);
+        }
+        requiredSeatsField.setText(""); // clears previous input
+        int requiredSeats = Integer.parseInt(input); // parses to Integer
         sendSeats.println(requiredSeats); // says how many seats he requires to the receptionist
         int tableNumber = Integer.parseInt(checkSeats.readLine());  // gets the table number from the receptionist if it's possible
 
@@ -262,9 +263,7 @@ public class CustomerController {
             StringBuilder totalOrdered = new StringBuilder(); // contains each customer's order
             takeOrder.println(order); // sends the order to the waiter
             order = eatOrder.readLine(); // waits for the order and eats it
-
             totalOrdered.append(order).append("\n"); // adds the order to the customer's list and its price to the bill
-
             totalOrderedArea.setCellFactory(new Callback<>() { // applies a border to each customer's order
                 @Override
                 public ListCell<String> call(ListView<String> param) {
@@ -302,8 +301,8 @@ public class CustomerController {
         Scene scene = new Scene(parent);
         Stage stage = (Stage) registerUsername.getScene().getWindow();
         stage.setScene(scene);
-        stage.setMaximized(true);
-        stage.show();
+        stage.setMaximized(true); // sets fullscreen
+        stage.show(); // shows the interface
     }
 
     @FXML
@@ -313,8 +312,8 @@ public class CustomerController {
         Scene scene = new Scene(parent);
         Stage stage = (Stage) loginUsername.getScene().getWindow();
         stage.setScene(scene);
-        stage.setMaximized(true);
-        stage.show();
+        stage.setMaximized(true); // sets fullscreen
+        stage.show(); // shows the interface
     }
 
     @FXML
@@ -322,10 +321,10 @@ public class CustomerController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GetSeatsInterface.fxml"));
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
-        Stage stage = (Stage) loginUsername.getScene().getWindow();
+        Stage stage = (Stage) loginPassword.getScene().getWindow();
         stage.setScene(scene);
-        stage.setMaximized(true);
-        stage.show();
+        stage.setMaximized(true); // sets fullscreen
+        stage.show(); // shows the interface
     }
 
     @FXML
@@ -346,8 +345,6 @@ public class CustomerController {
         billText.setText("0€");
         unavailableWaiter = (Text) scene.lookup("#unavailableWaiter");
 
-        getMenu(); // shows the menu
-
         menu.setOnMouseClicked(event -> { // adds an event manager to get customer's order by clicking onto the menu
             Order order = menu.getSelectionModel().getSelectedItem(); // gets customer's clicked order
 
@@ -365,7 +362,8 @@ public class CustomerController {
                 }
             });
         });
-        stage.show();
+        stage.show(); // shows the interface
+        getMenu(); // shows the menu
     }
 
     @FXML
