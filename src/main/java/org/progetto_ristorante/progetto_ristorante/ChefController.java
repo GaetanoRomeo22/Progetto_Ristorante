@@ -33,9 +33,8 @@ public class ChefController implements Initializable {
     private final ChefModel chefModel = new ChefModel();
     private final OrderFactory orderFactory = new SimpleOrderFactory();
 
-    // shows current menu when the interface is loaded and sets the action to perform when the customer clicks on buttons
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initialize(URL url, ResourceBundle resourceBundle) { // shows current menu when the interface is loaded and sets the action to perform when the customer clicks on buttons
         showMenu(); // shows the menu
         menuArea.setOnMouseClicked(event -> { // adds an event manager to get the order the chef wants to remove from the menu
             Order order = menuArea.getSelectionModel().getSelectedItem(); // gets chef's clicked order
@@ -48,7 +47,6 @@ public class ChefController implements Initializable {
             confirmationDialog.setContentText("Sei sicuro di voler eliminare " + order.getName() + " dal menu?");
 
             confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
-
             confirmationDialog.showAndWait().ifPresent(response -> { // waits chef's response
                 if (response == ButtonType.OK) { // if chef confirms, deletes the order from the menu and shows the updated menu
                     try {
@@ -71,17 +69,11 @@ public class ChefController implements Initializable {
     @FXML
     private void addOrder() throws SQLException { // adds an order into the menu
         showMenu(); // shows current menu
-
-        // reads order's name and price from the interface
-        String order = menuOrderField.getText();
-        String inputPrice = orderPriceField.getText();
-
+        String order = menuOrderField.getText(); // gets the order to add to the menu from the interface
+        String inputPrice = orderPriceField.getText(); // gets the order's price from the interface
         if (!order.isEmpty() && !inputPrice.isEmpty()) { // checks if the chef has entered a valid order and a valid price
-
-            // replaces ',' with '.'
-            inputPrice = inputPrice.replace(',', '.');
+            inputPrice = inputPrice.replace(',', '.'); // replaces ',' with '.'
             Order order1 = orderFactory.createOrder(order, Float.parseFloat(inputPrice));
-
             try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
                 String selectQuery = "SELECT * FROM ORDINI WHERE NOME = ?"; // query to check if the order is already into the menu
                 try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) { // substitutes ? with order's name
@@ -90,18 +82,15 @@ public class ChefController implements Initializable {
                         if (resultSet.next()) { // if the order is already into the menu, shows an error message
                             invalidData.setText("Ordine gia presente nel menu");
                             invalidData.setVisible(true);
-                        } else {
+                        } else { // otherwise, adds the order into the menu
                             invalidData.setVisible(false);
                             String insertQuery = "INSERT INTO ORDINI (NOME, PREZZO) VALUES (?, ?)"; // query to insert the order into the menu
                             try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) { // substitutes ? with username and password
                                 insertStatement.setString(1, order1.getName());
                                 insertStatement.setFloat(2, order1.getPrice());
-
                                 insertStatement.executeUpdate(); // performs the insert
-
-                                // clears previous text
-                                menuOrderField.setText("");
-                                orderPriceField.setText("");
+                                menuOrderField.setText(""); // clears order's field
+                                orderPriceField.setText(""); // clears price's field
                             }
                         }
                     }
@@ -153,7 +142,7 @@ public class ChefController implements Initializable {
                                     setStyle(null);
                                 } else {
                                     setText(item.getName() + " - €" + item.getPrice());
-                                    setStyle("-fx-border-color: #D2B48C; -fx-border-width: 1;");
+                                    setStyle("-fx-border-color: #F5DEB3");
                                 }
                             }
                         };
@@ -176,14 +165,9 @@ public class ChefController implements Initializable {
         confirmationDialog.setGraphic(null);
         confirmationDialog.setContentText("Sei sicuro di voler confermare il menu?");
 
-        // adds confirm and deny buttons
-        confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
-
-        // waits chef's response
-        confirmationDialog.showAndWait().ifPresent(response -> {
-
-            // if chef confirms, confirms the menu and hides interface's elements
-            if (response == ButtonType.OK) {
+        confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);  // adds confirm and deny buttons
+        confirmationDialog.showAndWait().ifPresent(response -> { // waits chef's response
+            if (response == ButtonType.OK) { // if chef confirms, confirms the menu and hides interface's elements
                 order.setVisible(false);
                 menu.setVisible(false);
                 invalidData.setVisible(false);

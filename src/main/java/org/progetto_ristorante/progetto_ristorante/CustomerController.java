@@ -229,7 +229,7 @@ public class CustomerController {
                                     setStyle(null);
                                 } else {
                                     setText(item.getName() + " - €" + item.getPrice());
-                                    setStyle("-fx-border-color: #D2B48C; -fx-border-width: 1;");
+                                    setStyle("-fx-border-color: #F5DEB3");
                                 }
                             }
                         };

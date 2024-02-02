@@ -12,7 +12,7 @@
 
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController"
-      style="-fx-background-color: #FFDAB9; -fx-padding: 20; -fx-border-color: #ccc;">
+      style="-fx-background-color: #F5DEB3; -fx-padding: 20; -fx-border-color: #ccc;">
 
     <!-- Distance Among Elements -->
     <padding>
@@ -27,24 +27,24 @@
     <!-- Logo -->
 
     <!-- Title -->
-    <Text text="REGISTRAZIONE" style="-fx-font-size: 28px; -fx-fill: #008000; -fx-padding: 10 0 20 0; -fx-font-family: 'Arial'; -fx-font-weight: bold"/>
+    <Text text="REGISTRAZIONE" style="-fx-font-size: 30px; -fx-fill: #32CD32; -fx-padding: 10 0 20 0; -fx-font-family: 'Arial'; -fx-font-weight: bold"/>
     <!-- Title -->
 
     <!-- Username and Password -->
-    <TextField fx:id="registerUsername" promptText="Username" style="-fx-font-size: 20px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Arial'" maxWidth="250"/>
-    <PasswordField fx:id="registerPassword" promptText="Password" style="-fx-font-size: 20px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8" maxWidth="250"/>
-    <PasswordField fx:id="confirmPassword" promptText="Conferma Password" style="-fx-font-size: 20px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8" maxWidth="250"/>
+    <TextField fx:id="registerUsername" promptText="Username" style="-fx-font-size: 28px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Arial'" maxWidth="250"/>
+    <PasswordField fx:id="registerPassword" promptText="Password" style="-fx-font-size: 28px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8" maxWidth="250"/>
+    <PasswordField fx:id="confirmPassword" promptText="Conferma Password" style="-fx-font-size: 28px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8" maxWidth="250"/>
     <!-- Username and Password -->
 
     <!-- Buttons -->
-    <Button text="Registrati" onAction="#register" style="-fx-font-size: 22px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Arial'; -fx-border-color: #228B22; -fx-border-width: 1; -fx-alignment: CENTER;"/>
+    <Button text="Registrati" onAction="#register" style="-fx-font-size: 28px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Arial'; -fx-border-color: #228B22; -fx-border-width: 1; -fx-alignment: CENTER;"/>
     <HBox spacing="5.0" alignment="CENTER">
-        <Text text="Hai già un account?" style="-fx-font-size: 20px"/>
-        <Text text="Accedi" underline="true" onMouseClicked="#showLoginInterface" fill="#228B22" style="-fx-font-size: 20px"/>
+        <Text text="Hai già un account?" style="-fx-font-size: 28px"/>
+        <Text text="Accedi" underline="true" onMouseClicked="#showLoginInterface" fill="#32CD32" style="-fx-font-size: 28px"/>
     </HBox>
     <!-- Buttons -->
 
     <!-- Error Messages -->
-    <Text fx:id="registerError" visible="false" fill="red" style="-fx-font-family: 'Arial'; -fx-font-size: 20px"/>
+    <Text fx:id="registerError" visible="false" fill="red" style="-fx-font-family: 'Arial'; -fx-font-size: 28px"/>
     <!-- Error Messages -->
 </VBox>
