@@ -28,35 +28,31 @@ public class ReceptionistController {
         }
     }
 
-    private void processRequest(Socket acceptedClient) { // manages a customer's request
-        try { // used to get customer's required seats and to assign a table's number to him
-            BufferedReader readSeatsNumber = new BufferedReader(new InputStreamReader(acceptedClient.getInputStream()));
-            PrintWriter giveTableNumber = new PrintWriter(acceptedClient.getOutputStream(), true);
-
+    private void processRequest(Socket acceptedClient) throws IOException { // manages a customer's request
+        BufferedReader readSeatsNumber; // used to get customer's required seats
+        PrintWriter giveTableNumber; // used to assign a table's number to the customer
+        try { readSeatsNumber = new BufferedReader(new InputStreamReader(acceptedClient.getInputStream())); // reads data sent from client through the socket
+             giveTableNumber = new PrintWriter(acceptedClient.getOutputStream(), true); // writes data to the client through the socket
             int requiredSeats = Integer.parseInt(readSeatsNumber.readLine()); // gets customer's required seats
             int tableNumber = model.assignTable(requiredSeats, giveTableNumber); // assigns the table to the customer
-
             if (tableNumber == 0) { // if the table isn't available
                 giveTableNumber.println(0);
-                readSeatsNumber.close();
-                giveTableNumber.close();
-                acceptedClient.close();
-
-                try (Socket waitingTimeSocket = receptionSocket.accept()) { // creates a socket to accept a connection
+                try (Socket waitingTimeSocket = receptionSocket.accept()) { // creates a second socket to say to the customer the time to wait
                     PrintWriter waitingTimeWriter = new PrintWriter(waitingTimeSocket.getOutputStream(), true); // used to communicate to the customer the time he has to wait
                     int waitingTime = model.generateWaitingTime(); // generates a random time
                     waitingTimeWriter.println(waitingTime); // communicates the time to the customer
                 } catch (IOException exc) {
                     throw new RuntimeException(exc);
                 }
-            } else {
-                readSeatsNumber.close();
-                giveTableNumber.close();
-                acceptedClient.close();
             }
         } catch (IOException exc) {
             throw new RuntimeException(exc);
         }
+
+        // closes used resources and connection
+        readSeatsNumber.close();
+        giveTableNumber.close();
+        acceptedClient.close();
     }
 
     public static void main(String[] args) throws IOException {

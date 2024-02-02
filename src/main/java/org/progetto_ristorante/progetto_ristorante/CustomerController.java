@@ -122,28 +122,23 @@ public class CustomerController {
 
     @FXML
     private void getRequiredSeats() { // manages the request of seats by a customer
-        try {
-            final int RECEPTIONIST_PORT = 1313; // port to communicate with the receptionist
-            Socket receptionSocket = new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT); // creates a socket to communicate with the receptionist
+        final int RECEPTIONIST_PORT = 1313; // port to communicate with the receptionist
+        try (Socket receptionSocket = new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT)){ // creates a socket to communicate with the receptionist
             unavailableReceptionist.setVisible(false);
             table = getTable(receptionSocket); // says how many seats he needs to the receptionist and gets a table
             if (table >= 0) { // if there are available seats, the customer takes them
                 showOrderInterface(); // shows second interface's elements
             } else { // otherwise, opens a second socket
                 try (Socket receptionSocket2 = new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT)) {
+                    seatsBox.setVisible(false); // hides the interface's element to get required seats
+                    waitingBox.setVisible(true); // shows the interface's element to get customer's answer about waiting or not
                     getWaitingTime = new BufferedReader(new InputStreamReader(receptionSocket2.getInputStream())); // used to read the time to wait communicated by the receptionist
-
-                    // read the time to wait from the socket and parses it to integer
-                    waitingTime = Integer.parseInt(getWaitingTime.readLine());
-                    seatsBox.setVisible(false);
-                    waitingBox.setVisible(true);
-
-                    // sets the waiting time message
-                    waitingMessage.setText("Non ci sono abbastanza posti disponibili, vuoi attendere " + waitingTime + " minuti ?");
+                    waitingTime = Integer.parseInt(getWaitingTime.readLine()); // read the time to wait from the socket and parses it to integer
+                    waitingMessage.setText("Non ci sono abbastanza posti disponibili, vuoi attendere " + waitingTime + " minuti ?"); // shows the waiting time message
                     waitingMessage.setVisible(true);
                 }
             }
-        } catch (IOException exc) { // if receptionist is unreachable
+        } catch (IOException exc) { // if receptionist is unreachable, shows an error message
             unavailableReceptionist.setText("Receptionist non disponibile al momento");
             unavailableReceptionist.setVisible(true);
             throw new RuntimeException(exc);
@@ -187,11 +182,8 @@ public class CustomerController {
 
     @FXML
     private int getTable(Socket receptionSocket) throws IOException { // allows the customer to specify how many seats they need and to get a table if available
-
-        // used to get customer's required seats and to send it to the receptionist
-        BufferedReader checkSeats = new BufferedReader(new InputStreamReader(receptionSocket.getInputStream()));
-        PrintWriter sendSeats = new PrintWriter(receptionSocket.getOutputStream(), true);
-
+        BufferedReader checkSeats = new BufferedReader(new InputStreamReader(receptionSocket.getInputStream())); // used to get customer's required seats
+        PrintWriter sendSeats = new PrintWriter(receptionSocket.getOutputStream(), true); // used to send the number of required seats to the receptionist
         String input = requiredSeatsField.getText(); // gets customer's required seats from the interface
         if (!input.matches("\\d+")) { // checks if the user's entered a number
             unavailableReceptionist.setText("Numero di posti non valido");
@@ -255,11 +247,8 @@ public class CustomerController {
         final int WAITER_PORT = 1316;  // used to communicate with the waiter
         try (Socket waiterSocket = new Socket(InetAddress.getLocalHost(), WAITER_PORT)) { // creates a socket to communicate with the waiter
             unavailableWaiter.setVisible(false);
-
-            // used to get a customer's order and to send it to a waiter
-            BufferedReader eatOrder = new BufferedReader(new InputStreamReader(waiterSocket.getInputStream()));
-            PrintWriter takeOrder = new PrintWriter(waiterSocket.getOutputStream(), true);
-
+            BufferedReader eatOrder = new BufferedReader(new InputStreamReader(waiterSocket.getInputStream())); // used to get a customer's order
+            PrintWriter takeOrder = new PrintWriter(waiterSocket.getOutputStream(), true); // used to send an order to a waiter
             StringBuilder totalOrdered = new StringBuilder(); // contains each customer's order
             takeOrder.println(order); // sends the order to the waiter
             order = eatOrder.readLine(); // waits for the order and eats it
@@ -321,7 +310,7 @@ public class CustomerController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GetSeatsInterface.fxml"));
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
-        Stage stage = (Stage) loginPassword.getScene().getWindow();
+        Stage stage = (Stage) loginUsername.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true); // sets fullscreen
         stage.show(); // shows the interface
@@ -332,7 +321,7 @@ public class CustomerController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GetOrderInterface.fxml"));
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
-        Stage stage = (Stage) seatsBox.getScene().getWindow();
+        Stage stage = (Stage) requiredSeatsField.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true);
 

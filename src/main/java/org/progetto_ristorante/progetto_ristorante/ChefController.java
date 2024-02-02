@@ -36,15 +36,9 @@ public class ChefController implements Initializable {
     // shows current menu when the interface is loaded and sets the action to perform when the customer clicks on buttons
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
-        // shows the menu
-        showMenu();
-
-        // adds an event manager to get the order the chef wants to remove from the menu
-        menuArea.setOnMouseClicked(event -> {
-
-            // gets chef's clicked order
-            Order order = menuArea.getSelectionModel().getSelectedItem();
+        showMenu(); // shows the menu
+        menuArea.setOnMouseClicked(event -> { // adds an event manager to get the order the chef wants to remove from the menu
+            Order order = menuArea.getSelectionModel().getSelectedItem(); // gets chef's clicked order
 
             // shows a window to get chef confirm
             Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
@@ -53,14 +47,10 @@ public class ChefController implements Initializable {
             confirmationDialog.setGraphic(null);
             confirmationDialog.setContentText("Sei sicuro di voler eliminare " + order.getName() + " dal menu?");
 
-            // adds confirm and deny buttons
-            confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+            confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
 
-            // waits chef's response
-            confirmationDialog.showAndWait().ifPresent(response -> {
-
-                // if chef confirms, deletes the order from the menu and shows the updated menu
-                if (response == ButtonType.OK) {
+            confirmationDialog.showAndWait().ifPresent(response -> { // waits chef's response
+                if (response == ButtonType.OK) { // if chef confirms, deletes the order from the menu and shows the updated menu
                     try {
                         deleteOrder(order.getName());
                         showMenu();
@@ -73,59 +63,41 @@ public class ChefController implements Initializable {
     }
 
     @FXML
-    private void cook() {
+    private void cook() { // hides interface's elements and starts chef thread
         hideInterface();
         chefModel.startServer();
     }
 
-    // adds an order into the menu
     @FXML
-    private void addOrder() throws SQLException {
-
-        // shows current menu
-        showMenu();
+    private void addOrder() throws SQLException { // adds an order into the menu
+        showMenu(); // shows current menu
 
         // reads order's name and price from the interface
-        String order = menuOrderField.getText(),
-                inputPrice = orderPriceField.getText();
+        String order = menuOrderField.getText();
+        String inputPrice = orderPriceField.getText();
 
-        // checks if the chef has entered a valid order and a valid price
-        if (!order.isEmpty() && !inputPrice.isEmpty()) {
+        if (!order.isEmpty() && !inputPrice.isEmpty()) { // checks if the chef has entered a valid order and a valid price
 
             // replaces ',' with '.'
             inputPrice = inputPrice.replace(',', '.');
             Order order1 = orderFactory.createOrder(order, Float.parseFloat(inputPrice));
 
-            // connection to the database
-            try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
-
-                // query to check if the order is already into the menu
-                String selectQuery = "SELECT * FROM ORDINI WHERE NOME = ?";
-                try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) {
-
-                    // substitutes ? with order's name
+            try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
+                String selectQuery = "SELECT * FROM ORDINI WHERE NOME = ?"; // query to check if the order is already into the menu
+                try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) { // substitutes ? with order's name
                     selectStatement.setString(1, order1.getName());
-
-                    // performs the query
-                    try (ResultSet resultSet = selectStatement.executeQuery()) {
-
-                        // if the order is already into the menu, shows an error message
-                        if (resultSet.next()) {
+                    try (ResultSet resultSet = selectStatement.executeQuery()) { // performs the query
+                        if (resultSet.next()) { // if the order is already into the menu, shows an error message
                             invalidData.setText("Ordine gia presente nel menu");
                             invalidData.setVisible(true);
                         } else {
                             invalidData.setVisible(false);
-
-                            // query to insert the order into the menu
-                            String insertQuery = "INSERT INTO ORDINI (NOME, PREZZO) VALUES (?, ?)";
-                            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
-
-                                // substitutes ? with username and password
+                            String insertQuery = "INSERT INTO ORDINI (NOME, PREZZO) VALUES (?, ?)"; // query to insert the order into the menu
+                            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) { // substitutes ? with username and password
                                 insertStatement.setString(1, order1.getName());
                                 insertStatement.setFloat(2, order1.getPrice());
 
-                                // performs the insert
-                                insertStatement.executeUpdate();
+                                insertStatement.executeUpdate(); // performs the insert
 
                                 // clears previous text
                                 menuOrderField.setText("");
@@ -139,42 +111,24 @@ public class ChefController implements Initializable {
             invalidData.setText("Ordine o prezzo mancante");
             invalidData.setVisible(true);
         }
-
-        // shows updated menu
-        showMenu();
+        showMenu(); // shows updated menu
     }
 
-    // deletes an order from the menu
-    private void deleteOrder(String name) throws SQLException {
-
-        // connection to the database
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
-
-            // query to delete the order from the database
-            String deleteQuery = "DELETE FROM ORDINI WHERE NOME = ?";
-            try (PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) {
-
-                // substitutes ? with order's name
+    private void deleteOrder(String name) throws SQLException { // deletes an order from the menu
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
+            String deleteQuery = "DELETE FROM ORDINI WHERE NOME = ?"; // query to delete the order from the database
+            try (PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) { // substitutes ? with order's name
                 deleteStatement.setString(1, name);
-
-                // executes the query
-                deleteStatement.executeUpdate();
+                deleteStatement.executeUpdate(); // executes the query
             }
         }
     }
 
     @FXML
-    // shows the menu in real time
-    private void showMenu() {
-
-        // connection to the database
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) {
-
-            // query to get each menu's order
-            String selectQuery = "SELECT * FROM ORDINI";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
-
-                // performs the select
+    private void showMenu() { // shows the menu in real time
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
+            String selectQuery = "SELECT * FROM ORDINI"; // query to get each menu's order
+            try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) { // performs the select
                 ResultSet resultSet = preparedStatement.executeQuery();
 
                 // makes the menu viewable as list of Order elements (name-price)
