@@ -10,6 +10,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -202,7 +205,7 @@ public class CustomerController {
     }
 
     @FXML
-    private void getMenu() { // shows the menu in real time
+    private void showMenu() { // shows the menu in real time
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
             String selectQuery = "SELECT * FROM ORDINI"; // query to get each menu's orders
             try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) { // performs the query
@@ -228,8 +231,15 @@ public class CustomerController {
                                     setText(null);
                                     setStyle(null);
                                 } else {
-                                    setText(item.getName() + " - €" + item.getPrice());
-                                    setStyle("-fx-border-color: #F5DEB3");
+                                    HBox hbox = new HBox();
+                                    Label nameLabel = new Label(item.getName());
+                                    Label priceLabel = new Label("€" + item.getPrice());
+                                    Region spacer = new Region();
+                                    HBox.setHgrow(spacer, Priority.ALWAYS);
+                                    hbox.getChildren().addAll(nameLabel, spacer, priceLabel);
+                                    setText(null);
+                                    setGraphic(hbox);
+                                    setStyle("-fx-border-color: #F5DEB3; -fx-padding: 5px;");
                                 }
                             }
                         };
@@ -352,7 +362,7 @@ public class CustomerController {
             });
         });
         stage.show(); // shows the interface
-        getMenu(); // shows the menu
+        showMenu(); // shows the menu
     }
 
     @FXML

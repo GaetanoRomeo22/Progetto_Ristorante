@@ -8,7 +8,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 public class WaiterModel {
-
     public static class WaiterHandler implements Runnable {
         protected final Socket customerSocket;    // socket to communicate with the customer
         protected final int CHEF_PORT;            // port to communicate with the chef
@@ -22,33 +21,39 @@ public class WaiterModel {
             this.CHEF_PORT = CHEF_PORT;
         }
 
+        private String sendOrderToChef(Socket chefSocket) throws IOException { // gets an order from a customer and sends it to the chef to prepare it
+            readOrder = new BufferedReader(new InputStreamReader(customerSocket.getInputStream()));
+            sendOrder = new PrintWriter(chefSocket.getOutputStream(), true);
+            String order = readOrder.readLine();
+            sendOrder.println(order);
+            return order;
+        }
+
+        private void sendOrderToCustomer(Socket chefSocket) throws IOException { // gets an order from the chef and sends it to the customer who ordered it
+            readReadyOrder = new BufferedReader(new InputStreamReader(chefSocket.getInputStream()));
+            sendReadyOrder = new PrintWriter(customerSocket.getOutputStream(), true);
+            String order = readReadyOrder.readLine();
+            sendReadyOrder.println(order);
+        }
+
         public void run() { // main of the thread
             try (Socket chefSocket = new Socket(InetAddress.getLocalHost(), CHEF_PORT)) { // creates a socket to communicate with the chef
-
-                // sets the objects to read and write information through the socket
-                readOrder = new BufferedReader(new InputStreamReader(customerSocket.getInputStream()));
-                sendOrder = new PrintWriter(chefSocket.getOutputStream(), true);
-                readReadyOrder = new BufferedReader(new InputStreamReader(chefSocket.getInputStream()));
-                sendReadyOrder = new PrintWriter(customerSocket.getOutputStream(), true);
-
-                String order;   // order to prepare
-                do { // gets a customer's order
-                    order = readOrder.readLine();
+                String order; // customer's order
+                do {
+                    order = sendOrderToChef(chefSocket); // gets a customer's order and sends it to the chef
                     if (order == null) { // checks if customer has finished ordering
                         break;
                     }
-                    sendOrder.println(order); // sends the order to the chef
-                    order = readReadyOrder.readLine(); // gets the order from the chef once ready
-                    sendReadyOrder.println(order); // sends the order to the customer who ordered it
+                    sendOrderToCustomer(chefSocket); // gets a prepared order from the chef and sends it to the customer
                 } while (true);
             } catch (IOException exc) {
                 throw new RuntimeException(exc);
-            } finally { // once customer has finished, close the connection and each used object
+            } finally { // closes used resources and connection
                 closeConnections();
             }
         }
 
-        private void closeConnections() { // once customer has finished, close the connection and each used object
+        private void closeConnections() { // once customer has finished, close the connection and each used resource
             try {
                 customerSocket.close();
                 readOrder.close();

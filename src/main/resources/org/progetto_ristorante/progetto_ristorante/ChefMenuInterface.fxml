@@ -36,7 +36,7 @@
             </VBox>
         </HBox>
         <Button text="Conferma piatto" onAction="#addOrder"
-                style="-fx-font-size: 28px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Arial'; -fx-border-color: #228B22; -fx-border-width: 1; -fx-alignment: CENTER;"
+                style="-fx-font-size: 28px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Arial'; -fx-border-color: #228B22; -fx-border-width: 1"
                 prefWidth="250"/>
     </VBox>
     <!-- Order and Price Writing -->
@@ -46,15 +46,14 @@
     <!-- Error Message -->
 
     <!-- Menu -->
-    <VBox fx:id="menu" spacing="15.0" alignment="CENTER">
+    <VBox fx:id="menuArea" spacing="15.0" alignment="CENTER">
         <Text text="MENU" style="-fx-font-size: 30px; -fx-fill: #32CD32; -fx-font-family: 'Arial'; -fx-font-weight: bold"/>
-        <ListView fx:id="menuArea"
+        <ListView fx:id="menu"
                   style="-fx-font-size: 28px; -fx-font-family: 'Arial'"
                   minWidth="0" prefWidth="808" maxWidth="808"/>
         <Button text="Conferma menu" onAction="#cook"
-                style="-fx-font-size: 28px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Arial'; -fx-border-color: #1E90FF; -fx-border-width: 1;"
+                style="-fx-font-size: 28px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Arial'; -fx-border-color: #228B22; -fx-border-width: 1;"
                 prefWidth="250"/>
     </VBox>
     <!-- Menu -->
-
 </VBox>
