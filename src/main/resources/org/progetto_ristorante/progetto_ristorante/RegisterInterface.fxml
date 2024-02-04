@@ -31,9 +31,9 @@
     <!-- Title -->
 
     <!-- Username and Password -->
-    <TextField fx:id="registerUsername" promptText="Username" style="-fx-font-size: 28px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Arial'" maxWidth="250"/>
-    <PasswordField fx:id="registerPassword" promptText="Password" style="-fx-font-size: 28px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8" maxWidth="250"/>
-    <PasswordField fx:id="confirmPassword" promptText="Conferma Password" style="-fx-font-size: 28px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8" maxWidth="250"/>
+    <TextField fx:id="registerUsername" promptText="Username" style="-fx-font-size: 28px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Arial'" maxWidth="260"/>
+    <PasswordField fx:id="registerPassword" promptText="Password" style="-fx-font-size: 28px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8" maxWidth="260"/>
+    <PasswordField fx:id="confirmPassword" promptText="Conferma Password" style="-fx-font-size: 28px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8" maxWidth="260"/>
     <!-- Username and Password -->
 
     <!-- Buttons -->

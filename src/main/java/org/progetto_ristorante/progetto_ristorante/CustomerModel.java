@@ -12,7 +12,7 @@ public class CustomerModel {
 
     private static CustomerModel instance = null;
 
-    public static CustomerModel getInstance() { // constructor with singleton pattern
+    public static CustomerModel getInstance() {
         if(instance == null)
             instance = new CustomerModel();
         return instance;

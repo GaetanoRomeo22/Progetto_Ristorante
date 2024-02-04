@@ -129,7 +129,7 @@ public class CustomerController {
         try (Socket receptionSocket = new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT)){ // creates a socket to communicate with the receptionist
             unavailableReceptionist.setVisible(false);
             table = getTable(receptionSocket); // says how many seats he needs to the receptionist and gets a table
-            if (table >= 0) { // if there are available seats, the customer takes them
+            if (table > 0) { // if there are available seats, the customer takes them
                 showOrderInterface(); // shows second interface's elements
             } else { // otherwise, opens a second socket
                 try (Socket receptionSocket2 = new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT)) {
@@ -166,8 +166,7 @@ public class CustomerController {
         Platform.runLater(() -> {
             Timeline timeline = new Timeline( // after a certain period of time, hides the waiting components and sends the customer to the interface to take orders
                 new KeyFrame(Duration.seconds(1), event -> {
-                    try { // shows the interface to get orders
-                        showOrderInterface();
+                    try { showOrderInterface(); // shows the interface to get orders
                     } catch (IOException exc) {
                         throw new RuntimeException(exc);
                     }
@@ -232,8 +231,8 @@ public class CustomerController {
                                     setStyle(null);
                                 } else {
                                     HBox hbox = new HBox();
-                                    Label nameLabel = new Label(item.getName());
-                                    Label priceLabel = new Label("€" + item.getPrice());
+                                    Label nameLabel = new Label(item.name());
+                                    Label priceLabel = new Label("€" + String.format("%.2f", item.price()) + "€");
                                     Region spacer = new Region();
                                     HBox.setHgrow(spacer, Priority.ALWAYS);
                                     hbox.getChildren().addAll(nameLabel, spacer, priceLabel);
@@ -352,12 +351,12 @@ public class CustomerController {
             confirmationDialog.setTitle("Conferma ordine");
             confirmationDialog.setHeaderText(null);
             confirmationDialog.setGraphic(null);
-            confirmationDialog.setContentText("Sei sicuro di voler ordinare " + order.getName() + " ?");
+            confirmationDialog.setContentText("Sei sicuro di voler ordinare " + order.name() + " ?");
 
             confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
             confirmationDialog.showAndWait().ifPresent(response -> { // waits for customer's response
                 if (response == ButtonType.OK) { // if the customer confirms, sends the order to the waiter
-                    getOrder(order.getName(), order.getPrice());
+                    getOrder(order.name(), order.price());
                 }
             });
         });
