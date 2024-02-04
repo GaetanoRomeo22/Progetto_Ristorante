@@ -77,11 +77,8 @@ public class CustomerController {
 
     @FXML
     private void login() throws SQLException, NoSuchAlgorithmException, IOException { // manages customer's login
-
-        // gets username and password from the interface
-        String username = loginUsername.getText();
-        String password = loginPassword.getText();
-
+        String username = loginUsername.getText(); // gets username from the interface
+        String password = loginPassword.getText(); // gets password from the interface
         if (username.isEmpty() || password.isEmpty()) { // checks if the customer has entered null values
             loginError.setText("Credenziali incomplete");
             loginError.setVisible(true);
@@ -95,17 +92,14 @@ public class CustomerController {
 
     @FXML
     private void register() throws SQLException, IOException, NoSuchAlgorithmException { // manages customer's registration
-
-        // gets username and password from the interface
-        String username = registerUsername.getText();
-        String password = registerPassword.getText();
-        String confirmedPassword = confirmPassword.getText();
-
+        String username = registerUsername.getText(); // gets username from the interface
+        String password = registerPassword.getText(); // gets password from the interface
+        String confirmedPassword = confirmPassword.getText(); // gets confirmed password from the interface
         if (username.isEmpty() || password.isEmpty() || confirmedPassword.isEmpty()) { // checks if the customer has entered null values
             registerError.setText("Credenziali incomplete");
             registerError.setVisible(true);
         } else if (!validPassword(password)) { // checks if the password doesn't respect the standard
-            registerError.setText("Password non contenente almeno 8 caratteri (lettera maiuscola, carattere speciale e numero");
+            registerError.setText("La password deve contenere almeno 8 caratteri, una lettera maiuscola, un carattere speciale e un numero");
             registerError.setVisible(true);
         } else if (!confirmedPassword.equals(password)) { // checks if the password isn't correctly confirmed
             registerError.setText("Conferma password errata");
@@ -144,7 +138,6 @@ public class CustomerController {
         } catch (IOException exc) { // if receptionist is unreachable, shows an error message
             unavailableReceptionist.setText("Receptionist non disponibile al momento");
             unavailableReceptionist.setVisible(true);
-            throw new RuntimeException(exc);
         }
     }
 
@@ -196,7 +189,7 @@ public class CustomerController {
         sendSeats.println(requiredSeats); // says how many seats he requires to the receptionist
         int tableNumber = Integer.parseInt(checkSeats.readLine());  // gets the table number from the receptionist if it's possible
 
-        // closes used resources
+        // closes used resources and connection
         checkSeats.close();
         sendSeats.close();
         receptionSocket.close();
@@ -212,11 +205,11 @@ public class CustomerController {
 
                 // makes the menu viewable
                 ObservableList<Order> menuItems = FXCollections.observableArrayList();
-                while (resultSet.next()) {
+                while (resultSet.next()) { // gets each order's name and price
                     String name = resultSet.getString("NOME");
                     float price = resultSet.getFloat("PREZZO");
-                    Order order = new Order(name, price);
-                    menuItems.add(order);
+                    Order order = new Order(name, price); // calls the constructor to build an Order object
+                    menuItems.add(order); // adds the order to the menu
                 }
 
                 menu.setCellFactory(new Callback<>() { // applies a border to each menu's order
@@ -288,7 +281,6 @@ public class CustomerController {
         } catch (IOException exc) { // if waiter is unreachable
             unavailableWaiter.setText("Nessun cameriere disponibile al momento");
             unavailableWaiter.setVisible(true);
-            throw new RuntimeException(exc);
         }
     }
 

@@ -35,7 +35,7 @@ public class CustomerModel {
     public boolean registerUser(String username, String password) throws SQLException, NoSuchAlgorithmException { // manages the insertion of customer's data into the database once registered
         String hashedPassword = hashPassword(password); // encrypts the password
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
-            if (usernameAvailable(connection, username)) { // checks if the username is available
+            if (!usernameAvailable(connection, username)) { // checks if the username is available
                 return false;
             }
             String query = "INSERT IGNORE INTO UTENTI (USERNAME, PASSWORD) VALUES (?, ?)"; // query to insert the customer into the database
@@ -53,7 +53,9 @@ public class CustomerModel {
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) { // substitutes "?" with username and performs the query
             preparedStatement.setString(1, username);
             try (ResultSet resultSet = preparedStatement.executeQuery()) { // returns true if the username is available and false otherwise
-                return !resultSet.next();
+                resultSet.next();
+                int count = resultSet.getInt(1);
+                return count == 0;
             }
         }
     }
