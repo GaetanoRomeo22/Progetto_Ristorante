@@ -12,6 +12,8 @@ public class CustomerModel {
 
     private static CustomerModel instance = null;
 
+    private CustomerModel() {}
+
     public static CustomerModel getInstance() {
         if(instance == null)
             instance = new CustomerModel();

@@ -6,6 +6,11 @@ import java.net.Socket;
 
 public class WaiterController {
 
+    public static void main(String[] args) {
+        WaiterController waiterController = new WaiterController();
+        waiterController.startServer();
+    }
+
     public void startServer() {
         final int CUSTOMER_PORT = 1316; // port to communicate with customers
         final int CHEF_PORT     = 1315; // port to communicate with the chef
@@ -19,10 +24,5 @@ public class WaiterController {
         } catch (IOException exc) {
             throw new RuntimeException(exc);
         }
-    }
-
-    public static void main(String[] args) {
-        WaiterController waiterController = new WaiterController();
-        waiterController.startServer();
     }
 }

@@ -116,7 +116,7 @@ public class ChefController implements Initializable {
                                 insertStatement.setString(1, order1.name());
                                 insertStatement.setFloat(2, order1.price());
                                 insertStatement.executeUpdate(); // performs the insert
-                                isMenuUpdated = true;
+                                isMenuUpdated = true; // the menu is updated
                                 menuOrderField.setText(""); // clears order's field
                                 orderPriceField.setText(""); // clears price's field
                             }
@@ -137,7 +137,7 @@ public class ChefController implements Initializable {
             try (PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) { // substitutes ? with order's name
                 deleteStatement.setString(1, name);
                 deleteStatement.executeUpdate(); // executes the query
-                isMenuUpdated = true;
+                isMenuUpdated = true; // the menu is updated
             }
         }
         showMenu(); // shows updated menu

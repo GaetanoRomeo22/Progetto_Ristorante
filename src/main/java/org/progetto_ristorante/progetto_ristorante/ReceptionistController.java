@@ -21,6 +21,12 @@ public class ReceptionistController {
         }
     }
 
+    public static void main(String[] args) throws IOException {
+        ReceptionistModel model = new ReceptionistModel();
+        ReceptionistController controller = new ReceptionistController(model);
+        controller.startServer();
+    }
+
     public void startServer() throws IOException { // accepts a connection from a customer and manages it
         while (true) {
             Socket acceptedClient = receptionSocket.accept();
@@ -53,11 +59,5 @@ public class ReceptionistController {
         readSeatsNumber.close();
         giveTableNumber.close();
         acceptedClient.close();
-    }
-
-    public static void main(String[] args) throws IOException {
-        ReceptionistModel model = new ReceptionistModel();
-        ReceptionistController controller = new ReceptionistController(model);
-        controller.startServer();
     }
 }

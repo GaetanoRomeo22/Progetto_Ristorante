@@ -14,13 +14,13 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         menuObserverManager = new MenuObserverManager(new ArrayList<>());
-        try {
-
+        try { // customer's interface
             FXMLLoader customerLoader = new FXMLLoader(getClass().getResource("LoginInterface.fxml"));
             Parent customerRoot = customerLoader.load();
             CustomerController customerController = customerLoader.getController();
             customerController.setMenuObserverManager(menuObserverManager);
 
+            // chef's interface
             FXMLLoader chefLoader = new FXMLLoader(getClass().getResource("ChefMenuInterface.fxml"));
             Parent chefRoot = chefLoader.load();
             ChefController chefController = chefLoader.getController();
