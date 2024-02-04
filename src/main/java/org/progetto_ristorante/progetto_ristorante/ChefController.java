@@ -41,6 +41,23 @@ public class ChefController implements Initializable {
     private final ChefModel chefModel = new ChefModel();
     private final OrderFactory orderFactory = new SimpleOrderFactory();
     private boolean confirmedMenu = false;
+    private static  MenuObserverManager menuObserverManager;
+    private boolean isMenuUpdated = false;
+
+    public static void setMenuObserverManager(MenuObserverManager manager) {
+        ChefController.menuObserverManager = manager;
+    }
+
+    public void updateMenu(boolean isMenuUpdated) {
+        System.out.println(isMenuUpdated);
+        if (isMenuUpdated) {
+            System.out.println("Avviso menù aggiornato");
+            menuObserverManager.notifyObserversMenuUpdate();
+        } else {
+            System.out.println("Avviso menù non aggiornato");
+            menuObserverManager.notifyObserversMenuNotUpdated();
+        }
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) { // shows current menu when the interface is loaded and sets the action to perform when the chef clicks on buttons
@@ -73,6 +90,7 @@ public class ChefController implements Initializable {
     @FXML
     private void cook() { // hides interface's elements and starts chef thread
         hideInterface();
+        updateMenu(isMenuUpdated);
         chefModel.startServer();
     }
 
@@ -98,6 +116,7 @@ public class ChefController implements Initializable {
                                 insertStatement.setString(1, order1.name());
                                 insertStatement.setFloat(2, order1.price());
                                 insertStatement.executeUpdate(); // performs the insert
+                                isMenuUpdated = true;
                                 menuOrderField.setText(""); // clears order's field
                                 orderPriceField.setText(""); // clears price's field
                             }
@@ -118,6 +137,7 @@ public class ChefController implements Initializable {
             try (PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) { // substitutes ? with order's name
                 deleteStatement.setString(1, name);
                 deleteStatement.executeUpdate(); // executes the query
+                isMenuUpdated = true;
             }
         }
         showMenu(); // shows updated menu
@@ -152,7 +172,7 @@ public class ChefController implements Initializable {
                                 } else {
                                     HBox hbox = new HBox();
                                     Label nameLabel = new Label(item.name());
-                                    Label priceLabel = new Label("€" + String.format("%.2f", item.price()) + "€");
+                                    Label priceLabel = new Label("€" + String.format("%.2f", item.price()));
                                     Region spacer = new Region();
                                     HBox.setHgrow(spacer, Priority.ALWAYS);
                                     hbox.getChildren().addAll(nameLabel, spacer, priceLabel);

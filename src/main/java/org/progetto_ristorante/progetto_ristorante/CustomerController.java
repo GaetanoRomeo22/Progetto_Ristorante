@@ -31,7 +31,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.concurrent.*;
 
-public class CustomerController {
+public class CustomerController implements MenuObserver {
     
     @FXML
     private Text billText,
@@ -40,6 +40,7 @@ public class CustomerController {
             loginError,
             registerError,
             unavailableReceptionist,
+            menuUpdateMessage,
             unavailableWaiter;
 
     @FXML
@@ -70,9 +71,25 @@ public class CustomerController {
     private int waitingTime;               // time the customer has to wait if there aren't available seats
     private float bill = 0.0f;             // customer's total bill
     private int table;                     // customer's table's number
+    private boolean menuCond = false;
+    private static MenuObserverManager menuObserverManager;
 
     public CustomerController() { // constructor
         model = CustomerModel.getInstance();
+    }
+
+    public static void setMenuObserverManager(MenuObserverManager manager) {
+        CustomerController.menuObserverManager = manager;
+    }
+    public void updateMenu() {
+        System.out.println("Setto il messaggio");
+        menuCond = true;
+    }
+
+    public void notifyMenuNotUpdate() {
+        // Aggiorna l'interfaccia del cliente per notificare che il menu non è stato aggiornato
+        System.out.println("Setto il messaggio menu non modificato");
+        menuCond = false;
     }
 
     @FXML
@@ -83,6 +100,7 @@ public class CustomerController {
             loginError.setText("Credenziali incomplete");
             loginError.setVisible(true);
         } else if (model.loginUser(username, password)) { // if the login works, sends the customer to next interface
+            menuObserverManager.addObserver(this);
             showSeatsInterface();
         } else { // if the login doesn't work, shows an error message
             loginError.setText("Credenziali errate, riprovare");
@@ -225,7 +243,7 @@ public class CustomerController {
                                 } else {
                                     HBox hbox = new HBox();
                                     Label nameLabel = new Label(item.name());
-                                    Label priceLabel = new Label("€" + String.format("%.2f", item.price()) + "€");
+                                    Label priceLabel = new Label("€" + String.format("%.2f", item.price()));
                                     Region spacer = new Region();
                                     HBox.setHgrow(spacer, Priority.ALWAYS);
                                     hbox.getChildren().addAll(nameLabel, spacer, priceLabel);
@@ -277,7 +295,7 @@ public class CustomerController {
             // shows orders and total bill
             totalOrderedArea.getItems().add(totalOrdered.toString());
             bill += price;
-            billText.setText(String.format("%.2f", bill) + "€");
+            billText.setText("€" + String.format("%.2f", bill));
         } catch (IOException exc) { // if waiter is unreachable
             unavailableWaiter.setText("Nessun cameriere disponibile al momento");
             unavailableWaiter.setVisible(true);
@@ -317,12 +335,11 @@ public class CustomerController {
         stage.show(); // shows the interface
     }
 
-    @FXML
     private void showOrderInterface() throws IOException { // switches the interface to get orders
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GetOrderInterface.fxml"));
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
-        Stage stage = (Stage) requiredSeatsField.getScene().getWindow();
+        Stage stage = (Stage) seatsBox.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true);
 
@@ -334,7 +351,9 @@ public class CustomerController {
         billText = (Text) scene.lookup("#billText");
         billText.setText("0€");
         unavailableWaiter = (Text) scene.lookup("#unavailableWaiter");
+        menuUpdateMessage = (Text) scene.lookup("#menuUpdateMessage");
 
+        showMenu(); // shows the menu
         menu.setOnMouseClicked(event -> { // adds an event manager to get customer's order by clicking onto the menu
             Order order = menu.getSelectionModel().getSelectedItem(); // gets customer's clicked order
 
@@ -352,8 +371,14 @@ public class CustomerController {
                 }
             });
         });
-        stage.show(); // shows the interface
-        showMenu(); // shows the menu
+        System.out.println(menuCond);
+        if (!menuCond) {
+            menuUpdateMessage.setText("Menu non del giorno.");
+        } else {
+            menuUpdateMessage.setText("Menu del giorno.");
+        }
+        menuUpdateMessage.setVisible(true);
+        stage.show();
     }
 
     @FXML
@@ -361,7 +386,7 @@ public class CustomerController {
 
         // shows a window to get customers confirm
         Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmationDialog.setTitle("Conferma richiesta conto");
+        confirmationDialog.setTitle("Richiesta conto");
         confirmationDialog.setGraphic(null);
         confirmationDialog.setHeaderText(null);
         confirmationDialog.setContentText("Sei sicuro di voler chiedere il conto?");
@@ -370,6 +395,7 @@ public class CustomerController {
         confirmationDialog.showAndWait().ifPresent(response -> { // waits for customer's response
             if (response == ButtonType.OK) { // if customer confirms, closes the interface
                 Stage stage = (Stage) stopButton.getScene().getWindow();
+                menuObserverManager.removeObserver(this);
                 stage.close();
             }
         });
