@@ -6,23 +6,32 @@ import java.net.Socket;
 
 public class WaiterController {
 
-    public static void main(String[] args) {
-        WaiterController waiterController = new WaiterController();
+    protected final WaiterModel model;
+    protected final int CUSTOMER_PORT = 1316; // port to communicate with customers
+    protected final int CHEF_PORT     = 1315; // port to communicate with the chef
+    protected final ServerSocket waiterSocket;
+
+    public WaiterController(WaiterModel waiterModel) { // constructor
+        this.model = waiterModel;
+        try { // creates a socket to communicate with customers
+            waiterSocket = new ServerSocket(CUSTOMER_PORT);
+        } catch (IOException exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        WaiterModel waiterModel = new WaiterModel();
+        WaiterController waiterController = new WaiterController(waiterModel);
         waiterController.startServer();
     }
 
-    public void startServer() {
-        final int CUSTOMER_PORT = 1316; // port to communicate with customers
-        final int CHEF_PORT     = 1315; // port to communicate with the chef
-        try (ServerSocket serverSocket = new ServerSocket(CUSTOMER_PORT)) { // creates a socket to communicate with customers
+    public void startServer() throws IOException {
             while (true) { // accepts a connection and creates a thread to manage the request
-                Socket acceptedCustomer = serverSocket.accept();
+                Socket acceptedCustomer = waiterSocket.accept();
                 WaiterModel.WaiterHandler waiterHandler = new WaiterModel.WaiterHandler(acceptedCustomer, CHEF_PORT);
                 Thread waiterThread = new Thread(waiterHandler);
                 waiterThread.start();
             }
-        } catch (IOException exc) {
-            throw new RuntimeException(exc);
-        }
     }
 }

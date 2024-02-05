@@ -24,8 +24,8 @@ public class ReceptionistModel {
     }
 
     public int assignTable(int requiredSeats, PrintWriter giveTableNumber) { // assigns a table to a customer if possible
-        try { // gets the semaphore to manage a request
-            semaphore.acquire();
+        try {
+            semaphore.acquire(); // gets the semaphore to manage a request
             if (availableTables > 0 && availableSeats >= requiredSeats) { // checks if there are available seats and tables
                 int tableNumber = findFreeTable(); // assigns first free table to the customer
                 if (tableNumber != 0) { // if there is at least a free table and enough seats

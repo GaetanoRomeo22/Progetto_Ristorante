@@ -48,7 +48,7 @@ public class ChefController implements Initializable {
         ChefController.menuObserverManager = manager;
     }
 
-    public void updateMenu(boolean isMenuUpdated) {
+    public void updateMenu() {
         System.out.println(isMenuUpdated);
         if (isMenuUpdated) {
             System.out.println("Avviso menù aggiornato");
@@ -90,7 +90,7 @@ public class ChefController implements Initializable {
     @FXML
     private void cook() { // hides interface's elements and starts chef thread
         hideInterface();
-        updateMenu(isMenuUpdated);
+        updateMenu();
         chefModel.startServer();
     }
 

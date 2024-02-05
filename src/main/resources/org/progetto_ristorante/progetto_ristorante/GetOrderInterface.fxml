@@ -37,7 +37,7 @@
     </VBox>
     <!-- Menu -->
 
-    <Text fx:id="menuUpdateMessage" fill="#FF0000" style="-fx-font-family: 'Arial'; -fx-font-size: 28px;"/>
+    <Text fx:id="menuUpdateMessage" fill="#FF0000" style="-fx-font-family: 'Arial'; -fx-font-size: 28px;" visible="false"/>
 
     <!-- Orders -->
     <VBox spacing="10.0" alignment="CENTER">

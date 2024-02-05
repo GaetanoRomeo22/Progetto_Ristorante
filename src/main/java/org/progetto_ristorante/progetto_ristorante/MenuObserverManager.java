@@ -3,46 +3,37 @@ package org.progetto_ristorante.progetto_ristorante;
 import java.util.List;
 
 public class MenuObserverManager {
-    protected List<CustomerController> observers;
+    protected List<CustomerController> observers; // menu observer list
 
-    // Metodo per aggiungere un osservatore
-
-    public MenuObserverManager(List<CustomerController> observers) {
+    public MenuObserverManager(List<CustomerController> observers) { // constructor
         this.observers = observers;
     }
 
 
-    public void addObserver(CustomerController observer) {
-        System.out.println("Aggiungo Customer");
+    public void addObserver(CustomerController observer) { // adds a customer to menu observer list
         observers.add(observer);
     }
 
-    public void removeObserver(CustomerController observer) {
+    public void removeObserver(CustomerController observer) { // removes a customer from menu observer list
         observers.remove(observer);
     }
 
 
-    // Metodo per notificare tutti gli osservatori che il menu è stato aggiornato
-    public void notifyObserversMenuUpdate() {
+    public void notifyObserversMenuUpdate() { // notifies to each customer that the menu has been updated
         System.out.println("Avviso menu aggiornato agli stronzi");
         if (!observers.isEmpty()) {
             for (MenuObserver observer : observers) {
                 observer.updateMenu();
             }
-        } else {
-            System.out.println("Lista vuota");
         }
     }
 
-    // Metodo per notificare tutti gli osservatori che il menu non è stato aggiornato
-    public void notifyObserversMenuNotUpdated() {
+    public void notifyObserversMenuNotUpdated() { // notifies to each customer that the menu hasn't been updated
         System.out.println("Avviso menu non aggiornato agli stronzi");
         if (!observers.isEmpty()) {
             for (MenuObserver observer : observers) {
                 observer.notifyMenuNotUpdate();
             }
-        } else {
-            System.out.println("Lista vuota");
         }
     }
 }
