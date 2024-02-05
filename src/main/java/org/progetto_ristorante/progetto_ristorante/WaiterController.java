@@ -7,9 +7,9 @@ import java.net.Socket;
 public class WaiterController {
 
     protected final WaiterModel model;
-    protected final int CUSTOMER_PORT = 1316; // port to communicate with customers
-    protected final int CHEF_PORT     = 1315; // port to communicate with the chef
-    protected final ServerSocket waiterSocket;
+    protected final int CUSTOMER_PORT = 1316;  // port to communicate with customers
+    protected final int CHEF_PORT     = 1315;  // port to communicate with the chef
+    protected final ServerSocket waiterSocket; // socket to communicate with customers
 
     public WaiterController(WaiterModel waiterModel) { // constructor
         this.model = waiterModel;

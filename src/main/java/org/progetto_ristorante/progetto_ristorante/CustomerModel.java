@@ -12,9 +12,9 @@ public class CustomerModel {
 
     private static CustomerModel instance = null;
 
-    private CustomerModel() {}
+    private CustomerModel() {} // constructor for singleton pattern (lazy implementation)
 
-    public static CustomerModel getInstance() {
+    public static CustomerModel getInstance() { // returns an instance or defines a new one if not existing already
         if(instance == null)
             instance = new CustomerModel();
         return instance;

@@ -35,7 +35,7 @@ public class ChefController implements Initializable {
 
     private final ChefModel chefModel = new ChefModel();
     private final OrderFactory orderFactory = new SimpleOrderFactory();
-    private static  MenuObserverManager menuObserverManager;
+    private static  MenuObserverManager menuObserverManager; // instance to notify if the menu's been updated or not
     private boolean isMenuUpdated = false;
     private final MenuOriginator menuOriginator = new MenuOriginator(); // initial menu's state (before modifies)
     private final MenuMemento menuMemento = menuOriginator.saveMenuState(); // used to restore menu's previous state if chef undo modifies
@@ -60,19 +60,17 @@ public class ChefController implements Initializable {
         showStoredMenu(); // shows the initial menu's state
         menu.setOnMouseClicked(event -> { // adds an event manager to get the order the chef wants to remove from the menu
             Order order = menu.getSelectionModel().getSelectedItem(); // gets chef's clicked order
-
             // shows a window to get chef confirm
             Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
             confirmationDialog.setTitle("Conferma eliminazione ordine");
             confirmationDialog.setHeaderText(null);
             confirmationDialog.setGraphic(null);
             confirmationDialog.setContentText("Sei sicuro di voler eliminare " + order.name() + " dal menu?");
-
             confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
             confirmationDialog.showAndWait().ifPresent(response -> { // waits chef's response
-                if (response == ButtonType.OK) { // if chef confirms, deletes the order from the menu
+                if (response == ButtonType.OK) { // if chef confirms
                     try {
-                        deleteOrder(order.name());
+                        deleteOrder(); // deletes the order from the menu
                     } catch (SQLException exc) {
                         throw new RuntimeException(exc);
                     }
@@ -112,10 +110,11 @@ public class ChefController implements Initializable {
         }
     }
 
-    private void deleteOrder(String name) throws SQLException { // deletes an order from current menu
-        menuOriginator.getMenu().removeIf(order -> order.name().equals(name)); // checks if the order is into current menu
+    private void deleteOrder() throws SQLException { // deletes an order from current menu
+        Order selectedOrder = menu.getSelectionModel().getSelectedItem();
+        menuOriginator.getMenu().removeIf(order -> order.name().equals(selectedOrder.name())); // checks if the order is into current menu
         isMenuUpdated = true; // the menu is updated
-        showCurrentMenu();
+        showCurrentMenu(); // shows updated menu
     }
 
     @FXML
@@ -205,7 +204,6 @@ public class ChefController implements Initializable {
         confirmationDialog.setHeaderText(null);
         confirmationDialog.setGraphic(null);
         confirmationDialog.setContentText("Sei sicuro di voler confermare il menu?");
-
         confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);  // adds confirm and deny buttons
         confirmationDialog.showAndWait().ifPresent(response -> { // waits chef's response
             if (response == ButtonType.OK) { // if chef confirms, confirms the menu and hides interface's elements
@@ -225,7 +223,6 @@ public class ChefController implements Initializable {
         confirmationDialog.setHeaderText(null);
         confirmationDialog.setGraphic(null);
         confirmationDialog.setContentText("Sei sicuro di voler annullare le modifiche al menu?");
-
         confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);  // adds confirm and deny buttons
         confirmationDialog.showAndWait().ifPresent(response -> { // waits for chef's response
             if (response == ButtonType.OK) { // if chef confirms, confirms the menu and hides interface's elements
@@ -255,5 +252,3 @@ public class ChefController implements Initializable {
         }
     }
 }
-
-
