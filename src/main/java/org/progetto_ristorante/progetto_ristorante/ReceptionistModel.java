@@ -51,13 +51,13 @@ public class ReceptionistModel {
         availableSeats += requiredSeats;
     }
 
-    private int findFreeTable() { // assigns first free table to the customer
+    private int findFreeTable() { // assigns first free table to the customer or returns 0 if there aren't enough seats or a free table
         for (int i = 0; i < MAX_TABLES; i++) {
             if (tables[i] == 0) {
                 return i + 1;
             }
         }
-        return 0; // returns 0 if there aren't enough seats or a free table
+        return 0;
     }
 
     public  int generateWaitingTime() {  // generates a random number to simulates the time the customer has to wait

@@ -71,7 +71,6 @@ public class CustomerController implements MenuObserver {
     private int waitingTime;               // time the customer has to wait if there aren't available seats
     private float bill = 0.0f;             // customer's total bill
     private int table;                     // customer's table's number
-    private boolean menuCond = false;
     private static MenuObserverManager menuObserverManager;
 
     public CustomerController() { // constructor
@@ -81,15 +80,22 @@ public class CustomerController implements MenuObserver {
     public static void setMenuObserverManager(MenuObserverManager manager) {
         CustomerController.menuObserverManager = manager;
     }
-    public void updateMenu() {
+
+    public void updateMenu(boolean isMenuUpdated) {
         System.out.println("Setto il messaggio");
-        menuCond = true;
+        if (isMenuUpdated) {
+            menuUpdateMessage.setText("Menu non del giorno.");
+        } else {
+            menuUpdateMessage.setText("Menu del giorno.");
+        }
+        menuUpdateMessage.setVisible(true);
     }
 
     public void notifyMenuNotUpdate() {
         // Aggiorna l'interfaccia del cliente per notificare che il menu non è stato aggiornato
         System.out.println("Setto il messaggio menu non modificato");
-        menuCond = false;
+        menuUpdateMessage.setText("Menu non del giorno.");
+        menuUpdateMessage.setVisible(true);
     }
 
     @FXML
@@ -229,7 +235,6 @@ public class CustomerController implements MenuObserver {
                     Order order = new Order(name, price); // calls the constructor to build an Order object
                     menuItems.add(order); // adds the order to the menu
                 }
-
                 menu.setCellFactory(new Callback<>() { // applies a border to each menu's order
                     @Override
                     public ListCell<Order> call(ListView<Order> param) {
@@ -349,7 +354,7 @@ public class CustomerController implements MenuObserver {
         tableNumber = (Text) scene.lookup("#tableNumber");
         tableNumber.setText(String.valueOf(table));
         billText = (Text) scene.lookup("#billText");
-        billText.setText("0€");
+        billText.setText("€0");
         unavailableWaiter = (Text) scene.lookup("#unavailableWaiter");
         menuUpdateMessage = (Text) scene.lookup("#menuUpdateMessage");
 
@@ -371,13 +376,6 @@ public class CustomerController implements MenuObserver {
                 }
             });
         });
-        System.out.println(menuCond);
-        if (!menuCond) {
-            menuUpdateMessage.setText("Menu non del giorno.");
-        } else {
-            menuUpdateMessage.setText("Menu del giorno.");
-        }
-        menuUpdateMessage.setVisible(true);
         stage.show();
     }
 

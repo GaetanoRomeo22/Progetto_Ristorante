@@ -19,20 +19,20 @@ public class MenuObserverManager {
     }
 
 
-    public void notifyObserversMenuUpdate() { // notifies to each customer that the menu has been updated
+    public void notifyObserversMenuUpdate() {
         System.out.println("Avviso menu aggiornato agli stronzi");
         if (!observers.isEmpty()) {
             for (MenuObserver observer : observers) {
-                observer.updateMenu();
+                observer.updateMenu(true);
             }
         }
     }
 
-    public void notifyObserversMenuNotUpdated() { // notifies to each customer that the menu hasn't been updated
+    public void notifyObserversMenuNotUpdated() {
         System.out.println("Avviso menu non aggiornato agli stronzi");
         if (!observers.isEmpty()) {
             for (MenuObserver observer : observers) {
-                observer.notifyMenuNotUpdate();
+                observer.updateMenu(false);
             }
         }
     }

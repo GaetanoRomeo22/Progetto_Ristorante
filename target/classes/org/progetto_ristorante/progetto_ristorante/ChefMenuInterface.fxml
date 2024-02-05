@@ -51,9 +51,14 @@
         <ListView fx:id="menu"
                   style="-fx-font-size: 28px; -fx-font-family: 'Arial'"
                   minWidth="0" prefWidth="808" maxWidth="808"/>
-        <Button text="Conferma menu" onAction="#cook"
-                style="-fx-font-size: 28px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Arial'; -fx-border-color: #228B22; -fx-border-width: 1;"
-                prefWidth="250"/>
+        <HBox spacing="10.0" alignment="CENTER">
+            <Button text="Annulla modifiche" onAction="#restoreMenu"
+                    style="-fx-font-size: 28px; -fx-background-color: #FF0000; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Arial'; -fx-border-color: #B22222; -fx-border-width: 1;"
+                    prefWidth="250"/>
+            <Button text="Conferma menu" onAction="#cook"
+                    style="-fx-font-size: 28px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Arial'; -fx-border-color: #228B22; -fx-border-width: 1;"
+                    prefWidth="250"/>
+        </HBox>
     </VBox>
     <!-- Menu -->
 </VBox>
