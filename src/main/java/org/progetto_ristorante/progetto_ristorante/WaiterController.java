@@ -1,20 +1,18 @@
 package org.progetto_ristorante.progetto_ristorante;
 
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 public class WaiterController {
 
     protected final WaiterModel model;
-    protected final int CUSTOMER_PORT = 1316;  // port to communicate with customers
-    protected final int CHEF_PORT     = 1315;  // port to communicate with the chef
-    protected final ServerSocket waiterSocket; // socket to communicate with customers
+    private final ServerSocketHandler waiterSocket; // socket to communicate with customers
 
     public WaiterController(WaiterModel waiterModel) { // constructor
         this.model = waiterModel;
+        int CUSTOMER_PORT = 1316; // port to communicate with customers
         try { // creates a socket to communicate with customers
-            waiterSocket = new ServerSocket(CUSTOMER_PORT);
+            waiterSocket = new ServerSocketProxy(CUSTOMER_PORT);
         } catch (IOException exc) {
             throw new RuntimeException(exc);
         }
@@ -29,7 +27,9 @@ public class WaiterController {
     public void startServer() throws IOException {
             while (true) { // accepts a connection and creates a thread to manage the request
                 Socket acceptedCustomer = waiterSocket.accept();
-                WaiterModel.WaiterHandler waiterHandler = new WaiterModel.WaiterHandler(acceptedCustomer, CHEF_PORT);
+                SocketHandler customerSocket = new SocketProxy(acceptedCustomer);
+                int CHEF_PORT = 1315; // port to communicate with the chef
+                WaiterModel.WaiterHandler waiterHandler = new WaiterModel.WaiterHandler(customerSocket, CHEF_PORT);
                 Thread waiterThread = new Thread(waiterHandler);
                 waiterThread.start();
             }

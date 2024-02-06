@@ -144,16 +144,16 @@ public class CustomerController implements MenuObserver {
     @FXML
     private void getRequiredSeats() { // manages the request of seats by a customer
         final int RECEPTIONIST_PORT = 1313; // port to communicate with the receptionist
-        try (Socket receptionSocket = new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT)){ // creates a socket to communicate with the receptionist
+        try (SocketHandler receptionSocket = new SocketProxy(new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT))){ // creates a socket to communicate with the receptionist
             unavailableReceptionist.setVisible(false);
             table = getTable(receptionSocket); // says how many seats he needs to the receptionist and gets a table
             if (table > 0) { // if there are available seats, the customer takes them
                 showOrderInterface(); // shows second interface's elements
             } else { // otherwise, opens a second socket
-                try (Socket receptionSocket2 = new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT)) {
+                try (SocketHandler receptionSocket2 = new SocketProxy(new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT))) {
                     seatsBox.setVisible(false); // hides the interface's element to get required seats
                     waitingBox.setVisible(true); // shows the interface's element to get customer's answer about waiting or not
-                    getWaitingTime = new BufferedReader(new InputStreamReader(receptionSocket2.getInputStream())); // used to read the time to wait communicated by the receptionist
+                    getWaitingTime = receptionSocket2.getReader(); // used to read the time to wait communicated by the receptionist
                     waitingTime = Integer.parseInt(getWaitingTime.readLine()); // read the time to wait from the socket and parses it to integer
                     waitingMessage.setText("Non ci sono abbastanza posti disponibili, vuoi attendere " + waitingTime + " minuti ?"); // shows the waiting time message
                     waitingMessage.setVisible(true);
@@ -200,9 +200,9 @@ public class CustomerController implements MenuObserver {
     }
 
     @FXML
-    private int getTable(Socket receptionSocket) throws IOException { // allows the customer to specify how many seats they need and to get a table if available
-        BufferedReader checkSeats = new BufferedReader(new InputStreamReader(receptionSocket.getInputStream())); // used to get customer's required seats
-        PrintWriter sendSeats = new PrintWriter(receptionSocket.getOutputStream(), true); // used to send the number of required seats to the receptionist
+    private int getTable(SocketHandler receptionSocket) throws IOException { // allows the customer to specify how many seats they need and to get a table if available
+        BufferedReader checkSeats = receptionSocket.getReader();
+        PrintWriter sendSeats = receptionSocket.getWriter();
         String input = requiredSeatsField.getText(); // gets customer's required seats from the interface
         if (!input.matches("\\d+")) { // checks if the user's entered a number
             unavailableReceptionist.setText("Numero di posti non valido");
@@ -212,9 +212,7 @@ public class CustomerController implements MenuObserver {
         int requiredSeats = Integer.parseInt(input); // parses to Integer
         sendSeats.println(requiredSeats); // says how many seats he requires to the receptionist
         int tableNumber = Integer.parseInt(checkSeats.readLine());  // gets the table number from the receptionist if it's possible
-
-        // closes used resources and connection
-        checkSeats.close();
+        checkSeats.close(); // closes used resources and connection
         sendSeats.close();
         receptionSocket.close();
         return tableNumber;
@@ -226,9 +224,7 @@ public class CustomerController implements MenuObserver {
             String selectQuery = "SELECT * FROM ORDINI"; // query to get each menu's orders
             try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) { // performs the query
                 ResultSet resultSet = preparedStatement.executeQuery();
-
-                // makes the menu viewable
-                ObservableList<Order> menuItems = FXCollections.observableArrayList();
+                ObservableList<Order> menuItems = FXCollections.observableArrayList(); // makes the menu viewable
                 while (resultSet.next()) { // gets each order's name and price
                     String name = resultSet.getString("NOME");
                     float price = resultSet.getFloat("PREZZO");
@@ -270,10 +266,10 @@ public class CustomerController implements MenuObserver {
     @FXML
     private void getOrder(String order, float price) { // allows a customer to get an order
         final int WAITER_PORT = 1316;  // used to communicate with the waiter
-        try (Socket waiterSocket = new Socket(InetAddress.getLocalHost(), WAITER_PORT)) { // creates a socket to communicate with the waiter
+        try (SocketHandler waiterSocket = new SocketProxy(new Socket(InetAddress.getLocalHost(), WAITER_PORT));) { // creates a socket to communicate with the waiter
             unavailableWaiter.setVisible(false);
-            BufferedReader eatOrder = new BufferedReader(new InputStreamReader(waiterSocket.getInputStream())); // used to get a customer's order
-            PrintWriter takeOrder = new PrintWriter(waiterSocket.getOutputStream(), true); // used to send an order to a waiter
+            BufferedReader eatOrder = waiterSocket.getReader();
+            PrintWriter takeOrder = waiterSocket.getWriter();
             StringBuilder totalOrdered = new StringBuilder(); // contains each customer's order
             takeOrder.println(order); // sends the order to the waiter
             order = eatOrder.readLine(); // waits for the order and eats it
@@ -296,9 +292,7 @@ public class CustomerController implements MenuObserver {
                     };
                 }
             });
-
-            // shows orders and total bill
-            totalOrderedArea.getItems().add(totalOrdered.toString());
+            totalOrderedArea.getItems().add(totalOrdered.toString()); // shows orders and total bill
             bill += price;
             billText.setText("€" + String.format("%.2f", bill));
         } catch (IOException exc) { // if waiter is unreachable
@@ -347,9 +341,7 @@ public class CustomerController implements MenuObserver {
         Stage stage = (Stage) seatsBox.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true);
-
-        // initializes interface's elements
-        menu = (ListView<Order>) scene.lookup("#menu");
+        menu = (ListView<Order>) scene.lookup("#menu"); // initializes interface's elements
         totalOrderedArea = (ListView<String>) scene.lookup("#totalOrderedArea");
         tableNumber = (Text) scene.lookup("#tableNumber");
         tableNumber.setText(String.valueOf(table));
@@ -357,18 +349,14 @@ public class CustomerController implements MenuObserver {
         billText.setText("€0");
         unavailableWaiter = (Text) scene.lookup("#unavailableWaiter");
         menuUpdateMessage = (Text) scene.lookup("#menuUpdateMessage");
-
         showMenu(); // shows the menu
         menu.setOnMouseClicked(event -> { // adds an event manager to get customer's order by clicking onto the menu
             Order order = menu.getSelectionModel().getSelectedItem(); // gets customer's clicked order
-
-            // shows a window to get customers confirm
-            Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+            Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get customers confirm
             confirmationDialog.setTitle("Conferma ordine");
             confirmationDialog.setHeaderText(null);
             confirmationDialog.setGraphic(null);
             confirmationDialog.setContentText("Sei sicuro di voler ordinare " + order.name() + " ?");
-
             confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
             confirmationDialog.showAndWait().ifPresent(response -> { // waits for customer's response
                 if (response == ButtonType.OK) { // if the customer confirms, sends the order to the waiter
@@ -381,14 +369,11 @@ public class CustomerController implements MenuObserver {
 
     @FXML
     private void askBill() { // method to close customers' interface once they've done
-
-        // shows a window to get customers confirm
-        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get customers confirm
         confirmationDialog.setTitle("Richiesta conto");
         confirmationDialog.setGraphic(null);
         confirmationDialog.setHeaderText(null);
         confirmationDialog.setContentText("Sei sicuro di voler chiedere il conto?");
-
         confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
         confirmationDialog.showAndWait().ifPresent(response -> { // waits for customer's response
             if (response == ButtonType.OK) { // if customer confirms, closes the interface

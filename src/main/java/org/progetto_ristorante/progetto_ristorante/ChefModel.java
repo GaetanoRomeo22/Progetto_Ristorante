@@ -11,7 +11,8 @@ public class ChefModel {
             try (ServerSocket serverSocket = new ServerSocket(WAITER_PORT)) { // creates a socket to communicate with the waiter
                 while (true) { // accepts a connection and creates a thread to manage the request
                     Socket acceptedOrder = serverSocket.accept();
-                    Thread chef = new Thread(new ChefHandler(acceptedOrder));
+                    SocketHandler orderSocket = new SocketProxy(acceptedOrder);
+                    Thread chef = new Thread(new ChefHandler(orderSocket));
                     chef.start();
                 }
             } catch (IOException exc) {
@@ -23,19 +24,19 @@ public class ChefModel {
 
     public static class ChefHandler implements Runnable {
 
-        protected final Socket accepted; // identifies which waiter is connected
+        private final SocketHandler accepted; // identifies which waiter is connected
 
-        public ChefHandler(Socket accepted) { // constructor
+        public ChefHandler(SocketHandler accepted) { // constructor
             this.accepted = accepted;
         }
 
         public String getOrder() throws IOException { // gets a customer's order
-            BufferedReader takeOrder = new BufferedReader(new InputStreamReader(accepted.getInputStream()));
+            BufferedReader takeOrder = accepted.getReader();
             return takeOrder.readLine();
         }
 
         public void giveOrder(String order) throws IOException { // sends a ready order to the customer
-            PrintWriter sendOrder = new PrintWriter(accepted.getOutputStream(), true);
+            PrintWriter sendOrder = accepted.getWriter();
             sendOrder.println(order);
         }
 
