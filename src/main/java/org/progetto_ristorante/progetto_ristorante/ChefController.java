@@ -17,8 +17,6 @@ import java.sql.*;
 import java.util.ResourceBundle;
 
 public class ChefController implements Initializable {
-
-    // FXML annotations for injecting UI elements
     @FXML
     private TextField menuOrderField,
             orderPriceField;
@@ -60,8 +58,7 @@ public class ChefController implements Initializable {
         showStoredMenu(); // shows the initial menu's state
         menu.setOnMouseClicked(event -> { // adds an event manager to get the order the chef wants to remove from the menu
             Order order = menu.getSelectionModel().getSelectedItem(); // gets chef's clicked order
-            // shows a window to get chef confirm
-            Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+            Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get chef confirm
             confirmationDialog.setTitle("Conferma eliminazione ordine");
             confirmationDialog.setHeaderText(null);
             confirmationDialog.setGraphic(null);
@@ -111,7 +108,7 @@ public class ChefController implements Initializable {
     }
 
     private void deleteOrder() throws SQLException { // deletes an order from current menu
-        Order selectedOrder = menu.getSelectionModel().getSelectedItem();
+        Order selectedOrder = menu.getSelectionModel().getSelectedItem(); // gets the order clicked by chef into the interface
         menuOriginator.getMenu().removeIf(order -> order.name().equals(selectedOrder.name())); // checks if the order is into current menu
         isMenuUpdated = true; // the menu is updated
         showCurrentMenu(); // shows updated menu
@@ -119,8 +116,7 @@ public class ChefController implements Initializable {
 
     @FXML
     private void showCurrentMenu() { // shows current menu in real time
-        // makes the menu viewable as a list of Order elements (name-price)
-        ObservableList<Order> menuItems = FXCollections.observableArrayList(menuOriginator.getMenu());
+        ObservableList<Order> menuItems = FXCollections.observableArrayList(menuOriginator.getMenu()); // list of orders
         menu.setCellFactory(new Callback<>() { // applies a border to each menu's order
             @Override
             public ListCell<Order> call(ListView<Order> param) {
@@ -146,7 +142,7 @@ public class ChefController implements Initializable {
                 };
             }
         });
-        menu.setItems(menuItems);
+        menu.setItems(menuItems);  // makes the menu viewable as a list of Order elements (name-price)
     }
 
     @FXML
@@ -155,12 +151,11 @@ public class ChefController implements Initializable {
             String selectQuery = "SELECT * FROM ORDINI"; // query to get each menu's order
             try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) { // performs the select
                 ResultSet resultSet = preparedStatement.executeQuery();
-                // makes the menu viewable as list of Order elements (name-price)
-                ObservableList<Order> menuItems = FXCollections.observableArrayList();
+                ObservableList<Order> menuItems = FXCollections.observableArrayList(); // list of orders
                 while (resultSet.next()) { // each order is added into the menu
                     String name = resultSet.getString("NOME");
                     float price = resultSet.getFloat("PREZZO");
-                    Order order = new Order(name, price);
+                    Order order = new Order(name, price); // calls the constructor to create an Order object
                     menuItems.add(order);
                 }
                 menuOriginator.setMenu(menuItems); // sets menu's initial state
@@ -189,7 +184,7 @@ public class ChefController implements Initializable {
                         };
                     }
                 });
-                menu.setItems(menuItems);
+                menu.setItems(menuItems); // makes the menu viewable as list of Order elements (name-price)
             }
         } catch (SQLException exc) {
             throw new RuntimeException(exc);

@@ -29,9 +29,9 @@ public class WaiterController {
                 Socket acceptedCustomer = waiterSocket.accept();
                 SocketHandler customerSocket = new SocketProxy(acceptedCustomer);
                 int CHEF_PORT = 1315; // port to communicate with the chef
-                WaiterModel.WaiterHandler waiterHandler = new WaiterModel.WaiterHandler(customerSocket, CHEF_PORT);
-                Thread waiterThread = new Thread(waiterHandler);
-                waiterThread.start();
+                WaiterModel.WaiterHandler waiterHandler = new WaiterModel.WaiterHandler(customerSocket, CHEF_PORT); // creates a handler to manage the request
+                Thread waiterThread = new Thread(waiterHandler); // creates a thread
+                waiterThread.start(); // starts the thread
             }
     }
 }

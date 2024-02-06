@@ -3,7 +3,6 @@ package org.progetto_ristorante.progetto_ristorante;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -199,8 +198,8 @@ public class CustomerController implements MenuObserver {
 
     @FXML
     private int getTable(SocketHandler receptionSocket) throws IOException { // allows the customer to specify how many seats they need and to get a table if available
-        BufferedReader checkSeats = receptionSocket.getReader();
-        PrintWriter sendSeats = receptionSocket.getWriter();
+        BufferedReader checkSeats = receptionSocket.getReader(); // used to gets a table from the receptionist
+        PrintWriter sendSeats = receptionSocket.getWriter(); // used to say to the receptionist how much seats does him require
         String input = requiredSeatsField.getText(); // gets customer's required seats from the interface
         if (!input.matches("\\d+")) { // checks if the user's entered a number
             unavailableReceptionist.setText("Numero di posti non valido");
@@ -218,8 +217,8 @@ public class CustomerController implements MenuObserver {
 
     @FXML
     private void showMenu() { // shows the menu in real time
-        LocalDate today = LocalDate.now();
-        DayOfWeek day = today.getDayOfWeek();
+        LocalDate today = LocalDate.now(); // local's date
+        DayOfWeek day = today.getDayOfWeek(); // local's day
         if (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) { // shows discounted menu during the weekend
             menuContext.setMenuState(new DiscountMenu());
         } else { // shows full price menu during the week
@@ -250,7 +249,7 @@ public class CustomerController implements MenuObserver {
                 };
             }
         });
-        menu.setItems(menuContext.getMenuState().getMenu());
+        menu.setItems(menuContext.getMenuState().getMenu()); // makes the menu viewable as a list of Order elements (name-price)
     }
 
     @FXML
@@ -258,8 +257,8 @@ public class CustomerController implements MenuObserver {
         final int WAITER_PORT = 1316;  // used to communicate with the waiter
         try (SocketHandler waiterSocket = new SocketProxy(new Socket(InetAddress.getLocalHost(), WAITER_PORT))) { // creates a socket to communicate with the waiter
             unavailableWaiter.setVisible(false);
-            BufferedReader eatOrder = waiterSocket.getReader();
-            PrintWriter takeOrder = waiterSocket.getWriter();
+            BufferedReader eatOrder = waiterSocket.getReader(); // used to get the order from the receptionist
+            PrintWriter takeOrder = waiterSocket.getWriter(); // used to send an order to the receptionist
             StringBuilder totalOrdered = new StringBuilder(); // contains each customer's order
             takeOrder.println(order); // sends the order to the waiter
             order = eatOrder.readLine(); // waits for the order and eats it
@@ -283,7 +282,7 @@ public class CustomerController implements MenuObserver {
                 }
             });
             totalOrderedArea.getItems().add(totalOrdered.toString()); // shows orders and total bill
-            bill += price;
+            bill += price; // updates customer's bill
             billText.setText("€" + String.format("%.2f", bill));
         } catch (IOException exc) { // if waiter is unreachable
             unavailableWaiter.setText("Nessun cameriere disponibile al momento");
