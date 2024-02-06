@@ -3,7 +3,6 @@ package org.progetto_ristorante.progetto_ristorante;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,15 +19,13 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.concurrent.*;
 
 public class CustomerController implements MenuObserver {
@@ -72,6 +69,7 @@ public class CustomerController implements MenuObserver {
     private float bill = 0.0f;             // customer's total bill
     private int table;                     // customer's table's number
     private static MenuObserverManager menuObserverManager;
+    protected MenuContext menuContext = new MenuContext();
 
     public CustomerController() { // constructor
         model = CustomerModel.getInstance();
@@ -168,7 +166,7 @@ public class CustomerController implements MenuObserver {
     @FXML
     private void waitButton() throws IOException { // manages the action when the customer clicks the "Wait" button
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1); // creates a scheduler to plan the periodic execution of tasks
-        ScheduledFuture<?> waitTask = scheduler.schedule(this::onWaitComplete, waitingTime, TimeUnit.SECONDS);  // plans which task execute after a waiting time, and specifies the time unit
+        ScheduledFuture<?> waitTask = scheduler.schedule(this::onWaitComplete, waitingTime, TimeUnit.SECONDS); // plans which task execute after a waiting time, and specifies the time unit
         try { // waits for the task to complete (the estimated wait time)
             waitTask.get();
         } catch (InterruptedException | ExecutionException exc) {
@@ -220,53 +218,45 @@ public class CustomerController implements MenuObserver {
 
     @FXML
     private void showMenu() { // shows the menu in real time
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
-            String selectQuery = "SELECT * FROM ORDINI"; // query to get each menu's orders
-            try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) { // performs the query
-                ResultSet resultSet = preparedStatement.executeQuery();
-                ObservableList<Order> menuItems = FXCollections.observableArrayList(); // makes the menu viewable
-                while (resultSet.next()) { // gets each order's name and price
-                    String name = resultSet.getString("NOME");
-                    float price = resultSet.getFloat("PREZZO");
-                    Order order = new Order(name, price); // calls the constructor to build an Order object
-                    menuItems.add(order); // adds the order to the menu
-                }
-                menu.setCellFactory(new Callback<>() { // applies a border to each menu's order
-                    @Override
-                    public ListCell<Order> call(ListView<Order> param) {
-                        return new ListCell<>() {
-                            @Override
-                            protected void updateItem(Order item, boolean empty) {
-                                super.updateItem(item, empty);
-                                if (empty || item == null) {
-                                    setText(null);
-                                    setStyle(null);
-                                } else {
-                                    HBox hbox = new HBox();
-                                    Label nameLabel = new Label(item.name());
-                                    Label priceLabel = new Label("€" + String.format("%.2f", item.price()));
-                                    Region spacer = new Region();
-                                    HBox.setHgrow(spacer, Priority.ALWAYS);
-                                    hbox.getChildren().addAll(nameLabel, spacer, priceLabel);
-                                    setText(null);
-                                    setGraphic(hbox);
-                                    setStyle("-fx-border-color: #F5DEB3; -fx-padding: 5px;");
-                                }
-                            }
-                        };
-                    }
-                });
-                menu.setItems(menuItems);
-            }
-        } catch (SQLException exc) {
-            throw new RuntimeException(exc);
+        LocalDate today = LocalDate.now();
+        DayOfWeek day = today.getDayOfWeek();
+        if (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) { // shows discounted menu during the weekend
+            menuContext.setMenuState(new DiscountMenu());
+        } else { // shows full price menu during the week
+            menuContext.setMenuState(new NotDiscountMenu());
         }
+        menu.setCellFactory(new Callback<>() { // applies a border to each menu's order
+            @Override
+            public ListCell<Order> call(ListView<Order> param) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Order item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                            setStyle(null);
+                        } else {
+                            HBox hbox = new HBox();
+                            Label nameLabel = new Label(item.name());
+                            Label priceLabel = new Label("€" + String.format("%.2f", item.price()));
+                            Region spacer = new Region();
+                            HBox.setHgrow(spacer, Priority.ALWAYS);
+                            hbox.getChildren().addAll(nameLabel, spacer, priceLabel);
+                            setText(null);
+                            setGraphic(hbox);
+                            setStyle("-fx-border-color: #F5DEB3; -fx-padding: 5px;");
+                        }
+                    }
+                };
+            }
+        });
+        menu.setItems(menuContext.getMenuState().getMenu());
     }
 
     @FXML
     private void getOrder(String order, float price) { // allows a customer to get an order
         final int WAITER_PORT = 1316;  // used to communicate with the waiter
-        try (SocketHandler waiterSocket = new SocketProxy(new Socket(InetAddress.getLocalHost(), WAITER_PORT));) { // creates a socket to communicate with the waiter
+        try (SocketHandler waiterSocket = new SocketProxy(new Socket(InetAddress.getLocalHost(), WAITER_PORT))) { // creates a socket to communicate with the waiter
             unavailableWaiter.setVisible(false);
             BufferedReader eatOrder = waiterSocket.getReader();
             PrintWriter takeOrder = waiterSocket.getWriter();

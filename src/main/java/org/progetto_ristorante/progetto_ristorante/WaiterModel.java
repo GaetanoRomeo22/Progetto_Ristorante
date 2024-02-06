@@ -8,12 +8,12 @@ import java.net.Socket;
 
 public class WaiterModel {
     public static class WaiterHandler implements Runnable {
-        private final SocketHandler customerSocket;    // socket to communicate with the customer
-        private final int CHEF_PORT;            // port to communicate with the chef
-        private BufferedReader readOrder;                 // used to get a customer's order
-        protected BufferedReader readReadyOrder;            // used to get an order from the chef once ready
-        protected PrintWriter sendOrder;                    // used to send an order to the chef to prepare it
-        private PrintWriter sendReadyOrder;               // used to send an order to the customer who ordered it once ready
+        private final SocketHandler customerSocket; // socket to communicate with the customer
+        private final int CHEF_PORT;                // port to communicate with the chef
+        private BufferedReader readOrder;           // used to get a customer's order
+        protected BufferedReader readReadyOrder;    // used to get an order from the chef once ready
+        protected PrintWriter sendOrder;            // used to send an order to the chef to prepare it
+        private PrintWriter sendReadyOrder;         // used to send an order to the customer who ordered it once ready
 
         public WaiterHandler(SocketHandler accepted, int CHEF_PORT) { // constructor
             this.customerSocket = accepted;
@@ -48,11 +48,11 @@ public class WaiterModel {
             } catch (IOException exc) {
                 throw new RuntimeException(exc);
             } finally { // closes used resources and connection
-                closeConnections();
+                closeConnection();
             }
         }
 
-        private void closeConnections() { // once customer has finished, close the connection and each used resource
+        private void closeConnection() { // once customer has finished, close the connection and each used resource
             try {
                 customerSocket.close();
                 readOrder.close();

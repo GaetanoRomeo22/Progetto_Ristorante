@@ -8,7 +8,7 @@ import java.net.Socket;
 public class ReceptionistController {
     protected final ReceptionistModel model;
     protected static final int CUSTOMER_PORT = 1313; // port used to communicate with customers
-    private final ServerSocketHandler receptionSocket;    // socket used to communicate with customers
+    private final ServerSocketHandler receptionSocket; // socket used to communicate with customers
 
     public ReceptionistController(ReceptionistModel model) { // constructor
         this.model = model;

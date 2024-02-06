@@ -8,10 +8,10 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 public class ReceptionistModel {
-    private static final int MAX_TABLES = 20,        // max number of tables of the restaurant
-                             MAX_SEATS = 100;        // max number of seats of the restaurant
-    private int availableSeats,                      // number of current available seats
-                availableTables;                     // number of current available tables
+    private static final int MAX_TABLES = 20;        // max number of tables of the restaurant
+    private static final int MAX_SEATS = 100;        // max number of seats of the restaurant
+    private int availableSeats;                      // number of current available seats
+    private int availableTables;                     // number of current available tables
     private final int[] tables;                      // array to manage tables (0 means free and 1 occupied)
     private final Semaphore semaphore;               // semaphore to synchronize the access to the receptionist
     private static final Random rand = new Random(); // used to generate random numbers
@@ -33,7 +33,7 @@ public class ReceptionistModel {
                     availableTables--; // decreases available tables
                     availableSeats -= requiredSeats; // decreases available seats
                     giveTableNumber.println(tableNumber); // assigns the table to the customer
-                    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);  // creates a scheduler to manage the release of the tables
+                    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1); // creates a scheduler to manage the release of the tables
                     scheduler.schedule(() -> releaseTable(requiredSeats, tableNumber), rand.nextInt(), TimeUnit.SECONDS); // the scheduler release tables periodically
                     return tableNumber;
                 }
@@ -60,7 +60,7 @@ public class ReceptionistModel {
         return 0;
     }
 
-    public  int generateWaitingTime() {  // generates a random number to simulates the time the customer has to wait
+    public  int generateWaitingTime() { // generates a random number to simulates the time the customer has to wait
         return rand.nextInt(5) + 1;
     }
 }
