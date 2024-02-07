@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -31,6 +32,11 @@ public class ChefController implements Initializable {
     private VBox order,
                  menuArea;
 
+    @FXML
+    private Button  confirmOrderButton,
+                    cancelButton,
+                    confirmMenuButton;
+
     private final ChefModel chefModel = new ChefModel();
     private final OrderFactory orderFactory = new SimpleOrderFactory();
     //private static  MenuObservable menuObservable; // instance to notify if the menu's been updated or not
@@ -43,15 +49,14 @@ public class ChefController implements Initializable {
     }*/
 
     public void updateMenu() { // notifies if menu has been modified or not
-        System.out.println(isMenuUpdated);
         if (isMenuUpdated) {
-            System.out.println("Avviso menù aggiornato");
             //menuObservable.notifyObservers(isMenuUpdated);
         }
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) { // shows current menu when the interface is loaded and sets the action to perform when the chef clicks on buttons
+        setButtonShadow(); // sets buttons' shadow when chef hovers them with mouse
         showStoredMenu(); // shows the initial menu's state
         setMouseClickHandler(); // sets an event handler that catches chef's clicks on the interface
     }
@@ -188,6 +193,15 @@ public class ChefController implements Initializable {
         }
     }
 
+    public void setButtonShadow() { // sets a shadow when chef hovers buttons with mouse
+        cancelButton.setOnMouseEntered(event -> cancelButton.setEffect(new DropShadow()));
+        cancelButton.setOnMouseExited(event -> cancelButton.setEffect(null));
+        confirmMenuButton.setOnMouseEntered(event -> confirmMenuButton.setEffect(new DropShadow()));
+        confirmMenuButton.setOnMouseExited(event -> confirmMenuButton.setEffect(null));
+        confirmOrderButton.setOnMouseEntered(event -> confirmOrderButton.setEffect(new DropShadow()));
+        confirmOrderButton.setOnMouseExited(event -> confirmOrderButton.setEffect(null));
+    }
+
     public void setMouseClickHandler () { // sets an event handler that catches chef's clicks on the interface
         menu.setOnMouseClicked(event -> { // adds an event manager to get the order the chef wants to remove from the menu
             Order order = menu.getSelectionModel().getSelectedItem(); // gets chef's clicked order
@@ -229,7 +243,7 @@ public class ChefController implements Initializable {
                             hbox.getChildren().addAll(nameLabel, spacer, priceLabel);
                             setText(null);
                             setGraphic(hbox);
-                            setStyle("-fx-border-color: #F5DEB3; -fx-padding: 5px;");
+                            setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px");
                         }
                     }
                 };

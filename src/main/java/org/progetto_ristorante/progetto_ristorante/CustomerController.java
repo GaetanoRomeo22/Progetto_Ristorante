@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -55,7 +56,10 @@ public class CustomerController {
             confirmPassword;
 
     @FXML
-    private Button stopButton;
+    private Button loginButton,
+                   registerButton,
+                   confirmSeatsButton,
+                   stopButton;
 
     @FXML
     private VBox seatsBox,
@@ -254,6 +258,9 @@ public class CustomerController {
         Stage stage = (Stage) registerUsername.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true); // sets fullscreen
+        loginButton = (Button) scene.lookup("#loginButton");
+        loginButton.setOnMouseEntered(event -> loginButton.setEffect(new DropShadow()));
+        loginButton.setOnMouseExited(event -> loginButton.setEffect(null));
         stage.show(); // shows the interface
     }
 
@@ -265,6 +272,9 @@ public class CustomerController {
         Stage stage = (Stage) loginUsername.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true); // sets fullscreen
+        registerButton = (Button) scene.lookup("#registerButton");
+        registerButton.setOnMouseEntered(event -> registerButton.setEffect(new DropShadow()));
+        registerButton.setOnMouseExited(event -> registerButton.setEffect(null));
         stage.show(); // shows the interface
     }
 
@@ -276,6 +286,9 @@ public class CustomerController {
         Stage stage = (Stage) loginUsername.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true); // sets fullscreen
+        confirmSeatsButton = (Button) scene.lookup("#confirmSeatsButton");
+        confirmSeatsButton.setOnMouseEntered(event -> confirmSeatsButton.setEffect(new DropShadow()));
+        confirmSeatsButton.setOnMouseExited(event -> confirmSeatsButton.setEffect(null));
         stage.show(); // shows the interface
     }
 
@@ -301,6 +314,9 @@ public class CustomerController {
         billText.setText("€0");
         unavailableWaiter = (Text) scene.lookup("#unavailableWaiter");
         menuUpdateMessage = (Text) scene.lookup("#menuUpdateMessage");
+        stopButton = (Button) scene.lookup("#stopButton");
+        stopButton.setOnMouseEntered(event -> stopButton.setEffect(new DropShadow()));
+        stopButton.setOnMouseExited(event -> stopButton.setEffect(null));
     }
 
     public void setMouseClickHandler () { // sets an event handler that catches customer's clicks on the interface
@@ -351,7 +367,7 @@ public class CustomerController {
                             hbox.getChildren().addAll(nameLabel, spacer, priceLabel);
                             setText(null);
                             setGraphic(hbox);
-                            setStyle("-fx-border-color: #F5DEB3; -fx-padding: 5px;");
+                            setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px");
                         }
                     }
                 };
