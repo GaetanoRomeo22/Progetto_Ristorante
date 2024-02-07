@@ -20,11 +20,11 @@
     <!-- Table and Bill -->
     <HBox spacing="20.0" alignment="CENTER">
         <VBox spacing="5.0" alignment="CENTER">
-            <Text text="TAVOLO:" style="-fx-font-size: 30px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'; -fx-font-weight: bold"/>
+            <Text text="TAVOLO:" style="-fx-font-size: 30px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'"/>
             <Text fx:id="tableNumber" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
         </VBox>
         <VBox spacing="5.0" alignment="CENTER">
-            <Text text="TOTALE:" style="-fx-font-size: 30px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'; -fx-font-weight: bold"/>
+            <Text text="TOTALE:" style="-fx-font-size: 30px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'"/>
             <Text fx:id="billText" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
         </VBox>
     </HBox>
@@ -32,7 +32,7 @@
 
     <!-- Menu -->
     <VBox spacing="10.0" alignment="CENTER">
-        <Text text="MENU" style="-fx-font-size: 30px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'; -fx-font-weight: bold"/>
+        <Text text="MENU" style="-fx-font-size: 30px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'"/>
         <ListView fx:id="menu" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'" prefWidth="808" maxWidth="808"/>
     </VBox>
     <!-- Menu -->
@@ -41,9 +41,9 @@
 
     <!-- Orders -->
     <VBox spacing="10.0" alignment="CENTER">
-        <Text text="ORDINI EFFETTUATI" style="-fx-font-size: 30px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'; -fx-font-weight: bold"/>
-        <ListView fx:id="totalOrderedArea" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"
-                  prefWidth="808" maxWidth="808"/>
+        <Text text="ORDINI EFFETTUATI" style="-fx-font-size: 30px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'"/>
+        <ListView fx:id="totalOrderedArea" prefWidth="808" maxWidth="808"
+                  style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
     </VBox>
     <!-- Orders -->
 
