@@ -37,7 +37,7 @@
         </HBox>
         <Button text="Conferma piatto" onAction="#addOrder"
                 style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #228B22; -fx-border-width: 1"
-                prefWidth="280"/>
+                prefWidth="300"/>
     </VBox>
     <!-- Order and Price Writing -->
 
@@ -54,10 +54,10 @@
         <HBox spacing="10.0" alignment="CENTER">
             <Button text="Annulla modifiche" onAction="#restoreMenu"
                     style="-fx-font-size: 30px; -fx-background-color: #FF0000; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #B22222; -fx-border-width: 1;"
-                    prefWidth="280"/>
+                    prefWidth="300"/>
             <Button text="Conferma menu" onAction="#cook"
                     style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #228B22; -fx-border-width: 1;"
-                    prefWidth="280"/>
+                    prefWidth="300"/>
         </HBox>
     </VBox>
     <!-- Menu -->

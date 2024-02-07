@@ -27,8 +27,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.concurrent.*;
 
-public class CustomerController implements MenuObserver {
-    
+public class CustomerController {
     @FXML
     private Text billText,
             tableNumber,
@@ -67,16 +66,16 @@ public class CustomerController implements MenuObserver {
     private int waitingTime;               // time the customer has to wait if there aren't available seats
     private float bill = 0.0f;             // customer's total bill
     private int table;                     // customer's table's number
-    private static MenuObserverManager menuObserverManager;
+    //private static MenuObserverManager menuObserverManager;
     protected MenuContext menuContext = new MenuContext();
 
     public CustomerController() { // constructor
         model = CustomerModel.getInstance();
     }
 
-    public static void setMenuObserverManager(MenuObserverManager manager) {
+    /*public static void setMenuObserverManager(MenuObserverManager manager) {
         CustomerController.menuObserverManager = manager;
-    }
+    }*/
 
     public void updateMenu(boolean isMenuUpdated) {
         System.out.println("Setto il messaggio");
@@ -88,13 +87,6 @@ public class CustomerController implements MenuObserver {
         menuUpdateMessage.setVisible(true);
     }
 
-    public void notifyMenuNotUpdate() {
-        // Aggiorna l'interfaccia del cliente per notificare che il menu non è stato aggiornato
-        System.out.println("Setto il messaggio menu non modificato");
-        menuUpdateMessage.setText("Menu non del giorno.");
-        menuUpdateMessage.setVisible(true);
-    }
-
     @FXML
     private void login() throws SQLException, NoSuchAlgorithmException, IOException { // manages customer's login
         String username = loginUsername.getText(); // gets username from the interface
@@ -103,7 +95,7 @@ public class CustomerController implements MenuObserver {
             loginError.setText("Credenziali incomplete");
             loginError.setVisible(true);
         } else if (model.loginUser(username, password)) { // if the login works, sends the customer to next interface
-            menuObserverManager.addObserver(this);
+            //menuObserverManager.addObserver(this);
             showSeatsInterface();
         } else { // if the login doesn't work, shows an error message
             loginError.setText("Credenziali errate, riprovare");
@@ -131,11 +123,6 @@ public class CustomerController implements MenuObserver {
             registerError.setText("Username non disponibile");
             registerError.setVisible(true);
         }
-    }
-
-    private boolean validPassword(String password) { // checks if the password respects the standard
-        String regex = "^(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\",.<>?])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
-        return password.matches(regex);
     }
 
     @FXML
@@ -191,12 +178,6 @@ public class CustomerController implements MenuObserver {
     }
 
     @FXML
-    private void leave() { // closes the interface when the customer clicks the "Leave" button
-        Stage stage = (Stage) requiredSeatsField.getScene().getWindow();
-        stage.close();
-    }
-
-    @FXML
     private int getTable(SocketHandler receptionSocket) throws IOException { // allows the customer to specify how many seats they need and to get a table if available
         BufferedReader checkSeats = receptionSocket.getReader(); // used to gets a table from the receptionist
         PrintWriter sendSeats = receptionSocket.getWriter(); // used to say to the receptionist how much seats does him require
@@ -224,32 +205,7 @@ public class CustomerController implements MenuObserver {
         } else { // shows full price menu during the week
             menuContext.setMenuState(new NotDiscountMenu());
         }
-        menu.setCellFactory(new Callback<>() { // applies a border to each menu's order
-            @Override
-            public ListCell<Order> call(ListView<Order> param) {
-                return new ListCell<>() {
-                    @Override
-                    protected void updateItem(Order item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty || item == null) {
-                            setText(null);
-                            setStyle(null);
-                        } else {
-                            HBox hbox = new HBox();
-                            Label nameLabel = new Label(item.name());
-                            Label priceLabel = new Label("€" + String.format("%.2f", item.price()));
-                            Region spacer = new Region();
-                            HBox.setHgrow(spacer, Priority.ALWAYS);
-                            hbox.getChildren().addAll(nameLabel, spacer, priceLabel);
-                            setText(null);
-                            setGraphic(hbox);
-                            setStyle("-fx-border-color: #F5DEB3; -fx-padding: 5px;");
-                        }
-                    }
-                };
-            }
-        });
-        menu.setItems(menuContext.getMenuState().getMenu()); // makes the menu viewable as a list of Order elements (name-price)
+        applyMenuStyle(); // applies a style to the menu
     }
 
     @FXML
@@ -263,31 +219,31 @@ public class CustomerController implements MenuObserver {
             takeOrder.println(order); // sends the order to the waiter
             order = eatOrder.readLine(); // waits for the order and eats it
             totalOrdered.append(order).append("\n"); // adds the order to the customer's list and its price to the bill
-            totalOrderedArea.setCellFactory(new Callback<>() { // applies a border to each customer's order
-                @Override
-                public ListCell<String> call(ListView<String> param) {
-                    return new ListCell<>() {
-                        @Override
-                        protected void updateItem(String item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty || item == null) {
-                                setText(null);
-                                setStyle(null);
-                            } else {
-                                setText(item);
-                                setStyle("-fx-border-color: #D2B48C; -fx-border-width: 1;");
-                            }
-                        }
-                    };
-                }
-            });
-            totalOrderedArea.getItems().add(totalOrdered.toString()); // shows orders and total bill
+            applyTotalOrderedStyle(); // applies a style to total ordered
             bill += price; // updates customer's bill
             billText.setText("€" + String.format("%.2f", bill));
+            totalOrderedArea.getItems().add(totalOrdered.toString()); // shows orders and total bill
         } catch (IOException exc) { // if waiter is unreachable
             unavailableWaiter.setText("Nessun cameriere disponibile al momento");
             unavailableWaiter.setVisible(true);
         }
+    }
+
+    @FXML
+    private void askBill() { // closes customer's interface once he has done
+        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get customers confirm
+        confirmationDialog.setTitle("Richiesta conto");
+        confirmationDialog.setGraphic(null);
+        confirmationDialog.setHeaderText(null);
+        confirmationDialog.setContentText("Sei sicuro di voler chiedere il conto?");
+        confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
+        confirmationDialog.showAndWait().ifPresent(response -> { // waits for customer's response
+            if (response == ButtonType.OK) { // if customer confirms, closes the interface
+                Stage stage = (Stage) stopButton.getScene().getWindow();
+                //menuObserverManager.removeObserver(this);
+                stage.close();
+            }
+        });
     }
 
     @FXML
@@ -330,7 +286,14 @@ public class CustomerController implements MenuObserver {
         Stage stage = (Stage) seatsBox.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true);
-        menu = (ListView<Order>) scene.lookup("#menu"); // initializes interface's elements
+        initializeInterfaceElements(scene); // initializes interface's elements
+        setMouseClickHandler(); // sets an event handler that catches customer's clicks on the interface
+        stage.show();
+        showMenu(); // shows the menu
+    }
+
+    public void initializeInterfaceElements(Scene scene) { // initializes GetOrderInterface's elements
+        menu = (ListView<Order>) scene.lookup("#menu");
         totalOrderedArea = (ListView<String>) scene.lookup("#totalOrderedArea");
         tableNumber = (Text) scene.lookup("#tableNumber");
         tableNumber.setText(String.valueOf(table));
@@ -338,7 +301,9 @@ public class CustomerController implements MenuObserver {
         billText.setText("€0");
         unavailableWaiter = (Text) scene.lookup("#unavailableWaiter");
         menuUpdateMessage = (Text) scene.lookup("#menuUpdateMessage");
-        showMenu(); // shows the menu
+    }
+
+    public void setMouseClickHandler () { // sets an event handler that catches customer's clicks on the interface
         menu.setOnMouseClicked(event -> { // adds an event manager to get customer's order by clicking onto the menu
             Order order = menu.getSelectionModel().getSelectedItem(); // gets customer's clicked order
             Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get customers confirm
@@ -353,22 +318,65 @@ public class CustomerController implements MenuObserver {
                 }
             });
         });
-        stage.show();
     }
 
     @FXML
-    private void askBill() { // method to close customers' interface once they've done
-        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get customers confirm
-        confirmationDialog.setTitle("Richiesta conto");
-        confirmationDialog.setGraphic(null);
-        confirmationDialog.setHeaderText(null);
-        confirmationDialog.setContentText("Sei sicuro di voler chiedere il conto?");
-        confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
-        confirmationDialog.showAndWait().ifPresent(response -> { // waits for customer's response
-            if (response == ButtonType.OK) { // if customer confirms, closes the interface
-                Stage stage = (Stage) stopButton.getScene().getWindow();
-                menuObserverManager.removeObserver(this);
-                stage.close();
+    private void leave() { // closes the interface when the customer clicks the "Leave" button
+        Stage stage = (Stage) requiredSeatsField.getScene().getWindow();
+        stage.close();
+    }
+
+    private boolean validPassword(String password) { // checks if the password respects the standard
+        String regex = "^(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\",.<>?])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
+        return password.matches(regex);
+    }
+
+    public void applyMenuStyle() {
+        menu.setCellFactory(new Callback<>() { // applies a border to each menu's order
+            @Override
+            public ListCell<Order> call(ListView<Order> param) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Order item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                            setStyle(null);
+                        } else {
+                            HBox hbox = new HBox();
+                            Label nameLabel = new Label(item.name());
+                            Label priceLabel = new Label("€" + String.format("%.2f", item.price()));
+                            Region spacer = new Region();
+                            HBox.setHgrow(spacer, Priority.ALWAYS);
+                            hbox.getChildren().addAll(nameLabel, spacer, priceLabel);
+                            setText(null);
+                            setGraphic(hbox);
+                            setStyle("-fx-border-color: #F5DEB3; -fx-padding: 5px;");
+                        }
+                    }
+                };
+            }
+        });
+        menu.setItems(menuContext.getMenuState().getMenu()); // makes the menu viewable as a list of Order elements (name-price)
+    }
+
+    public void applyTotalOrderedStyle() {
+        totalOrderedArea.setCellFactory(new Callback<>() { // applies a border to each customer's order
+            @Override
+            public ListCell<String> call(ListView<String> param) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                            setStyle(null);
+                        } else {
+                            setText(item);
+                            setStyle("-fx-border-color: #D2B48C; -fx-border-width: 1;");
+                        }
+                    }
+                };
             }
         });
     }

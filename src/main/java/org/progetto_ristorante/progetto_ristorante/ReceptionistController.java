@@ -33,11 +33,12 @@ public class ReceptionistController {
         }
     }
 
-    private void processRequest(SocketHandler acceptedClient) throws IOException { // manages a customer's request
+    private void processRequest(SocketHandler acceptedClient) { // manages a customer's request
         BufferedReader readSeatsNumber; // used to get customer's required seats
         PrintWriter giveTableNumber; // used to assign a table's number to the customer
-        try { readSeatsNumber = acceptedClient.getReader(); // reads data sent from client through the socket
-             giveTableNumber = acceptedClient.getWriter(); // writes data to the client through the socket
+        try {
+            readSeatsNumber = acceptedClient.getReader(); // reads data sent from client through the socket
+            giveTableNumber = acceptedClient.getWriter(); // writes data to the client through the socket
             int requiredSeats = Integer.parseInt(readSeatsNumber.readLine()); // gets customer's required seats
             int tableNumber = model.assignTable(requiredSeats, giveTableNumber); // assigns the table to the customer
             if (tableNumber == 0) { // if the table isn't available
@@ -48,15 +49,14 @@ public class ReceptionistController {
                     waitingTimeWriter.println(waitingTime); // communicates the time to the customer
                 } catch (IOException exc) {
                     throw new RuntimeException(exc);
+                } finally {
+                    readSeatsNumber.close();
+                    giveTableNumber.close();
+                    acceptedClient.close();
                 }
             }
-        } catch (IOException exc) {
-            throw new RuntimeException(exc);
+        } catch (IOException | NumberFormatException exc) {
+            System.out.println("Numero di posti non valido");
         }
-
-        // closes used resources and connection
-        readSeatsNumber.close();
-        giveTableNumber.close();
-        acceptedClient.close();
     }
 }

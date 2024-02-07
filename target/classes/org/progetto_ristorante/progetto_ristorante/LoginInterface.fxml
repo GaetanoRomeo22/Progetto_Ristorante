@@ -27,23 +27,24 @@
     <!-- Logo -->
 
     <!-- Title -->
-    <Text text="LOGIN" style="-fx-font-size: 30px; -fx-fill: #32CD32; -fx-font-family: 'Arial'; -fx-font-weight: bold"/>
+    <Text text="LOGIN" style="-fx-font-size: 30px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'; -fx-font-weight: bold"/>
     <!-- Title -->
 
     <!-- Username and Password -->
-    <TextField fx:id="loginUsername" promptText="Username" style="-fx-font-size: 28px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Arial'" maxWidth="270" focusTraversable="false"/>
-    <PasswordField fx:id="loginPassword" promptText="Password" style="-fx-font-size: 28px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Arial'" maxWidth="270" focusTraversable="false"/>
+    <TextField fx:id="loginUsername" promptText="Username" style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'" maxWidth="300" focusTraversable="false"/>
+    <PasswordField fx:id="loginPassword" promptText="Password" style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'" maxWidth="300" focusTraversable="false"/>
     <!-- Username and Password -->
 
     <!-- Buttons -->
-    <Button text="Accedi" onAction="#login" style="-fx-font-size: 28px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Arial'; -fx-border-color: #228B22; -fx-border-width: 1; -fx-alignment: CENTER;"/>
+    <Button fx:id="loginButton" text="Accedi" onAction="#login" style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #228B22; -fx-border-width: 1; -fx-alignment: CENTER;"
+            onMouseEntered="#handleMouseEnter" onMouseExited="#handleMouseExit"/>
     <HBox spacing="5.0" alignment="CENTER">
-        <Text text="Non hai un account?" style="-fx-font-size: 28px; -fx-font-family: 'Arial'"/>
-        <Text text="Registrati" underline="true" onMouseClicked="#showRegisterInterface" fill="#32CD32" style="-fx-font-size: 28px; -fx-font-family: 'Arial'"/>
+        <Text text="Non hai un account?" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
+        <Text text="Registrati" underline="true" onMouseClicked="#showRegisterInterface" fill="#32CD32" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
     </HBox>
     <!-- Buttons -->
 
     <!-- Error Messages -->
-    <Text fx:id="loginError" visible="false" fill="red" style="-fx-font-family: 'Arial'; -fx-font-size: 28px"/>
+    <Text fx:id="loginError" visible="false" fill="red" style="-fx-font-family: 'Helvetica'; -fx-font-size: 30px"/>
     <!-- Error Messages -->
 </VBox>

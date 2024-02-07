@@ -33,47 +33,27 @@ public class ChefController implements Initializable {
 
     private final ChefModel chefModel = new ChefModel();
     private final OrderFactory orderFactory = new SimpleOrderFactory();
-    private static  MenuObserverManager menuObserverManager; // instance to notify if the menu's been updated or not
+    //private static  MenuObservable menuObservable; // instance to notify if the menu's been updated or not
     private boolean isMenuUpdated = false;
     private final MenuOriginator menuOriginator = new MenuOriginator(); // initial menu's state (before modifies)
     private final MenuMemento menuMemento = menuOriginator.saveMenuState(); // used to restore menu's previous state if chef undo modifies
 
-    public static void setMenuObserverManager(MenuObserverManager manager) {
-        ChefController.menuObserverManager = manager;
-    }
+    /*public static void setMenuObservable(MenuObservable manager) {
+        ChefController.menuObservable = manager;
+    }*/
 
     public void updateMenu() { // notifies if menu has been modified or not
         System.out.println(isMenuUpdated);
         if (isMenuUpdated) {
             System.out.println("Avviso menù aggiornato");
-            menuObserverManager.notifyObserversMenuUpdate();
-        } else {
-            System.out.println("Avviso menù non aggiornato");
-            menuObserverManager.notifyObserversMenuNotUpdated();
+            //menuObservable.notifyObservers(isMenuUpdated);
         }
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) { // shows current menu when the interface is loaded and sets the action to perform when the chef clicks on buttons
         showStoredMenu(); // shows the initial menu's state
-        menu.setOnMouseClicked(event -> { // adds an event manager to get the order the chef wants to remove from the menu
-            Order order = menu.getSelectionModel().getSelectedItem(); // gets chef's clicked order
-            Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get chef confirm
-            confirmationDialog.setTitle("Conferma eliminazione ordine");
-            confirmationDialog.setHeaderText(null);
-            confirmationDialog.setGraphic(null);
-            confirmationDialog.setContentText("Sei sicuro di voler eliminare " + order.name() + " dal menu?");
-            confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
-            confirmationDialog.showAndWait().ifPresent(response -> { // waits chef's response
-                if (response == ButtonType.OK) { // if chef confirms
-                    try {
-                        deleteOrder(); // deletes the order from the menu
-                    } catch (SQLException exc) {
-                        throw new RuntimeException(exc);
-                    }
-                }
-            });
-        });
+        setMouseClickHandler(); // sets an event handler that catches chef's clicks on the interface
     }
 
     @FXML
@@ -94,12 +74,21 @@ public class ChefController implements Initializable {
                 invalidData.setText("Ordine già presente nel menu");
                 invalidData.setVisible(true);
             } else {
-                invalidData.setVisible(false);
-                menuOriginator.getMenu().add(newOrder); // adds the order into current menu
-                showCurrentMenu(); // shows current menu (with modifies)
-                isMenuUpdated = true; // the menu is updated
-                menuOrderField.setText("");
-                orderPriceField.setText("");
+                Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmationDialog.setTitle("Conferma aggiunta ordine");
+                confirmationDialog.setHeaderText(null);
+                confirmationDialog.setGraphic(null);
+                confirmationDialog.setContentText("Sei sicuro di voler aggiungere " + orderName + " al menu?");
+                confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
+                confirmationDialog.showAndWait().ifPresent(result -> { // checks chef's answer
+                    if (result == ButtonType.OK) { // if chef confirms
+                        menuOriginator.getMenu().add(newOrder); // adds the order into current menu
+                        showCurrentMenu(); // shows current menu (with modifies)
+                        isMenuUpdated = true; // the menu is updated
+                        menuOrderField.setText(""); // clears previous text
+                        orderPriceField.setText("");
+                    }
+                });
             }
         } else {
             invalidData.setText("Ordine o prezzo mancante");
@@ -117,32 +106,8 @@ public class ChefController implements Initializable {
     @FXML
     private void showCurrentMenu() { // shows current menu in real time
         ObservableList<Order> menuItems = FXCollections.observableArrayList(menuOriginator.getMenu()); // list of orders
-        menu.setCellFactory(new Callback<>() { // applies a border to each menu's order
-            @Override
-            public ListCell<Order> call(ListView<Order> param) {
-                return new ListCell<>() {
-                    @Override
-                    protected void updateItem(Order item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty || item == null) {
-                            setText(null);
-                            setStyle(null);
-                        } else {
-                            HBox hbox = new HBox();
-                            Label nameLabel = new Label(item.name());
-                            Label priceLabel = new Label("€" + String.format("%.2f", item.price()));
-                            Region spacer = new Region();
-                            HBox.setHgrow(spacer, Priority.ALWAYS);
-                            hbox.getChildren().addAll(nameLabel, spacer, priceLabel);
-                            setText(null);
-                            setGraphic(hbox);
-                            setStyle("-fx-border-color: #F5DEB3; -fx-padding: 5px;");
-                        }
-                    }
-                };
-            }
-        });
-        menu.setItems(menuItems);  // makes the menu viewable as a list of Order elements (name-price)
+        applyMenuStyle(); // applies a border to the menu
+        menu.setItems(menuItems); // makes the menu viewable as a list of Order elements (name-price)
     }
 
     @FXML
@@ -159,31 +124,7 @@ public class ChefController implements Initializable {
                     menuItems.add(order);
                 }
                 menuOriginator.setMenu(menuItems); // sets menu's initial state
-                menu.setCellFactory(new Callback<>() { // applies a border to each menu's order
-                    @Override
-                    public ListCell<Order> call(ListView<Order> param) {
-                        return new ListCell<>() {
-                            @Override
-                            protected void updateItem(Order item, boolean empty) {
-                                super.updateItem(item, empty);
-                                if (empty || item == null) {
-                                    setText(null);
-                                    setStyle(null);
-                                } else {
-                                    HBox hbox = new HBox();
-                                    Label nameLabel = new Label(item.name());
-                                    Label priceLabel = new Label("€" + String.format("%.2f", item.price()));
-                                    Region spacer = new Region();
-                                    HBox.setHgrow(spacer, Priority.ALWAYS);
-                                    hbox.getChildren().addAll(nameLabel, spacer, priceLabel);
-                                    setText(null);
-                                    setGraphic(hbox);
-                                    setStyle("-fx-border-color: #F5DEB3; -fx-padding: 5px;");
-                                }
-                            }
-                        };
-                    }
-                });
+                applyMenuStyle(); // applies a border to the menu
                 menu.setItems(menuItems); // makes the menu viewable as list of Order elements (name-price)
             }
         } catch (SQLException exc) {
@@ -193,12 +134,12 @@ public class ChefController implements Initializable {
 
     @FXML
     private void confirmMenu() { // hides the interface once the chef has finished to write the menu
-        // shows a window to get chef confirm
-        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get chef confirm
         confirmationDialog.setTitle("Conferma menu");
         confirmationDialog.setHeaderText(null);
         confirmationDialog.setGraphic(null);
         confirmationDialog.setContentText("Sei sicuro di voler confermare il menu?");
+        confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
         confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);  // adds confirm and deny buttons
         confirmationDialog.showAndWait().ifPresent(response -> { // waits chef's response
             if (response == ButtonType.OK) { // if chef confirms, confirms the menu and hides interface's elements
@@ -211,13 +152,13 @@ public class ChefController implements Initializable {
     }
 
     @FXML
-    public void restoreMenu() {
-        // shows a window to get chef confirm
-        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmationDialog.setTitle("Annullamento modifiche");
+    public void restoreMenu() { // undo menu's updates
+        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get chef confirm
+        confirmationDialog.setTitle("Annulla modifiche");
         confirmationDialog.setHeaderText(null);
         confirmationDialog.setGraphic(null);
         confirmationDialog.setContentText("Sei sicuro di voler annullare le modifiche al menu?");
+        confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
         confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);  // adds confirm and deny buttons
         confirmationDialog.showAndWait().ifPresent(response -> { // waits for chef's response
             if (response == ButtonType.OK) { // if chef confirms, confirms the menu and hides interface's elements
@@ -245,5 +186,54 @@ public class ChefController implements Initializable {
         } catch (SQLException exc) {
             throw new RuntimeException(exc);
         }
+    }
+
+    public void setMouseClickHandler () { // sets an event handler that catches chef's clicks on the interface
+        menu.setOnMouseClicked(event -> { // adds an event manager to get the order the chef wants to remove from the menu
+            Order order = menu.getSelectionModel().getSelectedItem(); // gets chef's clicked order
+            Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get chef confirm
+            confirmationDialog.setTitle("Conferma eliminazione ordine");
+            confirmationDialog.setHeaderText(null);
+            confirmationDialog.setGraphic(null);
+            confirmationDialog.setContentText("Sei sicuro di voler eliminare " + order.name() + " dal menu?");
+            confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
+            confirmationDialog.showAndWait().ifPresent(response -> { // waits chef's response
+                if (response == ButtonType.OK) { // if chef confirms
+                    try {
+                        deleteOrder(); // deletes the order from the menu
+                    } catch (SQLException exc) {
+                        throw new RuntimeException(exc);
+                    }
+                }
+            });
+        });
+    }
+
+    public void applyMenuStyle() { // applies a border to each menu's order
+        menu.setCellFactory(new Callback<>() {
+            @Override
+            public ListCell<Order> call(ListView<Order> param) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Order item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                            setStyle(null);
+                        } else {
+                            HBox hbox = new HBox();
+                            Label nameLabel = new Label(item.name());
+                            Label priceLabel = new Label("€" + String.format("%.2f", item.price()));
+                            Region spacer = new Region();
+                            HBox.setHgrow(spacer, Priority.ALWAYS);
+                            hbox.getChildren().addAll(nameLabel, spacer, priceLabel);
+                            setText(null);
+                            setGraphic(hbox);
+                            setStyle("-fx-border-color: #F5DEB3; -fx-padding: 5px;");
+                        }
+                    }
+                };
+            }
+        });
     }
 }
