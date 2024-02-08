@@ -36,7 +36,6 @@ public class CustomerController {
             loginError,
             registerError,
             unavailableReceptionist,
-            menuUpdateMessage,
             unavailableWaiter;
 
     @FXML
@@ -70,25 +69,21 @@ public class CustomerController {
     private int waitingTime;               // time the customer has to wait if there aren't available seats
     private float bill = 0.0f;             // customer's total bill
     private int table;                     // customer's table's number
-    //private static MenuObserverManager menuObserverManager;
+    private static MenuObserverManager menuObserverManager;
     protected MenuContext menuContext = new MenuContext();
 
     public CustomerController() { // constructor
         model = CustomerModel.getInstance();
     }
 
-    /*public static void setMenuObserverManager(MenuObserverManager manager) {
+    public static void setMenuObserverManager(MenuObserverManager manager) {
         CustomerController.menuObserverManager = manager;
-    }*/
+    }
 
     public void updateMenu(boolean isMenuUpdated) {
-        System.out.println("Setto il messaggio");
-        if (isMenuUpdated) {
-            menuUpdateMessage.setText("Menu non del giorno.");
-        } else {
-            menuUpdateMessage.setText("Menu del giorno.");
+        if (isMenuUpdated) { // if menu has been modified
+            showMenu(); // shows updated menu
         }
-        menuUpdateMessage.setVisible(true);
     }
 
     @FXML
@@ -99,7 +94,7 @@ public class CustomerController {
             loginError.setText("Credenziali incomplete");
             loginError.setVisible(true);
         } else if (model.loginUser(username, password)) { // if the login works, sends the customer to next interface
-            //menuObserverManager.addObserver(this);
+            menuObserverManager.addObserver(this);
             showSeatsInterface();
         } else { // if the login doesn't work, shows an error message
             loginError.setText("Credenziali errate, riprovare");
@@ -244,7 +239,7 @@ public class CustomerController {
         confirmationDialog.showAndWait().ifPresent(response -> { // waits for customer's response
             if (response == ButtonType.OK) { // if customer confirms, closes the interface
                 Stage stage = (Stage) stopButton.getScene().getWindow();
-                //menuObserverManager.removeObserver(this);
+                menuObserverManager.removeObserver(this);
                 stage.close();
             }
         });
@@ -313,7 +308,6 @@ public class CustomerController {
         billText = (Text) scene.lookup("#billText");
         billText.setText("€0");
         unavailableWaiter = (Text) scene.lookup("#unavailableWaiter");
-        menuUpdateMessage = (Text) scene.lookup("#menuUpdateMessage");
         stopButton = (Button) scene.lookup("#stopButton");
         stopButton.setOnMouseEntered(event -> stopButton.setEffect(new DropShadow()));
         stopButton.setOnMouseExited(event -> stopButton.setEffect(null));
@@ -322,17 +316,19 @@ public class CustomerController {
     public void setMouseClickHandler () { // sets an event handler that catches customer's clicks on the interface
         menu.setOnMouseClicked(event -> { // adds an event manager to get customer's order by clicking onto the menu
             Order order = menu.getSelectionModel().getSelectedItem(); // gets customer's clicked order
-            Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get customers confirm
-            confirmationDialog.setTitle("Conferma ordine");
-            confirmationDialog.setHeaderText(null);
-            confirmationDialog.setGraphic(null);
-            confirmationDialog.setContentText("Sei sicuro di voler ordinare " + order.name() + " ?");
-            confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
-            confirmationDialog.showAndWait().ifPresent(response -> { // waits for customer's response
-                if (response == ButtonType.OK) { // if the customer confirms, sends the order to the waiter
-                    getOrder(order.name(), order.price());
-                }
-            });
+            if (order != null) { // checks if the chef's clicked on an order
+                Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get customers confirm
+                confirmationDialog.setTitle("Conferma ordine");
+                confirmationDialog.setHeaderText(null);
+                confirmationDialog.setGraphic(null);
+                confirmationDialog.setContentText("Sei sicuro di voler ordinare " + order.name() + " ?");
+                confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
+                confirmationDialog.showAndWait().ifPresent(response -> { // waits for customer's response
+                    if (response == ButtonType.OK) { // if the customer confirms, sends the order to the waiter
+                        getOrder(order.name(), order.price());
+                    }
+                });
+            }
         });
     }
 
@@ -368,6 +364,8 @@ public class CustomerController {
                             setText(null);
                             setGraphic(hbox);
                             setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px");
+                            setOnMouseEntered(event -> setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px; -fx-background-color: #ECD797"));
+                            setOnMouseExited(event -> setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px"));
                         }
                     }
                 };

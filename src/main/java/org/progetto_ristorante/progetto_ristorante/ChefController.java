@@ -39,18 +39,18 @@ public class ChefController implements Initializable {
 
     private final ChefModel chefModel = new ChefModel();
     private final OrderFactory orderFactory = new SimpleOrderFactory();
-    //private static  MenuObservable menuObservable; // instance to notify if the menu's been updated or not
+    private static  MenuObserverManager menuObserverManager; // instance to notify if the menu's been updated or not
     private boolean isMenuUpdated = false;
     private final MenuOriginator menuOriginator = new MenuOriginator(); // initial menu's state (before modifies)
     private final MenuMemento menuMemento = menuOriginator.saveMenuState(); // used to restore menu's previous state if chef undo modifies
 
-    /*public static void setMenuObservable(MenuObservable manager) {
-        ChefController.menuObservable = manager;
-    }*/
+    public static void setMenuObserverManager(MenuObserverManager manager) {
+        ChefController.menuObserverManager = manager;
+    }
 
     public void updateMenu() { // notifies if menu has been modified or not
         if (isMenuUpdated) {
-            //menuObservable.notifyObservers(isMenuUpdated);
+            menuObserverManager.notifyObserversMenuUpdate();
         }
     }
 
@@ -70,6 +70,7 @@ public class ChefController implements Initializable {
 
     @FXML
     private void addOrder() { // adds an order to current menu
+        invalidData.setVisible(false);
         String orderName = menuOrderField.getText(); // gets order's name from the interface
         String inputPrice = orderPriceField.getText(); // gets order's price from the interface
         if (!orderName.isEmpty() && !inputPrice.isEmpty()) { // checks if the chef has entered not null values
@@ -168,6 +169,7 @@ public class ChefController implements Initializable {
         confirmationDialog.showAndWait().ifPresent(response -> { // waits for chef's response
             if (response == ButtonType.OK) { // if chef confirms, confirms the menu and hides interface's elements
                 menuMemento.restoreMenu(); // returns to previous state
+                invalidData.setVisible(false);
                 showStoredMenu();
             }
         });
@@ -205,21 +207,23 @@ public class ChefController implements Initializable {
     public void setMouseClickHandler () { // sets an event handler that catches chef's clicks on the interface
         menu.setOnMouseClicked(event -> { // adds an event manager to get the order the chef wants to remove from the menu
             Order order = menu.getSelectionModel().getSelectedItem(); // gets chef's clicked order
-            Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get chef confirm
-            confirmationDialog.setTitle("Conferma eliminazione ordine");
-            confirmationDialog.setHeaderText(null);
-            confirmationDialog.setGraphic(null);
-            confirmationDialog.setContentText("Sei sicuro di voler eliminare " + order.name() + " dal menu?");
-            confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
-            confirmationDialog.showAndWait().ifPresent(response -> { // waits chef's response
-                if (response == ButtonType.OK) { // if chef confirms
-                    try {
-                        deleteOrder(); // deletes the order from the menu
-                    } catch (SQLException exc) {
-                        throw new RuntimeException(exc);
+            if (order != null) { // checks if the chef's clicked on an order
+                Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get chef confirm
+                confirmationDialog.setTitle("Conferma eliminazione ordine");
+                confirmationDialog.setHeaderText(null);
+                confirmationDialog.setGraphic(null);
+                confirmationDialog.setContentText("Sei sicuro di voler eliminare " + order.name() + " dal menu?");
+                confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
+                confirmationDialog.showAndWait().ifPresent(response -> { // waits chef's response
+                    if (response == ButtonType.OK) { // if chef confirms
+                        try {
+                            deleteOrder(); // deletes the order from the menu
+                        } catch (SQLException exc) {
+                            throw new RuntimeException(exc);
+                        }
                     }
-                }
-            });
+                });
+            }
         });
     }
 
@@ -244,6 +248,8 @@ public class ChefController implements Initializable {
                             setText(null);
                             setGraphic(hbox);
                             setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px");
+                            setOnMouseEntered(event -> setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px; -fx-background-color: #ECD797"));
+                            setOnMouseExited(event -> setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px"));
                         }
                     }
                 };

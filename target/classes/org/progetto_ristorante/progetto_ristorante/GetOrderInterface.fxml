@@ -37,13 +37,11 @@
     </VBox>
     <!-- Menu -->
 
-    <Text fx:id="menuUpdateMessage" fill="#FF0000" style="-fx-font-family: 'Helvetica'; -fx-font-size: 30px" visible="false"/>
-
     <!-- Orders -->
     <VBox spacing="10.0" alignment="CENTER">
         <Text text="ORDINI EFFETTUATI" style="-fx-font-size: 30px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'; -fx-font-weight: bold"/>
-        <ListView fx:id="totalOrderedArea" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"
-                  prefWidth="808" maxWidth="808"/>
+        <ListView fx:id="totalOrderedArea" prefWidth="808" maxWidth="808"
+                  style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
     </VBox>
     <!-- Orders -->
 
