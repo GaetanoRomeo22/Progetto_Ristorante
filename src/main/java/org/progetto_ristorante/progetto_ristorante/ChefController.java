@@ -39,20 +39,10 @@ public class ChefController implements Initializable {
 
     private final ChefModel chefModel = new ChefModel();
     private final OrderFactory orderFactory = new SimpleOrderFactory();
-    private static  MenuObserverManager menuObserverManager; // instance to notify if the menu's been updated or not
-    private boolean isMenuUpdated = false;
     private final MenuOriginator menuOriginator = new MenuOriginator(); // initial menu's state (before modifies)
     private final MenuMemento menuMemento = menuOriginator.saveMenuState(); // used to restore menu's previous state if chef undo modifies
 
-    public static void setMenuObserverManager(MenuObserverManager manager) {
-        ChefController.menuObserverManager = manager;
-    }
 
-    public void updateMenu() { // notifies if menu has been modified or not
-        if (isMenuUpdated) {
-            menuObserverManager.notifyObserversMenuUpdate();
-        }
-    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) { // shows current menu when the interface is loaded and sets the action to perform when the chef clicks on buttons
@@ -64,13 +54,11 @@ public class ChefController implements Initializable {
     @FXML
     private void cook() {
         confirmMenu(); // stores menu's updates
-        updateMenu(); // notifies if menu has been modified or not
         chefModel.startServer(); // starts chef's thread
     }
 
     @FXML
     private void addOrder() { // adds an order to current menu
-        invalidData.setVisible(false);
         String orderName = menuOrderField.getText(); // gets order's name from the interface
         String inputPrice = orderPriceField.getText(); // gets order's price from the interface
         if (!orderName.isEmpty() && !inputPrice.isEmpty()) { // checks if the chef has entered not null values
@@ -84,13 +72,12 @@ public class ChefController implements Initializable {
                 confirmationDialog.setTitle("Conferma aggiunta ordine");
                 confirmationDialog.setHeaderText(null);
                 confirmationDialog.setGraphic(null);
-                confirmationDialog.setContentText("Sei sicuro di voler aggiungere " + orderName + " al menu?");
+                confirmationDialog.setContentText(STR."Sei sicuro di voler aggiungere \{orderName} al menu?");
                 confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
                 confirmationDialog.showAndWait().ifPresent(result -> { // checks chef's answer
                     if (result == ButtonType.OK) { // if chef confirms
                         menuOriginator.getMenu().add(newOrder); // adds the order into current menu
                         showCurrentMenu(); // shows current menu (with modifies)
-                        isMenuUpdated = true; // the menu is updated
                         menuOrderField.setText(""); // clears previous text
                         orderPriceField.setText("");
                     }
@@ -105,7 +92,6 @@ public class ChefController implements Initializable {
     private void deleteOrder() throws SQLException { // deletes an order from current menu
         Order selectedOrder = menu.getSelectionModel().getSelectedItem(); // gets the order clicked by chef into the interface
         menuOriginator.getMenu().removeIf(order -> order.name().equals(selectedOrder.name())); // checks if the order is into current menu
-        isMenuUpdated = true; // the menu is updated
         showCurrentMenu(); // shows updated menu
     }
 
@@ -169,7 +155,6 @@ public class ChefController implements Initializable {
         confirmationDialog.showAndWait().ifPresent(response -> { // waits for chef's response
             if (response == ButtonType.OK) { // if chef confirms, confirms the menu and hides interface's elements
                 menuMemento.restoreMenu(); // returns to previous state
-                invalidData.setVisible(false);
                 showStoredMenu();
             }
         });
@@ -196,34 +181,32 @@ public class ChefController implements Initializable {
     }
 
     public void setButtonShadow() { // sets a shadow when chef hovers buttons with mouse
-        cancelButton.setOnMouseEntered(event -> cancelButton.setEffect(new DropShadow()));
-        cancelButton.setOnMouseExited(event -> cancelButton.setEffect(null));
-        confirmMenuButton.setOnMouseEntered(event -> confirmMenuButton.setEffect(new DropShadow()));
-        confirmMenuButton.setOnMouseExited(event -> confirmMenuButton.setEffect(null));
-        confirmOrderButton.setOnMouseEntered(event -> confirmOrderButton.setEffect(new DropShadow()));
-        confirmOrderButton.setOnMouseExited(event -> confirmOrderButton.setEffect(null));
+        cancelButton.setOnMouseEntered(_ -> cancelButton.setEffect(new DropShadow()));
+        cancelButton.setOnMouseExited(_ -> cancelButton.setEffect(null));
+        confirmMenuButton.setOnMouseEntered(_ -> confirmMenuButton.setEffect(new DropShadow()));
+        confirmMenuButton.setOnMouseExited(_ -> confirmMenuButton.setEffect(null));
+        confirmOrderButton.setOnMouseEntered(_ -> confirmOrderButton.setEffect(new DropShadow()));
+        confirmOrderButton.setOnMouseExited(_ -> confirmOrderButton.setEffect(null));
     }
 
     public void setMouseClickHandler () { // sets an event handler that catches chef's clicks on the interface
-        menu.setOnMouseClicked(event -> { // adds an event manager to get the order the chef wants to remove from the menu
+        menu.setOnMouseClicked(_ -> { // adds an event manager to get the order the chef wants to remove from the menu
             Order order = menu.getSelectionModel().getSelectedItem(); // gets chef's clicked order
-            if (order != null) { // checks if the chef's clicked on an order
-                Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get chef confirm
-                confirmationDialog.setTitle("Conferma eliminazione ordine");
-                confirmationDialog.setHeaderText(null);
-                confirmationDialog.setGraphic(null);
-                confirmationDialog.setContentText("Sei sicuro di voler eliminare " + order.name() + " dal menu?");
-                confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
-                confirmationDialog.showAndWait().ifPresent(response -> { // waits chef's response
-                    if (response == ButtonType.OK) { // if chef confirms
-                        try {
-                            deleteOrder(); // deletes the order from the menu
-                        } catch (SQLException exc) {
-                            throw new RuntimeException(exc);
-                        }
+            Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get chef confirm
+            confirmationDialog.setTitle("Conferma eliminazione ordine");
+            confirmationDialog.setHeaderText(null);
+            confirmationDialog.setGraphic(null);
+            confirmationDialog.setContentText(STR."Sei sicuro di voler eliminare \{order.name()} dal menu?");
+            confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
+            confirmationDialog.showAndWait().ifPresent(response -> { // waits chef's response
+                if (response == ButtonType.OK) { // if chef confirms
+                    try {
+                        deleteOrder(); // deletes the order from the menu
+                    } catch (SQLException exc) {
+                        throw new RuntimeException(exc);
                     }
-                });
-            }
+                }
+            });
         });
     }
 
@@ -241,15 +224,13 @@ public class ChefController implements Initializable {
                         } else {
                             HBox hbox = new HBox();
                             Label nameLabel = new Label(item.name());
-                            Label priceLabel = new Label("€" + String.format("%.2f", item.price()));
+                            Label priceLabel = new Label(STR."€\{String.format("%.2f", item.price())}");
                             Region spacer = new Region();
                             HBox.setHgrow(spacer, Priority.ALWAYS);
                             hbox.getChildren().addAll(nameLabel, spacer, priceLabel);
                             setText(null);
                             setGraphic(hbox);
                             setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px");
-                            setOnMouseEntered(event -> setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px; -fx-background-color: #ECD797"));
-                            setOnMouseExited(event -> setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px"));
                         }
                     }
                 };

@@ -36,7 +36,9 @@ public class CustomerController {
             loginError,
             registerError,
             unavailableReceptionist,
-            unavailableWaiter;
+            menuUpdateMessage,
+            unavailableWaiter,
+            cashText;
 
     @FXML
     private ListView<String> totalOrderedArea;
@@ -47,7 +49,11 @@ public class CustomerController {
     @FXML
     private TextField loginUsername,
             registerUsername,
-            requiredSeatsField;
+            requiredSeatsField,
+            cardNumberField,
+            cardNameField,
+            expiryDateField,
+            cvvField;
 
     @FXML
     private PasswordField loginPassword,
@@ -64,26 +70,32 @@ public class CustomerController {
     private VBox seatsBox,
             waitingBox;
 
+    @FXML
+    private Label paymentConfirmationLabel;
+
     private final CustomerModel model;
     private BufferedReader getWaitingTime; // used to get how much time has the customer to wait if there aren't available seats
     private int waitingTime;               // time the customer has to wait if there aren't available seats
-    private float bill = 0.0f;             // customer's total bill
+    private float bill = 0.0f;           // customer's total bill
     private int table;                     // customer's table's number
-    private static MenuObserverManager menuObserverManager;
+
     protected MenuContext menuContext = new MenuContext();
+
+    protected PaymentStrategy paymentStrategy;
 
     public CustomerController() { // constructor
         model = CustomerModel.getInstance();
     }
 
-    public static void setMenuObserverManager(MenuObserverManager manager) {
-        CustomerController.menuObserverManager = manager;
-    }
 
     public void updateMenu(boolean isMenuUpdated) {
-        if (isMenuUpdated) { // if menu has been modified
-            showMenu(); // shows updated menu
+        System.out.println("Setto il messaggio");
+        if (isMenuUpdated) {
+            menuUpdateMessage.setText("Menu non del giorno.");
+        } else {
+            menuUpdateMessage.setText("Menu del giorno.");
         }
+        menuUpdateMessage.setVisible(true);
     }
 
     @FXML
@@ -94,7 +106,6 @@ public class CustomerController {
             loginError.setText("Credenziali incomplete");
             loginError.setVisible(true);
         } else if (model.loginUser(username, password)) { // if the login works, sends the customer to next interface
-            menuObserverManager.addObserver(this);
             showSeatsInterface();
         } else { // if the login doesn't work, shows an error message
             loginError.setText("Credenziali errate, riprovare");
@@ -138,7 +149,7 @@ public class CustomerController {
                     waitingBox.setVisible(true); // shows the interface's element to get customer's answer about waiting or not
                     getWaitingTime = receptionSocket2.getReader(); // used to read the time to wait communicated by the receptionist
                     waitingTime = Integer.parseInt(getWaitingTime.readLine()); // read the time to wait from the socket and parses it to integer
-                    waitingMessage.setText("Non ci sono abbastanza posti disponibili, vuoi attendere " + waitingTime + " minuti ?"); // shows the waiting time message
+                    waitingMessage.setText(STR."Non ci sono abbastanza posti disponibili, vuoi attendere \{waitingTime} minuti ?"); // shows the waiting time message
                     waitingMessage.setVisible(true);
                 }
             }
@@ -165,7 +176,7 @@ public class CustomerController {
     private void onWaitComplete() { // manages the completion of the waiting time
         Platform.runLater(() -> {
             Timeline timeline = new Timeline( // after a certain period of time, hides the waiting components and sends the customer to the interface to take orders
-                new KeyFrame(Duration.seconds(1), event -> {
+                new KeyFrame(Duration.seconds(1), _ -> {
                     try { showOrderInterface(); // shows the interface to get orders
                     } catch (IOException exc) {
                         throw new RuntimeException(exc);
@@ -220,7 +231,7 @@ public class CustomerController {
             totalOrdered.append(order).append("\n"); // adds the order to the customer's list and its price to the bill
             applyTotalOrderedStyle(); // applies a style to total ordered
             bill += price; // updates customer's bill
-            billText.setText("€" + String.format("%.2f", bill));
+            billText.setText(STR."€\{String.format("%.2f", bill)}");
             totalOrderedArea.getItems().add(totalOrdered.toString()); // shows orders and total bill
         } catch (IOException exc) { // if waiter is unreachable
             unavailableWaiter.setText("Nessun cameriere disponibile al momento");
@@ -237,12 +248,94 @@ public class CustomerController {
         confirmationDialog.setContentText("Sei sicuro di voler chiedere il conto?");
         confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
         confirmationDialog.showAndWait().ifPresent(response -> { // waits for customer's response
-            if (response == ButtonType.OK) { // if customer confirms, closes the interface
-                Stage stage = (Stage) stopButton.getScene().getWindow();
-                menuObserverManager.removeObserver(this);
-                stage.close();
+            if (response == ButtonType.OK) {
+                // Finestra di scelta del metodo di pagamento
+                ChoiceDialog<String> paymentChoiceDialog = new ChoiceDialog<>("Contanti", "Contanti", "Carta di Credito");
+                paymentChoiceDialog.setTitle("Metodo di pagamento");
+                paymentChoiceDialog.setHeaderText(null);
+                paymentChoiceDialog.setContentText("Scegli il metodo di pagamento:");
+
+                paymentChoiceDialog.showAndWait().ifPresent(paymentMethod -> {
+                    if (paymentMethod.equals("Contanti")) {
+                        paymentStrategy = new CashPayment(cashText);
+                        paymentStrategy.processPayment();
+                        Stage stage = (Stage) stopButton.getScene().getWindow();
+                        stage.close();
+                    } else if (paymentMethod.equals("Carta di Credito")) {
+                        try {
+                            Stage stage = (Stage) stopButton.getScene().getWindow();
+                            stage.close();
+                            ShowCreditCardInterface();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
             }
         });
+    }
+
+
+    public void pay() {
+        String cardNumber = cardNumberField.getText().trim();
+        String cardName = cardNameField.getText().trim();
+        String expiryDate = expiryDateField.getText().trim();
+        String cvv = cvvField.getText().trim();
+
+        if (cardNumber.length() != 16) {
+            paymentConfirmationLabel.setText("Numero di carta non valido.");
+            paymentConfirmationLabel.setVisible(true);
+            return;
+        }
+
+        if (cardName.isEmpty()) {
+            paymentConfirmationLabel.setText("Nome sulla carta non valido.");
+            paymentConfirmationLabel.setVisible(true);
+            return;
+        }
+
+        // Controlla se il CVV è vuoto o non ha la lunghezza corretta
+        if (cvv.length() != 3) {
+            paymentConfirmationLabel.setText("CVV non valido.");
+            paymentConfirmationLabel.setVisible(true);
+            return;
+        }
+
+        // Controlla se la data di scadenza è nel formato corretto (MM/AAAA)
+        if (!expiryDate.matches("\\d{2}/\\d{4}")) {
+            paymentConfirmationLabel.setText("Data di scadenza non valida. Utilizzare il formato MM/AAAA.");
+            paymentConfirmationLabel.setVisible(true);
+            return;
+        }
+
+
+        // Altri controlli specifici per i dati della carta di credito possono essere aggiunti qui
+
+        // Se tutti i controlli passano, esegui il pagamento
+        paymentStrategy = new CreditCardPayment(cardNumberField, paymentConfirmationLabel);
+        paymentStrategy.processPayment();
+        cvvField.setVisible(false);
+        cardNumberField.setVisible(false);
+        cardNameField.setVisible(false);
+        expiryDateField.setVisible(false);
+    }
+
+
+    @FXML
+    private void ShowCreditCardInterface() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("CreditCardPaymentInterface.fxml"));
+        Scene scene = new Scene(loader.load());
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setMaximized(true);
+
+        cardNameField = (TextField) scene.lookup("#cardNameField");
+        cardNumberField = (TextField) scene.lookup("#cardNumberField");
+        cvvField = (TextField) scene.lookup("#cvvField");
+        expiryDateField = (TextField) scene.lookup("#expiryDateField");
+        paymentConfirmationLabel = (Label) scene.lookup("#paymentConfirmationLabel");
+        stage.show();
+
     }
 
     @FXML
@@ -254,8 +347,8 @@ public class CustomerController {
         stage.setScene(scene);
         stage.setMaximized(true); // sets fullscreen
         loginButton = (Button) scene.lookup("#loginButton");
-        loginButton.setOnMouseEntered(event -> loginButton.setEffect(new DropShadow()));
-        loginButton.setOnMouseExited(event -> loginButton.setEffect(null));
+        loginButton.setOnMouseEntered(_ -> loginButton.setEffect(new DropShadow()));
+        loginButton.setOnMouseExited(_ -> loginButton.setEffect(null));
         stage.show(); // shows the interface
     }
 
@@ -268,8 +361,8 @@ public class CustomerController {
         stage.setScene(scene);
         stage.setMaximized(true); // sets fullscreen
         registerButton = (Button) scene.lookup("#registerButton");
-        registerButton.setOnMouseEntered(event -> registerButton.setEffect(new DropShadow()));
-        registerButton.setOnMouseExited(event -> registerButton.setEffect(null));
+        registerButton.setOnMouseEntered(_ -> registerButton.setEffect(new DropShadow()));
+        registerButton.setOnMouseExited(_ -> registerButton.setEffect(null));
         stage.show(); // shows the interface
     }
 
@@ -282,8 +375,8 @@ public class CustomerController {
         stage.setScene(scene);
         stage.setMaximized(true); // sets fullscreen
         confirmSeatsButton = (Button) scene.lookup("#confirmSeatsButton");
-        confirmSeatsButton.setOnMouseEntered(event -> confirmSeatsButton.setEffect(new DropShadow()));
-        confirmSeatsButton.setOnMouseExited(event -> confirmSeatsButton.setEffect(null));
+        confirmSeatsButton.setOnMouseEntered(_ -> confirmSeatsButton.setEffect(new DropShadow()));
+        confirmSeatsButton.setOnMouseExited(_ -> confirmSeatsButton.setEffect(null));
         stage.show(); // shows the interface
     }
 
@@ -308,27 +401,26 @@ public class CustomerController {
         billText = (Text) scene.lookup("#billText");
         billText.setText("€0");
         unavailableWaiter = (Text) scene.lookup("#unavailableWaiter");
+        menuUpdateMessage = (Text) scene.lookup("#menuUpdateMessage");
         stopButton = (Button) scene.lookup("#stopButton");
-        stopButton.setOnMouseEntered(event -> stopButton.setEffect(new DropShadow()));
-        stopButton.setOnMouseExited(event -> stopButton.setEffect(null));
+        stopButton.setOnMouseEntered(_ -> stopButton.setEffect(new DropShadow()));
+        stopButton.setOnMouseExited(_ -> stopButton.setEffect(null));
     }
 
     public void setMouseClickHandler () { // sets an event handler that catches customer's clicks on the interface
-        menu.setOnMouseClicked(event -> { // adds an event manager to get customer's order by clicking onto the menu
+        menu.setOnMouseClicked(_ -> { // adds an event manager to get customer's order by clicking onto the menu
             Order order = menu.getSelectionModel().getSelectedItem(); // gets customer's clicked order
-            if (order != null) { // checks if the chef's clicked on an order
-                Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get customers confirm
-                confirmationDialog.setTitle("Conferma ordine");
-                confirmationDialog.setHeaderText(null);
-                confirmationDialog.setGraphic(null);
-                confirmationDialog.setContentText("Sei sicuro di voler ordinare " + order.name() + " ?");
-                confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
-                confirmationDialog.showAndWait().ifPresent(response -> { // waits for customer's response
-                    if (response == ButtonType.OK) { // if the customer confirms, sends the order to the waiter
-                        getOrder(order.name(), order.price());
-                    }
-                });
-            }
+            Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get customers confirm
+            confirmationDialog.setTitle("Conferma ordine");
+            confirmationDialog.setHeaderText(null);
+            confirmationDialog.setGraphic(null);
+            confirmationDialog.setContentText(STR."Sei sicuro di voler ordinare \{order.name()} ?");
+            confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
+            confirmationDialog.showAndWait().ifPresent(response -> { // waits for customer's response
+                if (response == ButtonType.OK) { // if the customer confirms, sends the order to the waiter
+                    getOrder(order.name(), order.price());
+                }
+            });
         });
     }
 
@@ -357,15 +449,13 @@ public class CustomerController {
                         } else {
                             HBox hbox = new HBox();
                             Label nameLabel = new Label(item.name());
-                            Label priceLabel = new Label("€" + String.format("%.2f", item.price()));
+                            Label priceLabel = new Label(STR."€\{String.format("%.2f", item.price())}");
                             Region spacer = new Region();
                             HBox.setHgrow(spacer, Priority.ALWAYS);
                             hbox.getChildren().addAll(nameLabel, spacer, priceLabel);
                             setText(null);
                             setGraphic(hbox);
                             setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px");
-                            setOnMouseEntered(event -> setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px; -fx-background-color: #ECD797"));
-                            setOnMouseExited(event -> setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px"));
                         }
                     }
                 };
