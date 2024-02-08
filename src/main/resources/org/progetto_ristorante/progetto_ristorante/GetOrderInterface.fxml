@@ -45,12 +45,6 @@
     </VBox>
     <!-- Orders -->
 
-    <VBox alignment="CENTER" spacing="10.0">
-        <Text fx:id="cashText" text="Vai in cassa per pagare il conto"
-              style="-fx-font-size: 20px; -fx-fill: #FFA500; -fx-font-family: 'Helvetica'; visibility: false"/>
-    </VBox>
-
-
     <!-- Stop Button -->
     <Button fx:id="stopButton" text="Chiedi il conto" onAction="#askBill"
             style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #228B22; -fx-border-width: 1; -fx-alignment: CENTER"/>
@@ -59,4 +53,6 @@
     <!-- Error Message -->
     <Text fx:id="unavailableWaiter" visible="false" fill="#FF0000" style="-fx-font-family: 'Helvetica'; -fx-font-size: 30px"/>
     <!-- Error Message -->
+
+    <Text fx:id="cashText" style="-fx-font-size: 30px; -fx-fill: #FFA500; -fx-font-family: 'Helvetica'; visibility: false"/>
 </VBox>

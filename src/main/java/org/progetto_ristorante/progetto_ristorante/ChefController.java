@@ -192,21 +192,23 @@ public class ChefController implements Initializable {
     public void setMouseClickHandler () { // sets an event handler that catches chef's clicks on the interface
         menu.setOnMouseClicked(_ -> { // adds an event manager to get the order the chef wants to remove from the menu
             Order order = menu.getSelectionModel().getSelectedItem(); // gets chef's clicked order
-            Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get chef confirm
-            confirmationDialog.setTitle("Conferma eliminazione ordine");
-            confirmationDialog.setHeaderText(null);
-            confirmationDialog.setGraphic(null);
-            confirmationDialog.setContentText(STR."Sei sicuro di voler eliminare \{order.name()} dal menu?");
-            confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
-            confirmationDialog.showAndWait().ifPresent(response -> { // waits chef's response
-                if (response == ButtonType.OK) { // if chef confirms
-                    try {
-                        deleteOrder(); // deletes the order from the menu
-                    } catch (SQLException exc) {
-                        throw new RuntimeException(exc);
+            if (order != null) {
+                Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get chef confirm
+                confirmationDialog.setTitle("Conferma eliminazione ordine");
+                confirmationDialog.setHeaderText(null);
+                confirmationDialog.setGraphic(null);
+                confirmationDialog.setContentText(STR."Sei sicuro di voler eliminare \{order.name()} dal menu?");
+                confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
+                confirmationDialog.showAndWait().ifPresent(response -> { // waits chef's response
+                    if (response == ButtonType.OK) { // if chef confirms
+                        try {
+                            deleteOrder(); // deletes the order from the menu
+                        } catch (SQLException exc) {
+                            throw new RuntimeException(exc);
+                        }
                     }
-                }
-            });
+                });
+            }
         });
     }
 
@@ -231,6 +233,8 @@ public class ChefController implements Initializable {
                             setText(null);
                             setGraphic(hbox);
                             setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px");
+                            setOnMouseEntered(_ -> setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px; -fx-background-color: #ECD797"));
+                            setOnMouseExited(_ -> setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px"));
                         }
                     }
                 };
