@@ -42,8 +42,6 @@ public class ChefController implements Initializable {
     private final MenuOriginator menuOriginator = new MenuOriginator(); // initial menu's state (before modifies)
     private final MenuMemento menuMemento = menuOriginator.saveMenuState(); // used to restore menu's previous state if chef undo modifies
 
-
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) { // shows current menu when the interface is loaded and sets the action to perform when the chef clicks on buttons
         setButtonShadow(); // sets buttons' shadow when chef hovers them with mouse
@@ -61,8 +59,25 @@ public class ChefController implements Initializable {
     private void addOrder() { // adds an order to current menu
         String orderName = menuOrderField.getText(); // gets order's name from the interface
         String inputPrice = orderPriceField.getText(); // gets order's price from the interface
+        float price;
         if (!orderName.isEmpty() && !inputPrice.isEmpty()) { // checks if the chef has entered not null values
-            inputPrice = inputPrice.replace(',', '.'); // replaces "," with "."
+            try{
+                price = Float.parseFloat(inputPrice.replace(',', '.')); // replaces "," with "."
+                if (price <= 0) { // checks if orderPrice is non-negative
+                    invalidData.setText("Prezzo non valido");
+                    invalidData.setVisible(true);
+                    return;
+                }
+            } catch (NumberFormatException exc) { // checks if chef has entered a correct price
+                invalidData.setText("Prezzo non valido");
+                invalidData.setVisible(true);
+                return;
+            }
+            if (!orderName.matches("[a-zA-Z]+")) { // checks if order's name contains only letters
+                invalidData.setText("Il nome dell'ordine non deve contenere numeri o caratteri speciali");
+                invalidData.setVisible(true);
+                return;
+            }
             Order newOrder = orderFactory.createOrder(orderName, Float.parseFloat(inputPrice));
             if (menuOriginator.getMenu().stream().anyMatch(order -> order.name().equals(newOrder.name()))) { // checks if the order is already in the current menu
                 invalidData.setText("Ordine già presente nel menu");

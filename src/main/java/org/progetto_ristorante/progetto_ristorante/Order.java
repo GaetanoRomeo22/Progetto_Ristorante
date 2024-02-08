@@ -6,6 +6,6 @@ package org.progetto_ristorante.progetto_ristorante;
  */
 public record Order(String name, float price) {
     public String toString() { // returns the order as a string (override of the method toString)
-        return String.format("%-30s%10s", name, "€" + price);
+        return String.format("%-30s%10s", name, STR."€\{price}");
     }
 }
