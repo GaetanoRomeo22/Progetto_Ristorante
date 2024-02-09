@@ -479,6 +479,7 @@ public class CustomerController implements Initializable {
                         getOrder(order.name(), order.price());
                     }
                 });
+                menu.getSelectionModel().clearSelection(); // removes order's selection on the interface
             }
         });
     }

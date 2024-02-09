@@ -43,7 +43,7 @@
     <VBox fx:id="orderBox" spacing="10.0" alignment="CENTER">
         <Text text="ORDINI EFFETTUATI" style="-fx-font-size: 35px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'; -fx-font-weight: bold"/>
         <ListView fx:id="totalOrderedArea" prefWidth="808" maxWidth="808"
-                  style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
+                  style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'; -fx-opacity: 1.0;" disable="true"/>
         <!-- Stop Button -->
         <Button fx:id="stopButton" text="Chiedi il conto" onAction="#askBill"
                 style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #228B22; -fx-border-width: 1; -fx-alignment: CENTER"/>

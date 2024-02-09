@@ -230,6 +230,7 @@ public class ChefController implements Initializable {
                         }
                     }
                 });
+                menu.getSelectionModel().clearSelection(); // removes order's selection on the interface
             }
         });
     }
