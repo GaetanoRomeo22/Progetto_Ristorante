@@ -214,7 +214,7 @@ public class CustomerController implements Initializable {
             unavailableReceptionist.setText("Numero di posti non valido");
             unavailableReceptionist.setVisible(true);
         }
-        requiredSeatsField.setText(""); // clears previous input
+        requiredSeatsField.clear(); // clears previous input
         int requiredSeats = Integer.parseInt(input); // parses to Integer
         sendSeats.println(requiredSeats); // says how many seats he requires to the receptionist
         int tableNumber = Integer.parseInt(checkSeats.readLine());  // gets the table number from the receptionist if it's possible
@@ -265,6 +265,7 @@ public class CustomerController implements Initializable {
         confirmationDialog.setHeaderText(null);
         confirmationDialog.setContentText("Sei sicuro di voler chiedere il conto?");
         confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
+        confirmationDialog.initOwner(menu.getScene().getWindow());
         confirmationDialog.showAndWait().ifPresent(response -> { // waits for customer's response
             if (response == ButtonType.OK) { // payment method window
                 ChoiceDialog<String> paymentChoiceDialog = new ChoiceDialog<>("Contanti", "Contanti", "Carta di Credito");
@@ -272,6 +273,7 @@ public class CustomerController implements Initializable {
                 paymentChoiceDialog.setHeaderText(null);
                 paymentChoiceDialog.setGraphic(null);
                 paymentChoiceDialog.setContentText("Scegli il metodo di pagamento:");
+                paymentChoiceDialog.initOwner(menuBox.getScene().getWindow());
                 paymentChoiceDialog.showAndWait().ifPresent(paymentMethod -> {
                     if (paymentMethod.equals("Contanti")) {
                         paymentStrategy = new CashPayment(cashText);
@@ -281,8 +283,6 @@ public class CustomerController implements Initializable {
                         orderBox.setVisible(false);
                     } else if (paymentMethod.equals("Carta di Credito")) {
                         try {
-                            Stage stage = (Stage) stopButton.getScene().getWindow();
-                            stage.close();
                             ShowCreditCardInterface();
                         } catch (IOException e) {
                             throw new RuntimeException(e);
@@ -294,7 +294,7 @@ public class CustomerController implements Initializable {
     }
 
     public void pay() { // allows the user to pay
-        String cardNumber = cardNumberField.getText().trim();
+        String cardNumber = cardNumberField.getText().trim(); // gets card's data from the interface
         String cardName = cardNameField.getText().trim();
         String expiryDate = expiryDateField.getText().trim();
         String cvv = cvvField.getText().trim();
@@ -338,10 +338,20 @@ public class CustomerController implements Initializable {
             paymentConfirmationLabel.setVisible(true);
             return;
         }
-        // performs the payment
-        paymentStrategy = new CreditCardPayment(cardNumberField, paymentConfirmationLabel);
-        paymentStrategy.processPayment();
-        cardBox.setVisible(false);
+        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmationDialog.setTitle("Conferma pagamento");
+        confirmationDialog.setHeaderText(null);
+        confirmationDialog.setGraphic(null);
+        confirmationDialog.setContentText("Sei sicuro di voler procedere al pagamento?");
+        confirmationDialog.initOwner(cardBox.getScene().getWindow());
+        confirmationDialog.showAndWait().ifPresent(result -> { // checks customer's answer
+            if (result == ButtonType.OK) { // if chef confirms
+                // performs the payment
+                paymentStrategy = new CreditCardPayment(cardNumberField, paymentConfirmationLabel);
+                paymentStrategy.processPayment();
+                cardBox.setVisible(false);
+            }
+        });
     }
 
     @FXML
@@ -396,10 +406,11 @@ public class CustomerController implements Initializable {
     @FXML
     private void ShowCreditCardInterface() throws IOException { // switches the interface to the payment method
         FXMLLoader loader = new FXMLLoader(getClass().getResource("CreditCardPaymentInterface.fxml"));
-        Scene scene = new Scene(loader.load());
-        Stage stage = new Stage();
+        Parent parent = loader.load();
+        Scene scene = new Scene(parent);
+        Stage stage = (Stage) menuBox.getScene().getWindow();
         stage.setScene(scene);
-        stage.setMaximized(true); // sets fullscreen
+        stage.setMaximized(true);
         initializeCreditCardInterfaceElements(scene); // initializes interface's elements
         stage.show(); // shows the interface
     }
@@ -461,6 +472,7 @@ public class CustomerController implements Initializable {
                 confirmationDialog.setHeaderText(null);
                 confirmationDialog.setGraphic(null);
                 confirmationDialog.setContentText(STR."Sei sicuro di voler ordinare \{order.name()} ?");
+                confirmationDialog.initOwner(menu.getScene().getWindow());
                 confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
                 confirmationDialog.showAndWait().ifPresent(response -> { // waits for customer's response
                     if (response == ButtonType.OK) { // if the customer confirms, sends the order to the waiter

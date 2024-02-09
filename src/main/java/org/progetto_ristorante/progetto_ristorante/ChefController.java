@@ -57,6 +57,7 @@ public class ChefController implements Initializable {
 
     @FXML
     private void addOrder() { // adds an order to current menu
+        invalidData.setVisible(false);
         String orderName = menuOrderField.getText(); // gets order's name from the interface
         String inputPrice = orderPriceField.getText(); // gets order's price from the interface
         float price;
@@ -93,8 +94,8 @@ public class ChefController implements Initializable {
                     if (result == ButtonType.OK) { // if chef confirms
                         menuOriginator.getMenu().add(newOrder); // adds the order into current menu
                         showCurrentMenu(); // shows current menu (with modifies)
-                        menuOrderField.setText(""); // clears previous text
-                        orderPriceField.setText("");
+                        menuOrderField.clear(); // clears previous text
+                        orderPriceField.clear();
                     }
                 });
             }
@@ -119,6 +120,9 @@ public class ChefController implements Initializable {
 
     @FXML
     private void showStoredMenu() { // shows the menu stored into the database (initial menu's state)
+        invalidData.setVisible(false);
+        menuOrderField.clear();
+        orderPriceField.clear();
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
             String selectQuery = "SELECT * FROM ORDINI"; // query to get each menu's order
             try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) { // performs the select
@@ -148,6 +152,7 @@ public class ChefController implements Initializable {
         confirmationDialog.setContentText("Sei sicuro di voler confermare il menu?");
         confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
         confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);  // adds confirm and deny buttons
+        confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
         confirmationDialog.showAndWait().ifPresent(response -> { // waits chef's response
             if (response == ButtonType.OK) { // if chef confirms, confirms the menu and hides interface's elements
                 saveConfirmedMenu(); // stores menu updates into the database
@@ -167,6 +172,7 @@ public class ChefController implements Initializable {
         confirmationDialog.setContentText("Sei sicuro di voler annullare le modifiche al menu?");
         confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
         confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);  // adds confirm and deny buttons
+        confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
         confirmationDialog.showAndWait().ifPresent(response -> { // waits for chef's response
             if (response == ButtonType.OK) { // if chef confirms, confirms the menu and hides interface's elements
                 menuMemento.restoreMenu(); // returns to previous state
@@ -214,6 +220,7 @@ public class ChefController implements Initializable {
                 confirmationDialog.setGraphic(null);
                 confirmationDialog.setContentText(STR."Sei sicuro di voler eliminare \{order.name()} dal menu?");
                 confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
+                confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
                 confirmationDialog.showAndWait().ifPresent(response -> { // waits chef's response
                     if (response == ButtonType.OK) { // if chef confirms
                         try {

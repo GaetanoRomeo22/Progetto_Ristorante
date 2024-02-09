@@ -37,7 +37,7 @@
     </VBox>
     <!-- Menu -->
 
-    <Text fx:id="cashText" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'; -fx-fill: #32CD32" visible="false"/>
+    <Text fx:id="cashText" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'; -fx-fill: #32CD32" text="ciao" visible="false"/>
 
     <!-- Orders -->
     <VBox fx:id="orderBox" spacing="10.0" alignment="CENTER">
