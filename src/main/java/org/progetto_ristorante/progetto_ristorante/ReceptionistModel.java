@@ -18,9 +18,11 @@ public class ReceptionistModel {
 
     public ReceptionistModel() { // constructor
         semaphore = new Semaphore(1);
-        availableSeats = MAX_SEATS;
-        availableTables = MAX_TABLES;
-        tables = new int[MAX_TABLES];
+        availableSeats = MAX_SEATS; // sets the number of available seats
+        availableTables = MAX_TABLES; // sets the number of available tables
+        tables = new int[MAX_TABLES]; // allocates an array of MAX_TABLES that indicates restaurant's menu
+        for (int i = 0; i < MAX_TABLES; i++) // sets each table as free
+            tables[i] = 0;
     }
 
     public int assignTable(int requiredSeats, PrintWriter giveTableNumber) { // assigns a table to a customer if possible
