@@ -37,10 +37,12 @@
 
     <!-- Additional Elements for Waiting -->
     <VBox fx:id="waitingBox" spacing="20.0" visible="false" alignment="CENTER">
-        <Text fx:id="waitingMessage" visible="false" style="-fx-font-size: 30px; -fx-text-fill: #333333;"/>
+        <Text fx:id="waitingMessage" visible="false" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
         <HBox spacing="10.0" alignment="CENTER">
-            <Button text="Si, attendo" onAction="#waitButton" style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-text-fill: white"/>
-            <Button text="No, me ne vado" onAction="#leave" style="-fx-font-size: 30px; -fx-background-color: #FF4500; -fx-text-fill: white"/>
+            <Button fx:id="waitingButton" text="Si, attendo" onAction="#waitButton"
+                    style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #228B22; -fx-border-width: 1"/>
+            <Button fx:id="leavingButton" text="No, me ne vado" onAction="#leave"
+                    style="-fx-font-size: 30px; -fx-background-color: #FF4500; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #FF4500; -fx-border-width: 1"/>
         </HBox>
     </VBox>
     <!-- Additional Elements for Waiting -->

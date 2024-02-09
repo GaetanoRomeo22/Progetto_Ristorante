@@ -72,6 +72,8 @@ public class CustomerController implements Initializable {
                    registerButton,
                    confirmSeatsButton,
                    stopButton,
+                   waitingButton,
+                   leavingButton,
                    payButton;
 
     @FXML
@@ -106,6 +108,11 @@ public class CustomerController implements Initializable {
             loginButton.setOnMouseExited(_ -> loginButton.setEffect(null));
             loginRegisterButton.setOnMouseEntered(_ -> loginRegisterButton.setUnderline(true));
             loginRegisterButton.setOnMouseExited(_ -> loginRegisterButton.setUnderline(false));
+        } else if (waitingButton != null && leavingButton != null) { // sets hover effect in get seats interface
+            waitingButton.setOnMouseEntered(_ -> waitingButton.setEffect(new DropShadow()));
+            waitingButton.setOnMouseExited(_ -> waitingButton.setEffect(null));
+            leavingButton.setOnMouseEntered(_ -> leavingButton.setEffect(new DropShadow()));
+            leavingButton.setOnMouseExited(_ -> leavingButton.setEffect(null));
         }
     }
 
