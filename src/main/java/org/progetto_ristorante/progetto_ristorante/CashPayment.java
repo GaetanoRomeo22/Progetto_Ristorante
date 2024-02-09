@@ -13,7 +13,7 @@ public class CashPayment implements PaymentStrategy {
     }
 
     @Override
-    public void processPayment() {
+    public void processPayment() { // executes the payment with cash
         cashText.setText("Pagare l'importo presso la cassa, indicando il numero del tavolo");
         cashText.setVisible(true);
     }

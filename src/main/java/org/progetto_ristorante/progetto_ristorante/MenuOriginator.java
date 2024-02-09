@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MenuOriginator {
-    protected List<Order> initialMenuState = new ArrayList<>(); // initial menu's state
+    private List<Order> initialMenuState = new ArrayList<>(); // initial menu's state
 
     public void setMenu (List<Order> menuState) { // sets menu's current state
         this.initialMenuState = menuState;
