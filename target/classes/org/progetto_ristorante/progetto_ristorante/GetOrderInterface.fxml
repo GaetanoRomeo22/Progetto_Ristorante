@@ -18,7 +18,7 @@
     <!-- Distance Among Elements -->
 
     <!-- Table and Bill -->
-    <HBox spacing="20.0" alignment="CENTER">
+    <HBox fx:id="tableBillBox" spacing="20.0" alignment="CENTER">
         <VBox spacing="5.0" alignment="CENTER">
             <Text text="TAVOLO" style="-fx-font-size: 35px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'; -fx-font-weight: bold"/>
             <Text fx:id="tableNumber" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
@@ -31,28 +31,27 @@
     <!-- Table and Bill -->
 
     <!-- Menu -->
-    <VBox spacing="10.0" alignment="CENTER">
+    <VBox fx:id="menuBox" spacing="10.0" alignment="CENTER">
         <Text text="MENU" style="-fx-font-size: 35px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'; -fx-font-weight: bold"/>
         <ListView fx:id="menu" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'" prefWidth="808" maxWidth="808"/>
     </VBox>
     <!-- Menu -->
 
+    <Text fx:id="cashText" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'; -fx-fill: #32CD32" visible="false"/>
+
     <!-- Orders -->
-    <VBox spacing="10.0" alignment="CENTER">
+    <VBox fx:id="orderBox" spacing="10.0" alignment="CENTER">
         <Text text="ORDINI EFFETTUATI" style="-fx-font-size: 35px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'; -fx-font-weight: bold"/>
         <ListView fx:id="totalOrderedArea" prefWidth="808" maxWidth="808"
                   style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
+        <!-- Stop Button -->
+        <Button fx:id="stopButton" text="Chiedi il conto" onAction="#askBill"
+                style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #228B22; -fx-border-width: 1; -fx-alignment: CENTER"/>
+        <!-- Stop Button -->
     </VBox>
     <!-- Orders -->
-
-    <!-- Stop Button -->
-    <Button fx:id="stopButton" text="Chiedi il conto" onAction="#askBill"
-            style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #228B22; -fx-border-width: 1; -fx-alignment: CENTER"/>
-    <!-- Stop Button -->
 
     <!-- Error Message -->
     <Text fx:id="unavailableWaiter" visible="false" fill="#FF0000" style="-fx-font-family: 'Helvetica'; -fx-font-size: 30px"/>
     <!-- Error Message -->
-
-    <Text fx:id="cashText" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'; -fx-fill: #32CD32" visible="false"/>
 </VBox>
