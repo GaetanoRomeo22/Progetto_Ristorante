@@ -75,8 +75,14 @@ public class CustomerController implements Initializable {
                    payButton;
 
     @FXML
+    private HBox tableBillBox;
+
+    @FXML
     private VBox seatsBox,
-            waitingBox;
+            waitingBox,
+            menuBox,
+            orderBox,
+            cardBox;
 
     @FXML
     private Label paymentConfirmationLabel;
@@ -86,7 +92,6 @@ public class CustomerController implements Initializable {
     private int waitingTime;               // time the customer has to wait if there aren't available seats
     private float bill = 0.0f;             // customer's total bill
     private int table;                     // customer's table's number
-    private boolean isLoginInterface = true;
     protected MenuContext menuContext = new MenuContext();
     protected PaymentStrategy paymentStrategy;
 
@@ -96,7 +101,7 @@ public class CustomerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) { // sets hover effect in login interface
-        if (isLoginInterface && loginButton != null && loginRegisterButton != null) {
+        if (loginButton != null && loginRegisterButton != null) {
             loginButton.setOnMouseEntered(_ -> loginButton.setEffect(new DropShadow()));
             loginButton.setOnMouseExited(_ -> loginButton.setEffect(null));
             loginRegisterButton.setOnMouseEntered(_ -> loginRegisterButton.setUnderline(true));
@@ -264,6 +269,9 @@ public class CustomerController implements Initializable {
                     if (paymentMethod.equals("Contanti")) {
                         paymentStrategy = new CashPayment(cashText);
                         paymentStrategy.processPayment();
+                        tableBillBox.setVisible(false);
+                        menuBox.setVisible(false);
+                        orderBox.setVisible(false);
                     } else if (paymentMethod.equals("Carta di Credito")) {
                         try {
                             Stage stage = (Stage) stopButton.getScene().getWindow();
@@ -326,11 +334,11 @@ public class CustomerController implements Initializable {
         // performs the payment
         paymentStrategy = new CreditCardPayment(cardNumberField, paymentConfirmationLabel);
         paymentStrategy.processPayment();
+        cardBox.setVisible(false);
     }
 
     @FXML
     private void showLoginInterface() throws IOException { // switches the interface to the login
-        isLoginInterface = true;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("LoginInterface.fxml"));
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
@@ -343,7 +351,6 @@ public class CustomerController implements Initializable {
 
     @FXML
     private void showRegisterInterface() throws IOException { // switches the interface to the registration
-        isLoginInterface = false;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("RegisterInterface.fxml"));
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
@@ -356,7 +363,6 @@ public class CustomerController implements Initializable {
 
     @FXML
     private void showSeatsInterface() throws IOException { // switches the interface to require seats
-        isLoginInterface = false;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GetSeatsInterface.fxml"));
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
@@ -513,7 +519,7 @@ public class CustomerController implements Initializable {
                             setStyle(null);
                         } else {
                             setText(item);
-                            setStyle("-fx-border-color: #D2B48C; -fx-border-width: 1;");
+                            setStyle("-fx-border-color: #D2B48C; -fx-border-width: 1");
                         }
                     }
                 };

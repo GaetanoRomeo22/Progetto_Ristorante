@@ -15,6 +15,7 @@ public class CashPayment implements PaymentStrategy {
     @Override
     public void processPayment() {
         cashText.setText("Pagare l'importo presso la cassa, indicando il numero del tavolo");
+        cashText.setStyle("-fx-text-fill: #32CD32; -fx-font-family: 'Helvetica'; -fx-font-size: 30px;");
         cashText.setVisible(true);
     }
 }
