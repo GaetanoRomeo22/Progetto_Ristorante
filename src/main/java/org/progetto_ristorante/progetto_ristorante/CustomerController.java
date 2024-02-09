@@ -5,6 +5,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -18,6 +19,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
@@ -27,11 +29,12 @@ import java.net.Socket;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.ResourceBundle;
 import java.util.concurrent.*;
 
 import static java.lang.StringTemplate.STR;
 
-public class CustomerController {
+public class CustomerController implements Initializable {
     @FXML
     private Text billText,
             tableNumber,
@@ -39,6 +42,8 @@ public class CustomerController {
             loginError,
             registerError,
             unavailableReceptionist,
+            loginRegisterButton,
+            registerLoginButton,
             unavailableWaiter,
             cashText;
 
@@ -79,15 +84,24 @@ public class CustomerController {
     private final CustomerModel model;
     private BufferedReader getWaitingTime; // used to get how much time has the customer to wait if there aren't available seats
     private int waitingTime;               // time the customer has to wait if there aren't available seats
-    private float bill = 0.0f;           // customer's total bill
+    private float bill = 0.0f;             // customer's total bill
     private int table;                     // customer's table's number
-
+    private boolean isLoginInterface = true;
     protected MenuContext menuContext = new MenuContext();
-
     protected PaymentStrategy paymentStrategy;
 
     public CustomerController() { // constructor
         model = CustomerModel.getInstance();
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) { // sets hover effect in login interface
+        if (isLoginInterface && loginButton != null && loginRegisterButton != null) {
+            loginButton.setOnMouseEntered(_ -> loginButton.setEffect(new DropShadow()));
+            loginButton.setOnMouseExited(_ -> loginButton.setEffect(null));
+            loginRegisterButton.setOnMouseEntered(_ -> loginRegisterButton.setUnderline(true));
+            loginRegisterButton.setOnMouseExited(_ -> loginRegisterButton.setUnderline(false));
+        }
     }
 
     @FXML
@@ -315,62 +329,41 @@ public class CustomerController {
     }
 
     @FXML
-    private void ShowCreditCardInterface() throws IOException { // switches the interface to the payment method
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("CreditCardPaymentInterface.fxml"));
-        Scene scene = new Scene(loader.load());
-        Stage stage = new Stage();
-        stage.setScene(scene);
-        stage.setMaximized(true); // sets fullscreen
-        cardNameField = (TextField) scene.lookup("#cardNameField");
-        cardNumberField = (TextField) scene.lookup("#cardNumberField");
-        cvvField = (TextField) scene.lookup("#cvvField");
-        expiryDateField = (TextField) scene.lookup("#expiryDateField");
-        paymentConfirmationLabel = (Label) scene.lookup("#paymentConfirmationLabel");
-        payButton = (Button) scene.lookup("#payButton");
-        payButton.setOnMouseEntered(_ -> payButton.setEffect(new DropShadow()));
-        payButton.setOnMouseExited(_ -> payButton.setEffect(null));
-        stage.show(); // shows the interface
-    }
-
-    @FXML
     private void showLoginInterface() throws IOException { // switches the interface to the login
+        isLoginInterface = true;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("LoginInterface.fxml"));
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
         Stage stage = (Stage) registerUsername.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true); // sets fullscreen
-        loginButton = (Button) scene.lookup("#loginButton");
-        loginButton.setOnMouseEntered(_ -> loginButton.setEffect(new DropShadow()));
-        loginButton.setOnMouseExited(_ -> loginButton.setEffect(null));
+        initializeLoginInterfaceElements(scene); // initializes interface's elements
         stage.show(); // shows the interface
     }
 
     @FXML
     private void showRegisterInterface() throws IOException { // switches the interface to the registration
+        isLoginInterface = false;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("RegisterInterface.fxml"));
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
         Stage stage = (Stage) loginUsername.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true); // sets fullscreen
-        registerButton = (Button) scene.lookup("#registerButton");
-        registerButton.setOnMouseEntered(_ -> registerButton.setEffect(new DropShadow()));
-        registerButton.setOnMouseExited(_ -> registerButton.setEffect(null));
+        initializeRegisterInterfaceElements(scene); // initializes interface's elements
         stage.show(); // shows the interface
     }
 
     @FXML
     private void showSeatsInterface() throws IOException { // switches the interface to require seats
+        isLoginInterface = false;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GetSeatsInterface.fxml"));
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
         Stage stage = (Stage) loginUsername.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true); // sets fullscreen
-        confirmSeatsButton = (Button) scene.lookup("#confirmSeatsButton");
-        confirmSeatsButton.setOnMouseEntered(_ -> confirmSeatsButton.setEffect(new DropShadow()));
-        confirmSeatsButton.setOnMouseExited(_ -> confirmSeatsButton.setEffect(null));
+        initializeSeatsOrderInterface(scene); // initializes interface's elements
         stage.show(); // shows the interface
     }
 
@@ -381,13 +374,48 @@ public class CustomerController {
         Stage stage = (Stage) seatsBox.getScene().getWindow();
         stage.setScene(scene);
         stage.setMaximized(true);
-        initializeInterfaceElements(scene); // initializes interface's elements
+        initializeOrderInterfaceElements(scene); // initializes interface's elements
         setMouseClickHandler(); // sets an event handler that catches customer's clicks on the interface
         stage.show();
         showMenu(); // shows the menu
     }
 
-    public void initializeInterfaceElements(Scene scene) { // initializes GetOrderInterface's elements
+    @FXML
+    private void ShowCreditCardInterface() throws IOException { // switches the interface to the payment method
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("CreditCardPaymentInterface.fxml"));
+        Scene scene = new Scene(loader.load());
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setMaximized(true); // sets fullscreen
+        initializeCreditCardInterfaceElements(scene); // initializes interface's elements
+        stage.show(); // shows the interface
+    }
+
+    private void initializeLoginInterfaceElements(Scene scene) { // initializes LoginInterface's elements
+        loginButton = (Button) scene.lookup("#loginButton");
+        loginRegisterButton = (Text) scene.lookup("#loginRegisterButton");
+        loginButton.setOnMouseEntered(_ -> loginButton.setEffect(new DropShadow()));
+        loginButton.setOnMouseExited(_ -> loginButton.setEffect(null));
+        loginRegisterButton.setOnMouseEntered(_ -> loginRegisterButton.setUnderline(true));
+        loginRegisterButton.setOnMouseExited(_ -> loginRegisterButton.setUnderline(false));
+    }
+
+    private void initializeRegisterInterfaceElements(Scene scene) { // initializes RegisterInterface's elements
+        registerButton = (Button) scene.lookup("#registerButton");
+        registerLoginButton = (Text) scene.lookup("#registerLoginButton");
+        registerButton.setOnMouseEntered(_ -> registerButton.setEffect(new DropShadow()));
+        registerButton.setOnMouseExited(_ -> registerButton.setEffect(null));
+        registerLoginButton.setOnMouseEntered(_ -> registerLoginButton.setUnderline(true));
+        registerLoginButton.setOnMouseExited(_ -> registerLoginButton.setUnderline(false));
+    }
+
+    private void initializeSeatsOrderInterface(Scene scene) { // initializes GetSeatsInterface's elements
+        confirmSeatsButton = (Button) scene.lookup("#confirmSeatsButton");
+        confirmSeatsButton.setOnMouseEntered(_ -> confirmSeatsButton.setEffect(new DropShadow()));
+        confirmSeatsButton.setOnMouseExited(_ -> confirmSeatsButton.setEffect(null));
+    }
+
+    private void initializeOrderInterfaceElements(Scene scene) { // initializes GetOrderInterface's elements
         menu = (ListView<Order>) scene.lookup("#menu");
         totalOrderedArea = (ListView<String>) scene.lookup("#totalOrderedArea");
         tableNumber = (Text) scene.lookup("#tableNumber");
@@ -400,7 +428,18 @@ public class CustomerController {
         stopButton.setOnMouseExited(_ -> stopButton.setEffect(null));
     }
 
-    public void setMouseClickHandler () { // sets an event handler that catches customer's clicks on the interface
+    private void initializeCreditCardInterfaceElements(Scene scene) { // initializes CreditCardPaymentInterface's elements
+        cardNameField = (TextField) scene.lookup("#cardNameField");
+        cardNumberField = (TextField) scene.lookup("#cardNumberField");
+        cvvField = (TextField) scene.lookup("#cvvField");
+        expiryDateField = (TextField) scene.lookup("#expiryDateField");
+        paymentConfirmationLabel = (Label) scene.lookup("#paymentConfirmationLabel");
+        payButton = (Button) scene.lookup("#payButton");
+        payButton.setOnMouseEntered(_ -> payButton.setEffect(new DropShadow()));
+        payButton.setOnMouseExited(_ -> payButton.setEffect(null));
+    }
+
+    private void setMouseClickHandler () { // sets an event handler that catches customer's clicks on the interface
         menu.setOnMouseClicked(_ -> { // adds an event manager to get customer's order by clicking onto the menu
             Order order = menu.getSelectionModel().getSelectedItem(); // gets customer's clicked order
             if (order != null) {
@@ -430,7 +469,7 @@ public class CustomerController {
         return password.matches(regex);
     }
 
-    public void applyMenuStyle() {
+    private void applyMenuStyle() {
         menu.setCellFactory(new Callback<>() { // applies a border to each menu's order
             @Override
             public ListCell<Order> call(ListView<Order> param) {
@@ -461,7 +500,7 @@ public class CustomerController {
         menu.setItems(menuContext.getMenuState().getMenu()); // makes the menu viewable as a list of Order elements (name-price)
     }
 
-    public void applyTotalOrderedStyle() {
+    private void applyTotalOrderedStyle() {
         totalOrderedArea.setCellFactory(new Callback<>() { // applies a border to each customer's order
             @Override
             public ListCell<String> call(ListView<String> param) {

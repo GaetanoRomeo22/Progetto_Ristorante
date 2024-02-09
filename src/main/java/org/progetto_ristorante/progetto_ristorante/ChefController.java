@@ -159,7 +159,7 @@ public class ChefController implements Initializable {
     }
 
     @FXML
-    public void restoreMenu() { // undo menu's updates
+    private void restoreMenu() { // undo menu's updates
         Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get chef confirm
         confirmationDialog.setTitle("Annulla modifiche");
         confirmationDialog.setHeaderText(null);
@@ -195,7 +195,7 @@ public class ChefController implements Initializable {
         }
     }
 
-    public void setButtonShadow() { // sets a shadow when chef hovers buttons with mouse
+    private void setButtonShadow() { // sets a shadow when chef hovers buttons with mouse
         cancelButton.setOnMouseEntered(_ -> cancelButton.setEffect(new DropShadow()));
         cancelButton.setOnMouseExited(_ -> cancelButton.setEffect(null));
         confirmMenuButton.setOnMouseEntered(_ -> confirmMenuButton.setEffect(new DropShadow()));
@@ -204,7 +204,7 @@ public class ChefController implements Initializable {
         confirmOrderButton.setOnMouseExited(_ -> confirmOrderButton.setEffect(null));
     }
 
-    public void setMouseClickHandler () { // sets an event handler that catches chef's clicks on the interface
+    private void setMouseClickHandler () { // sets an event handler that catches chef's clicks on the interface
         menu.setOnMouseClicked(_ -> { // adds an event manager to get the order the chef wants to remove from the menu
             Order order = menu.getSelectionModel().getSelectedItem(); // gets chef's clicked order
             if (order != null) {
@@ -227,7 +227,7 @@ public class ChefController implements Initializable {
         });
     }
 
-    public void applyMenuStyle() { // applies a border to each menu's order
+    private void applyMenuStyle() { // applies a border to each menu's order
         menu.setCellFactory(new Callback<>() {
             @Override
             public ListCell<Order> call(ListView<Order> param) {
@@ -248,7 +248,7 @@ public class ChefController implements Initializable {
                             setText(null);
                             setGraphic(hbox);
                             setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px");
-                            setOnMouseEntered(_ -> setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px; -fx-background-color: #ECD797"));
+                            setOnMouseEntered(_ -> setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px; -fx-background-color: #F0E3A2"));
                             setOnMouseExited(_ -> setStyle("-fx-border-color: #F5DEB3; -fx-padding: 10px; -fx-margin: 10px"));
                         }
                     }

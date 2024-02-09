@@ -13,13 +13,13 @@
     <!-- Card Details -->
     <Text text="Dati Carta" style="-fx-font-size: 35px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'; -fx-font-weight: bold"/>
     <TextField fx:id="cardNumberField" promptText="Numero" maxWidth="300" focusTraversable="false"
-               style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'"/>
+               style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'; -fx-prompt-text-fill: #808080;"/>
     <TextField fx:id="cardNameField" promptText="Intestatario" maxWidth="300" focusTraversable="false"
-               style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'"/>
+               style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'; -fx-prompt-text-fill: #808080;"/>
     <TextField fx:id="expiryDateField" promptText="Data Scadenza" maxWidth="300" focusTraversable="false"
-               style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'"/>
+               style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'; -fx-prompt-text-fill: #808080;"/>
     <TextField fx:id="cvvField" promptText="CVV" maxWidth="300" focusTraversable="false"
-               style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'"/>
+               style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'; -fx-prompt-text-fill: #808080;"/>
     <!-- Card Details -->
 
     <!-- Pay Button -->
