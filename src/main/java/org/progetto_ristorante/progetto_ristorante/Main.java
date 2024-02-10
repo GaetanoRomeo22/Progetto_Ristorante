@@ -37,7 +37,7 @@ public class Main extends Application {
             primaryStage.show();
 
             // chef's interface
-            FXMLLoader chefLoader = new FXMLLoader(getClass().getResource("ChefMenuInterface.fxml"));
+            FXMLLoader chefLoader = new FXMLLoader(getClass().getResource("ChefInterface.fxml"));
             Parent chefRoot = chefLoader.load();
             Stage chefStage = new Stage();
             Scene chefScene = new Scene(chefRoot);

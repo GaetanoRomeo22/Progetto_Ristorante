@@ -37,9 +37,9 @@ public class ChefController implements Initializable {
                     cancelButton,
                     confirmMenuButton;
 
-    private final ChefModel chefModel = new ChefModel();
-    private final OrderFactory orderFactory = new SimpleOrderFactory();
-    private final MenuOriginator menuOriginator = new MenuOriginator(); // initial menu's state (before modifies)
+    private final ChefModel chefModel = new ChefModel();                    // reference to Model
+    private final OrderFactory orderFactory = new SimpleOrderFactory();     // used to create an order with name and price
+    private final MenuOriginator menuOriginator = new MenuOriginator();     // initial menu's state (before modifies)
     private final MenuMemento menuMemento = menuOriginator.saveMenuState(); // used to restore menu's previous state if chef undo modifies
 
     @Override
@@ -79,7 +79,7 @@ public class ChefController implements Initializable {
                 invalidData.setVisible(true);
                 return;
             }
-            Order newOrder = orderFactory.createOrder(orderName, Float.parseFloat(inputPrice));
+            Order newOrder = orderFactory.createOrder(orderName, Float.parseFloat(inputPrice)); // creates an order with entered name and price
             if (menuOriginator.getMenu().stream().anyMatch(order -> order.name().equals(newOrder.name()))) { // checks if the order is already in the current menu
                 invalidData.setText("Ordine già presente nel menu");
                 invalidData.setVisible(true);

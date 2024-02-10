@@ -89,13 +89,13 @@ public class CustomerController implements Initializable {
     @FXML
     private Label paymentConfirmationLabel;
 
-    private final CustomerModel model;
-    private BufferedReader getWaitingTime; // used to get how much time has the customer to wait if there aren't available seats
-    private int waitingTime;               // time the customer has to wait if there aren't available seats
-    private float bill = 0.0f;             // customer's total bill
-    private int table;                     // customer's table's number
-    protected MenuContext menuContext = new MenuContext();
-    protected PaymentStrategy paymentStrategy;
+    private final CustomerModel model;                      // reference to Model
+    private BufferedReader getWaitingTime;                  // used to get how much time has the customer to wait if there aren't available seats
+    private int waitingTime;                                // time the customer has to wait if there aren't available seats
+    private float bill = 0.0f;                              // customer's total bill
+    private int table;                                      // customer's table's number
+    protected MenuContext menuContext = new MenuContext();  // used to show discounted or not discounted menu
+    protected PaymentStrategy paymentStrategy;              // used to manage payment method
 
     public CustomerController() { // constructor
         model = CustomerModel.getInstance();
