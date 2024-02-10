@@ -5,7 +5,7 @@ import java.net.Socket;
 
 public class WaiterController {
 
-    protected final WaiterModel model;
+    protected final WaiterModel model; // reference to the Model
     private final ServerSocketHandler waiterSocket; // socket to communicate with customers
 
     public WaiterController(WaiterModel waiterModel) { // constructor

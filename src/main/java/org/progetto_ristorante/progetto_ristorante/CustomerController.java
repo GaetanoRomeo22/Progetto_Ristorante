@@ -102,8 +102,8 @@ public class CustomerController implements Initializable {
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) { // sets hover effect in login interface
-        if (loginButton != null && loginRegisterButton != null) {
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        if (loginButton != null && loginRegisterButton != null) { // sets hover effect in login interface
             loginButton.setOnMouseEntered(_ -> loginButton.setEffect(new DropShadow()));
             loginButton.setOnMouseExited(_ -> loginButton.setEffect(null));
             loginRegisterButton.setOnMouseEntered(_ -> loginRegisterButton.setUnderline(true));
@@ -118,8 +118,8 @@ public class CustomerController implements Initializable {
 
     @FXML
     private void login() throws SQLException, NoSuchAlgorithmException, IOException { // manages customer's login
-        String username = loginUsername.getText(); // gets username from the interface
-        String password = loginPassword.getText(); // gets password from the interface
+        String username = loginUsername.getText().trim(); // gets username from the interface
+        String password = loginPassword.getText().trim(); // gets password from the interface
         if (username.isEmpty() || password.isEmpty()) { // checks if the customer has entered null values
             loginError.setText("Credenziali incomplete");
             loginError.setVisible(true);
@@ -133,9 +133,9 @@ public class CustomerController implements Initializable {
 
     @FXML
     private void register() throws SQLException, IOException, NoSuchAlgorithmException { // manages customer's registration
-        String username = registerUsername.getText(); // gets username from the interface
-        String password = registerPassword.getText(); // gets password from the interface
-        String confirmedPassword = confirmPassword.getText(); // gets confirmed password from the interface
+        String username = registerUsername.getText().trim(); // gets username from the interface
+        String password = registerPassword.getText().trim(); // gets password from the interface
+        String confirmedPassword = confirmPassword.getText().trim(); // gets confirmed password from the interface
         if (username.isEmpty() || password.isEmpty() || confirmedPassword.isEmpty()) { // checks if the customer has entered null values
             registerError.setText("Credenziali incomplete");
             registerError.setVisible(true);
@@ -209,7 +209,7 @@ public class CustomerController implements Initializable {
     private int getTable(SocketHandler receptionSocket) throws IOException { // allows the customer to specify how many seats they need and to get a table if available
         BufferedReader checkSeats = receptionSocket.getReader(); // used to gets a table from the receptionist
         PrintWriter sendSeats = receptionSocket.getWriter(); // used to say to the receptionist how much seats does him require
-        String input = requiredSeatsField.getText(); // gets customer's required seats from the interface
+        String input = requiredSeatsField.getText().trim(); // gets customer's required seats from the interface
         if (!input.matches("\\d+")) { // checks if the user's entered a number
             unavailableReceptionist.setText("Numero di posti non valido");
             unavailableReceptionist.setVisible(true);
@@ -259,7 +259,7 @@ public class CustomerController implements Initializable {
 
     @FXML
     private void askBill() { // closes customer's interface once he has done
-        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get customers confirm
+        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a confirmation dialog to check if the customer confirms to ask the bill
         confirmationDialog.setTitle("Richiesta conto");
         confirmationDialog.setGraphic(null);
         confirmationDialog.setHeaderText(null);
@@ -268,21 +268,21 @@ public class CustomerController implements Initializable {
         confirmationDialog.initOwner(menu.getScene().getWindow());
         confirmationDialog.showAndWait().ifPresent(response -> { // waits for customer's response
             if (response == ButtonType.OK) { // payment method window
-                ChoiceDialog<String> paymentChoiceDialog = new ChoiceDialog<>("Contanti", "Contanti", "Carta di Credito");
+                ChoiceDialog<String> paymentChoiceDialog = new ChoiceDialog<>("Contanti", "Contanti", "Carta di Credito"); // shows to the customer payment methods
                 paymentChoiceDialog.setTitle("Metodo di pagamento");
                 paymentChoiceDialog.setHeaderText(null);
                 paymentChoiceDialog.setGraphic(null);
                 paymentChoiceDialog.setContentText("Scegli il metodo di pagamento:");
                 paymentChoiceDialog.initOwner(menuBox.getScene().getWindow());
-                paymentChoiceDialog.showAndWait().ifPresent(paymentMethod -> {
-                    if (paymentMethod.equals("Contanti")) {
+                paymentChoiceDialog.showAndWait().ifPresent(paymentMethod -> { // waits for customer's selection
+                    if (paymentMethod.equals("Contanti")) { // if customer chooses cash payment
                         paymentStrategy = new CashPayment(cashText);
                         paymentStrategy.processPayment();
                         tableBillBox.setVisible(false);
                         menuBox.setVisible(false);
                         orderBox.setVisible(false);
-                    } else if (paymentMethod.equals("Carta di Credito")) {
-                        try {
+                    } else if (paymentMethod.equals("Carta di Credito")) { // if customer chooses credit card payment
+                        try { // shows the interface to get credit card data
                             ShowCreditCardInterface();
                         } catch (IOException e) {
                             throw new RuntimeException(e);
@@ -368,7 +368,7 @@ public class CustomerController implements Initializable {
 
     @FXML
     private void showRegisterInterface() throws IOException { // switches the interface to the registration
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("RegisterInterface.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("RegisterInterface.fxml")); // loads the fxml containing the interface
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
         Stage stage = (Stage) loginUsername.getScene().getWindow();
@@ -380,7 +380,7 @@ public class CustomerController implements Initializable {
 
     @FXML
     private void showSeatsInterface() throws IOException { // switches the interface to require seats
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("GetSeatsInterface.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("GetSeatsInterface.fxml")); // loads the fxml containing the interface
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
         Stage stage = (Stage) loginUsername.getScene().getWindow();
@@ -391,7 +391,7 @@ public class CustomerController implements Initializable {
     }
 
     private void showOrderInterface() throws IOException { // switches the interface to get orders
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("GetOrderInterface.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("GetOrderInterface.fxml")); // loads the fxml containing the interface
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
         Stage stage = (Stage) seatsBox.getScene().getWindow();
@@ -405,7 +405,7 @@ public class CustomerController implements Initializable {
 
     @FXML
     private void ShowCreditCardInterface() throws IOException { // switches the interface to the payment method
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("CreditCardPaymentInterface.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("CreditCardPaymentInterface.fxml")); // loads the fxml containing the interface
         Parent parent = loader.load();
         Scene scene = new Scene(parent);
         Stage stage = (Stage) menuBox.getScene().getWindow();

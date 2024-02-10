@@ -50,16 +50,16 @@ public class ChefController implements Initializable {
     }
 
     @FXML
-    private void cook() {
+    private void cook() { // starts chef's thread to starts cooking customers' orders
         confirmMenu(); // stores menu's updates
         chefModel.startServer(); // starts chef's thread
     }
 
     @FXML
     private void addOrder() { // adds an order to current menu
-        invalidData.setVisible(false);
-        String orderName = menuOrderField.getText(); // gets order's name from the interface
-        String inputPrice = orderPriceField.getText(); // gets order's price from the interface
+        invalidData.setVisible(false); // hides error message
+        String orderName = menuOrderField.getText().trim(); // gets order's name from the interface
+        String inputPrice = orderPriceField.getText().trim(); // gets order's price from the interface
         float price;
         if (!orderName.isEmpty() && !inputPrice.isEmpty()) { // checks if the chef has entered not null values
             try{
@@ -84,7 +84,7 @@ public class ChefController implements Initializable {
                 invalidData.setText("Ordine già presente nel menu");
                 invalidData.setVisible(true);
             } else {
-                Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+                Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a confirmation dialog to check if chef confirms to add the order into the menu
                 confirmationDialog.setTitle("Conferma aggiunta ordine");
                 confirmationDialog.setHeaderText(null);
                 confirmationDialog.setGraphic(null);
@@ -120,8 +120,8 @@ public class ChefController implements Initializable {
 
     @FXML
     private void showStoredMenu() { // shows the menu stored into the database (initial menu's state)
-        invalidData.setVisible(false);
-        menuOrderField.clear();
+        invalidData.setVisible(false); // hides error message
+        menuOrderField.clear(); // clears previous text
         orderPriceField.clear();
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
             String selectQuery = "SELECT * FROM ORDINI"; // query to get each menu's order
@@ -132,7 +132,7 @@ public class ChefController implements Initializable {
                     String name = resultSet.getString("NOME");
                     float price = resultSet.getFloat("PREZZO");
                     Order order = new Order(name, price); // calls the constructor to create an Order object
-                    menuItems.add(order);
+                    menuItems.add(order); // adds the order into the menu
                 }
                 menuOriginator.setMenu(menuItems); // sets menu's initial state
                 applyMenuStyle(); // applies a border to the menu
@@ -145,7 +145,7 @@ public class ChefController implements Initializable {
 
     @FXML
     private void confirmMenu() { // hides the interface once the chef has finished to write the menu
-        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get chef confirm
+        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a confirmation dialog to check if chef confirms the menu
         confirmationDialog.setTitle("Conferma menu");
         confirmationDialog.setHeaderText(null);
         confirmationDialog.setGraphic(null);
@@ -165,13 +165,13 @@ public class ChefController implements Initializable {
 
     @FXML
     private void restoreMenu() { // undo menu's updates
-        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get chef confirm
+        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a confirmation dialog to check if chef confirms to undo menu's modifies
         confirmationDialog.setTitle("Annulla modifiche");
         confirmationDialog.setHeaderText(null);
         confirmationDialog.setGraphic(null);
         confirmationDialog.setContentText("Sei sicuro di voler annullare le modifiche al menu?");
         confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
-        confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);  // adds confirm and deny buttons
+        confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
         confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
         confirmationDialog.showAndWait().ifPresent(response -> { // waits for chef's response
             if (response == ButtonType.OK) { // if chef confirms, confirms the menu and hides interface's elements
@@ -201,7 +201,7 @@ public class ChefController implements Initializable {
         }
     }
 
-    private void setButtonShadow() { // sets a shadow when chef hovers buttons with mouse
+    private void setButtonShadow() { // sets a shadow effect when chef hovers buttons with mouse
         cancelButton.setOnMouseEntered(_ -> cancelButton.setEffect(new DropShadow()));
         cancelButton.setOnMouseExited(_ -> cancelButton.setEffect(null));
         confirmMenuButton.setOnMouseEntered(_ -> confirmMenuButton.setEffect(new DropShadow()));
@@ -214,7 +214,7 @@ public class ChefController implements Initializable {
         menu.setOnMouseClicked(_ -> { // adds an event manager to get the order the chef wants to remove from the menu
             Order order = menu.getSelectionModel().getSelectedItem(); // gets chef's clicked order
             if (order != null) {
-                Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get chef confirm
+                Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a confirmation dialog to check if chef wants to delete the clicked order
                 confirmationDialog.setTitle("Conferma eliminazione ordine");
                 confirmationDialog.setHeaderText(null);
                 confirmationDialog.setGraphic(null);
@@ -235,7 +235,7 @@ public class ChefController implements Initializable {
         });
     }
 
-    private void applyMenuStyle() { // applies a border to each menu's order
+    private void applyMenuStyle() { // applies menu's style
         menu.setCellFactory(new Callback<>() {
             @Override
             public ListCell<Order> call(ListView<Order> param) {

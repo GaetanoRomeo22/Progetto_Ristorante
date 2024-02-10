@@ -49,7 +49,7 @@ public class ReceptionistController {
                     waitingTimeWriter.println(waitingTime); // communicates the time to the customer
                 } catch (IOException exc) {
                     throw new RuntimeException(exc);
-                } finally {
+                } finally { // closes used resources
                     readSeatsNumber.close();
                     giveTableNumber.close();
                     acceptedClient.close();
