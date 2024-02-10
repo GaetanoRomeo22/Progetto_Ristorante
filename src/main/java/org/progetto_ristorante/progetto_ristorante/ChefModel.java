@@ -5,20 +5,20 @@ import java.net.Socket;
 public class ChefModel {
     private final int WAITER_PORT = 1315;  // port to communicate with the waiter
 
-    public void startServer() { // creates a thread chef
-        Thread serverThread = new Thread(() -> {
+    public void startServer() {
+        Thread serverThread = new Thread(() -> { // creates chef's server thread
             try (ServerSocketHandler chefSocket = new ServerSocketProxy(WAITER_PORT)) { // creates a socket to communicate with the waiter
-                while (true) { // accepts a connection and creates a thread to manage the request
-                    Socket acceptedOrder = chefSocket.accept();
+                while (true) {
+                    Socket acceptedOrder = chefSocket.accept(); // accepts a connection
                     SocketHandler orderSocket = new SocketProxy(acceptedOrder);
-                    Thread chef = new Thread(new ChefHandler(orderSocket));
-                    chef.start();
+                    Thread chef = new Thread(new ChefHandler(orderSocket)); // creates a thread to manage the request
+                    chef.start(); // starts the thread
                 }
             } catch (IOException exc) {
                 throw new RuntimeException(exc);
             }
         });
-        serverThread.start();
+        serverThread.start(); // starts chef's server thread
     }
 
     public static class ChefHandler implements Runnable {
@@ -44,11 +44,10 @@ public class ChefModel {
             while (true) {
                 try { // gets an order
                     order = getOrder();
-                    if (order == null) {
+                    if (order == null) { // checks if customer has ended ordering
                         break;
                     }
-                    String finalOrder = order;
-                    giveOrder(finalOrder);
+                    giveOrder(order); // sends the order back to the waiter once ready
                 } catch (IOException exc) {
                     throw new RuntimeException(exc);
                 }

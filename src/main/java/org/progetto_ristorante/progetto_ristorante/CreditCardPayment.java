@@ -12,7 +12,7 @@ public class CreditCardPayment implements PaymentStrategy {
     @FXML
     private Label paymentConfirmationLabel;
 
-    public CreditCardPayment(TextField cardNumberField, Label paymentConfirmationLabel) {
+    public CreditCardPayment(TextField cardNumberField, Label paymentConfirmationLabel) { // constructor
         this.cardNumberField = cardNumberField;
         this.paymentConfirmationLabel = paymentConfirmationLabel;
     }

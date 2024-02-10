@@ -79,7 +79,7 @@ public class ChefController implements Initializable {
                 invalidData.setVisible(true);
                 return;
             }
-            Order newOrder = orderFactory.createOrder(orderName, Float.parseFloat(inputPrice)); // creates an order with entered name and price
+            Order newOrder = orderFactory.createOrder(orderName, price); // creates an order with entered name and price
             if (menuOriginator.getMenu().stream().anyMatch(order -> order.name().equals(newOrder.name()))) { // checks if the order is already in the current menu
                 invalidData.setText("Ordine già presente nel menu");
                 invalidData.setVisible(true);

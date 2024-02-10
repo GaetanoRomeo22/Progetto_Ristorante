@@ -28,7 +28,7 @@ public class NotDiscountMenu implements MenuState {
         }
     }
 
-    public ObservableList<Order> getMenu () { // returns the menu
+    public ObservableList<Order> getMenu() { // returns the menu
         return menu;
     }
 }

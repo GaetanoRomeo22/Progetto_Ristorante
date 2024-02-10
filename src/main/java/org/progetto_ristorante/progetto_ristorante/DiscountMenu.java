@@ -6,7 +6,7 @@ import javafx.collections.ObservableList;
 import java.sql.*;
 
 public class DiscountMenu implements MenuState {
-    protected ObservableList<Order> menu; // menu
+    protected ObservableList<Order> discountedMenu; // discounted menu
 
     @Override
     public void changeMenuState(MenuContext menuContext) { // changes menu's state from full price version to discounted
@@ -18,17 +18,17 @@ public class DiscountMenu implements MenuState {
                 while (resultSet.next()) { // gets each order's name and price
                     String name = resultSet.getString("NOME");
                     float price = resultSet.getFloat("PREZZO");
-                    Order order = new Order(name, price - price * 0.1f); // calls the constructor to build an Order object
+                    Order order = new Order(name, price - price * 0.1f); // calls the constructor to build an Order object and applies the sale
                     menu.add(order); // adds the order to the menu
                 }
-                this.menu = menu; // updates the menu
+                this.discountedMenu = menu; // updates the menu
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public ObservableList<Order> getMenu () { // returns the menu
-        return menu;
+    public ObservableList<Order> getMenu() { // returns the menu
+        return discountedMenu;
     }
 }

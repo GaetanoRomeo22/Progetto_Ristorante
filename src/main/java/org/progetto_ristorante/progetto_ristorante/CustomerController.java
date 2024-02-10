@@ -102,7 +102,7 @@ public class CustomerController implements Initializable {
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initialize(URL url, ResourceBundle resourceBundle) { // called everytime the interface is loaded
         if (loginButton != null && loginRegisterButton != null) { // sets hover effect in login interface
             loginButton.setOnMouseEntered(_ -> loginButton.setEffect(new DropShadow()));
             loginButton.setOnMouseExited(_ -> loginButton.setEffect(null));
@@ -123,7 +123,7 @@ public class CustomerController implements Initializable {
         if (username.isEmpty() || password.isEmpty()) { // checks if the customer has entered null values
             loginError.setText("Credenziali incomplete");
             loginError.setVisible(true);
-        } else if (model.loginUser(username, password)) { // if the login works, sends the customer to next interface
+        } else if (model.loginUser(username, password)) { // if the login works, shows get seats interface
             showSeatsInterface();
         } else { // if the login doesn't work, shows an error message
             loginError.setText("Credenziali errate, riprovare");
@@ -139,13 +139,13 @@ public class CustomerController implements Initializable {
         if (username.isEmpty() || password.isEmpty() || confirmedPassword.isEmpty()) { // checks if the customer has entered null values
             registerError.setText("Credenziali incomplete");
             registerError.setVisible(true);
-        } else if (!validPassword(password)) { // checks if the password doesn't respect the standard
+        } else if (!validPassword(password)) { // checks if the password respects the standard
             registerError.setText("La password deve contenere almeno 8 caratteri, una lettera maiuscola, un carattere speciale e un numero");
             registerError.setVisible(true);
         } else if (!confirmedPassword.equals(password)) { // checks if the password isn't correctly confirmed
             registerError.setText("Conferma password errata");
             registerError.setVisible(true);
-        } else if (model.registerUser(username, password)) { // if the register works, sends the user to the login
+        } else if (model.registerUser(username, password)) { // if the register works, sends the user to login interface
             showLoginInterface();
         } else { // checks if the username is available
             registerError.setText("Username non disponibile");
@@ -338,7 +338,7 @@ public class CustomerController implements Initializable {
             paymentConfirmationLabel.setVisible(true);
             return;
         }
-        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a confirmation dialog to check if customer confirms credit card's data
         confirmationDialog.setTitle("Conferma pagamento");
         confirmationDialog.setHeaderText(null);
         confirmationDialog.setGraphic(null);
@@ -399,7 +399,7 @@ public class CustomerController implements Initializable {
         stage.setMaximized(true);
         initializeOrderInterfaceElements(scene); // initializes interface's elements
         setMouseClickHandler(); // sets an event handler that catches customer's clicks on the interface
-        stage.show();
+        stage.show(); // shows the interface
         showMenu(); // shows the menu
     }
 
@@ -410,7 +410,7 @@ public class CustomerController implements Initializable {
         Scene scene = new Scene(parent);
         Stage stage = (Stage) menuBox.getScene().getWindow();
         stage.setScene(scene);
-        stage.setMaximized(true);
+        stage.setMaximized(true); // sets fullscreen
         initializeCreditCardInterfaceElements(scene); // initializes interface's elements
         stage.show(); // shows the interface
     }
@@ -495,7 +495,7 @@ public class CustomerController implements Initializable {
         return password.matches(regex);
     }
 
-    private void applyMenuStyle() {
+    private void applyMenuStyle() { // applies a style to the menu
         menu.setCellFactory(new Callback<>() { // applies a border to each menu's order
             @Override
             public ListCell<Order> call(ListView<Order> param) {
@@ -526,7 +526,7 @@ public class CustomerController implements Initializable {
         menu.setItems(menuContext.getMenuState().getMenu()); // makes the menu viewable as a list of Order elements (name-price)
     }
 
-    private void applyTotalOrderedStyle() {
+    private void applyTotalOrderedStyle() { // applies a style to the list of orders
         totalOrderedArea.setCellFactory(new Callback<>() { // applies a border to each customer's order
             @Override
             public ListCell<String> call(ListView<String> param) {
