@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MenuOriginator {
-    private List<Order> initialMenuState = new ArrayList<>(); // initial menu's state
+    private List<ConcreteOrder> initialMenuState = new ArrayList<>(); // initial menu's state
 
-    public void setMenu(List<Order> menuState) { // sets menu's current state
+    public void setMenu(List<ConcreteOrder> menuState) { // sets menu's current state
         this.initialMenuState = menuState;
     }
 
-    public List<Order> getMenu() { // returns menu's current state
+    public List<ConcreteOrder> getMenu() { // returns menu's current state
         return this.initialMenuState;
     }
 
@@ -19,7 +19,7 @@ public class MenuOriginator {
     }
 
     public class ConcreteMenuMemento implements MenuMemento {
-        protected List<Order> currentMenuState; // current menu's state
+        protected List<ConcreteOrder> currentMenuState; // current menu's state
 
         public ConcreteMenuMemento() { // constructor (creates a menu's state)
             this.currentMenuState = initialMenuState;

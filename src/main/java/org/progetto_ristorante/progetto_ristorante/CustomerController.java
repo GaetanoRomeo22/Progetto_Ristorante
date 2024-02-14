@@ -51,7 +51,7 @@ public class CustomerController implements Initializable {
     private ListView<String> totalOrderedArea;
 
     @FXML
-    private ListView<Order> menu;
+    private ListView<ConcreteOrder> menu;
 
     @FXML
     private TextField loginUsername,
@@ -440,7 +440,7 @@ public class CustomerController implements Initializable {
     }
 
     private void initializeOrderInterfaceElements(Scene scene) { // initializes GetOrderInterface's elements
-        menu = (ListView<Order>) scene.lookup("#menu");
+        menu = (ListView<ConcreteOrder>) scene.lookup("#menu");
         totalOrderedArea = (ListView<String>) scene.lookup("#totalOrderedArea");
         tableNumber = (Text) scene.lookup("#tableNumber");
         tableNumber.setText(String.valueOf(table));
@@ -465,7 +465,7 @@ public class CustomerController implements Initializable {
 
     private void setMouseClickHandler () { // sets an event handler that catches customer's clicks on the interface
         menu.setOnMouseClicked(_ -> { // adds an event manager to get customer's order by clicking onto the menu
-            Order order = menu.getSelectionModel().getSelectedItem(); // gets customer's clicked order
+            ConcreteOrder order = menu.getSelectionModel().getSelectedItem(); // gets customer's clicked order
             if (order != null) {
                 Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a window to get customers confirm
                 confirmationDialog.setTitle("Conferma ordine");
@@ -498,10 +498,10 @@ public class CustomerController implements Initializable {
     private void applyMenuStyle() { // applies a style to the menu
         menu.setCellFactory(new Callback<>() { // applies a border to each menu's order
             @Override
-            public ListCell<Order> call(ListView<Order> param) {
+            public ListCell<ConcreteOrder> call(ListView<ConcreteOrder> param) {
                 return new ListCell<>() {
                     @Override
-                    protected void updateItem(Order item, boolean empty) {
+                    protected void updateItem(ConcreteOrder item, boolean empty) {
                         super.updateItem(item, empty);
                         if (empty || item == null) {
                             setText(null);

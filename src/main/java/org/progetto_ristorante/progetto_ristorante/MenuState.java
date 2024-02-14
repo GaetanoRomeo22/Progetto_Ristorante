@@ -4,5 +4,5 @@ import javafx.collections.ObservableList;
 
 public interface MenuState {
     void changeMenuState(MenuContext menuContext); // changes the menu from discounted and full price and vice versa
-    ObservableList<Order> getMenu (); // returns the menu
+    ObservableList<ConcreteOrder> getMenu (); // returns the menu
 }

@@ -23,7 +23,7 @@ public class ChefController implements Initializable {
             orderPriceField;
 
     @FXML
-    private ListView<Order> menu;
+    private ListView<ConcreteOrder> menu;
 
     @FXML
     private Text invalidData;
@@ -79,8 +79,8 @@ public class ChefController implements Initializable {
                 invalidData.setVisible(true);
                 return;
             }
-            Product newOrder = orderFactory.createOrder(orderName, price); // creates an order with entered name and price
-            if (menuOriginator.getMenu().stream().anyMatch(order -> order.name().equals(((Order) newOrder).name()))) { // checks if the order is already in the current menu
+            ConcreteOrder newOrder = orderFactory.createOrder(orderName, price); // creates an order with entered name and price
+            if (menuOriginator.getMenu().stream().anyMatch(order -> order.name().equals(newOrder.name()))) { // checks if the order is already in the current menu
                 invalidData.setText("Ordine già presente nel menu");
                 invalidData.setVisible(true);
             } else {
@@ -92,7 +92,7 @@ public class ChefController implements Initializable {
                 confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
                 confirmationDialog.showAndWait().ifPresent(result -> { // checks chef's answer
                     if (result == ButtonType.OK) { // if chef confirms
-                        menuOriginator.getMenu().add((Order) newOrder); // adds the order into current menu
+                        menuOriginator.getMenu().add(newOrder); // adds the order into current menu
                         showCurrentMenu(); // shows current menu (with modifies)
                         menuOrderField.clear(); // clears previous text
                         orderPriceField.clear();
@@ -106,14 +106,14 @@ public class ChefController implements Initializable {
     }
 
     private void deleteOrder() throws SQLException { // deletes an order from current menu
-        Order selectedOrder = menu.getSelectionModel().getSelectedItem(); // gets the order clicked by chef into the interface
+        ConcreteOrder selectedOrder = menu.getSelectionModel().getSelectedItem(); // gets the order clicked by chef into the interface
         menuOriginator.getMenu().removeIf(order -> order.name().equals(selectedOrder.name())); // checks if the order is into current menu
         showCurrentMenu(); // shows updated menu
     }
 
     @FXML
     private void showCurrentMenu() { // shows current menu in real time
-        ObservableList<Order> menuItems = FXCollections.observableArrayList(menuOriginator.getMenu()); // list of orders
+        ObservableList<ConcreteOrder> menuItems = FXCollections.observableArrayList(menuOriginator.getMenu()); // list of orders
         applyMenuStyle(); // applies a border to the menu
         menu.setItems(menuItems); // makes the menu viewable as a list of Order elements (name-price)
     }
@@ -127,11 +127,11 @@ public class ChefController implements Initializable {
             String selectQuery = "SELECT * FROM ORDINI"; // query to get each menu's order
             try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) { // performs the select
                 ResultSet resultSet = preparedStatement.executeQuery();
-                ObservableList<Order> menuItems = FXCollections.observableArrayList(); // list of orders
+                ObservableList<ConcreteOrder> menuItems = FXCollections.observableArrayList(); // list of orders
                 while (resultSet.next()) { // each order is added into the menu
                     String name = resultSet.getString("NOME");
                     float price = resultSet.getFloat("PREZZO");
-                    Order order = new Order(name, price); // calls the constructor to create an Order object
+                    ConcreteOrder order = new ConcreteOrder(name, price); // calls the constructor to create an Order object
                     menuItems.add(order); // adds the order into the menu
                 }
                 menuOriginator.setMenu(menuItems); // sets menu's initial state
@@ -189,7 +189,7 @@ public class ChefController implements Initializable {
             }
             String insertQuery = "INSERT INTO ORDINI (NOME, PREZZO) VALUES (?, ?)"; // inserts orders from currentMenu into the database
             try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) { // executes the query
-                for (Order order : menuOriginator.getMenu()) { // adds each current menu's order into the database
+                for (ConcreteOrder order : menuOriginator.getMenu()) { // adds each current menu's order into the database
                     insertStatement.setString(1, order.name()); // substitutes "?" with order's name and order's price
                     insertStatement.setFloat(2, order.price());
                     insertStatement.executeUpdate(); // executes the query
@@ -212,7 +212,7 @@ public class ChefController implements Initializable {
 
     private void setMouseClickHandler () { // sets an event handler that catches chef's clicks on the interface
         menu.setOnMouseClicked(_ -> { // adds an event manager to get the order the chef wants to remove from the menu
-            Order order = menu.getSelectionModel().getSelectedItem(); // gets chef's clicked order
+            ConcreteOrder order = menu.getSelectionModel().getSelectedItem(); // gets chef's clicked order
             if (order != null) {
                 Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a confirmation dialog to check if chef wants to delete the clicked order
                 confirmationDialog.setTitle("Conferma eliminazione ordine");
@@ -238,10 +238,10 @@ public class ChefController implements Initializable {
     private void applyMenuStyle() { // applies menu's style
         menu.setCellFactory(new Callback<>() {
             @Override
-            public ListCell<Order> call(ListView<Order> param) {
+            public ListCell<ConcreteOrder> call(ListView<ConcreteOrder> param) {
                 return new ListCell<>() {
                     @Override
-                    protected void updateItem(Order item, boolean empty) {
+                    protected void updateItem(ConcreteOrder item, boolean empty) {
                         super.updateItem(item, empty);
                         if (empty || item == null) {
                             setText(null);

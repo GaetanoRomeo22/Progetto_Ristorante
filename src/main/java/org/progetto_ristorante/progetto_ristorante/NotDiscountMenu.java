@@ -6,7 +6,7 @@ import javafx.collections.ObservableList;
 import java.sql.*;
 
 public class NotDiscountMenu implements MenuState {
-    protected ObservableList<Order> menu; // menu
+    protected ObservableList<ConcreteOrder> menu; // menu
 
     @Override
     public void changeMenuState(MenuContext menuContext) { // changes menu's state from discounted to full price version
@@ -14,11 +14,11 @@ public class NotDiscountMenu implements MenuState {
             String selectQuery = "SELECT * FROM ORDINI"; // query to get each menu's orders
             try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) { // performs the query
                 ResultSet resultSet = preparedStatement.executeQuery();
-                ObservableList<Order> menu = FXCollections.observableArrayList(); // makes the menu viewable
+                ObservableList<ConcreteOrder> menu = FXCollections.observableArrayList(); // makes the menu viewable
                 while (resultSet.next()) { // gets each order's name and price
                     String name = resultSet.getString("NOME");
                     float price = resultSet.getFloat("PREZZO");
-                    Order order = new Order(name, price); // calls the constructor to build an Order object
+                    ConcreteOrder order = new ConcreteOrder(name, price); // calls the constructor to build an Order object
                     menu.add(order); // adds the order to the menu
                 }
                 this.menu = menu; // updates the menu
@@ -28,7 +28,7 @@ public class NotDiscountMenu implements MenuState {
         }
     }
 
-    public ObservableList<Order> getMenu() { // returns the menu
+    public ObservableList<ConcreteOrder> getMenu() { // returns the menu
         return menu;
     }
 }
