@@ -8,6 +8,7 @@ import java.sql.*;
 public class NotDiscountMenu implements MenuState {
     protected ObservableList<Order> menu; // menu
 
+    @Override
     public void changeMenuState(MenuContext menuContext) { // changes menu's state from discounted to full price version
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
             String selectQuery = "SELECT * FROM ORDINI"; // query to get each menu's orders
@@ -27,7 +28,7 @@ public class NotDiscountMenu implements MenuState {
         }
     }
 
-    public ObservableList<Order> getMenu () { // returns the menu
+    public ObservableList<Order> getMenu() { // returns the menu
         return menu;
     }
 }

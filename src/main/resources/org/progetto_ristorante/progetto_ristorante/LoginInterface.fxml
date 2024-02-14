@@ -12,7 +12,7 @@
 
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController"
-      style="-fx-background-color: #F5DEB3; -fx-padding: 20;">
+      style="-fx-background-color: #F5DEB3; -fx-padding: 20">
 
     <!-- Distance Among Elements -->
     <padding>
@@ -27,14 +27,14 @@
     <!-- Logo -->
 
     <!-- Title -->
-    <Text text="LOGIN" style="-fx-font-size: 30px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'; -fx-font-weight: bold"/>
+    <Text text="LOGIN" style="-fx-font-size: 35px; -fx-fill: #32CD32; -fx-font-family: 'Helvetica'; -fx-font-weight: bold"/>
     <!-- Title -->
 
     <!-- Username and Password -->
     <TextField fx:id="loginUsername" promptText="Username" maxWidth="300" focusTraversable="false"
-               style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'"/>
+               style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'; -fx-prompt-text-fill: #808080;"/>
     <PasswordField fx:id="loginPassword" promptText="Password" maxWidth="300" focusTraversable="false"
-                   style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'"/>
+                   style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'; -fx-prompt-text-fill: #808080;"/>
     <!-- Username and Password -->
 
     <!-- Buttons -->
@@ -42,7 +42,7 @@
             style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #228B22; -fx-border-width: 1"/>
     <HBox spacing="5.0" alignment="CENTER">
         <Text text="Non hai un account?" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
-        <Text text="Registrati" underline="true" onMouseClicked="#showRegisterInterface" fill="#32CD32" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
+        <Text fx:id="loginRegisterButton" text="Registrati" onMouseClicked="#showRegisterInterface" fill="#32CD32" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
     </HBox>
     <!-- Buttons -->
 

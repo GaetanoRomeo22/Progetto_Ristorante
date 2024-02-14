@@ -18,20 +18,19 @@ public class ReceptionistModel {
 
     public ReceptionistModel() { // constructor
         semaphore = new Semaphore(1);
-        availableSeats = MAX_SEATS;
-        availableTables = MAX_TABLES;
-        tables = new int[MAX_TABLES];
+        availableSeats = MAX_SEATS; // sets the number of available seats
+        availableTables = MAX_TABLES; // sets the number of available tables
+        tables = new int[MAX_TABLES]; // allocates an array of MAX_TABLES that indicates restaurant's menu
+        for (int i = 0; i < MAX_TABLES; i++) // sets each table as free
+            tables[i] = 0;
     }
 
     public int assignTable(int requiredSeats, PrintWriter giveTableNumber) { // assigns a table to a customer if possible
         try {
             semaphore.acquire(); // gets the semaphore to manage a request
             if (availableTables > 0 && availableSeats >= requiredSeats) { // checks if there are available seats and tables
-                int tableNumber = findFreeTable(); // assigns first free table to the customer
+                int tableNumber = findFreeTable(requiredSeats); // assigns first free table to the customer
                 if (tableNumber != 0) { // if there is at least a free table and enough seats
-                    tables[tableNumber] = 1; // sets it as occupied
-                    availableTables--; // decreases available tables
-                    availableSeats -= requiredSeats; // decreases available seats
                     giveTableNumber.println(tableNumber); // assigns the table to the customer
                     ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1); // creates a scheduler to manage the release of the tables
                     scheduler.schedule(() -> releaseTable(requiredSeats, tableNumber), rand.nextInt(), TimeUnit.SECONDS); // the scheduler release tables periodically
@@ -46,15 +45,18 @@ public class ReceptionistModel {
     }
 
     public  void releaseTable(int requiredSeats, int tableNumber) { // releases a table, setting it as free and increasing available seats
-        tables[tableNumber] = 0;
+        tables[tableNumber - 1] = 0;
         availableTables++;
         availableSeats += requiredSeats;
     }
 
-    private int findFreeTable() { // assigns first free table to the customer or returns 0 if there aren't enough seats or a free table
+    private int findFreeTable(int requiredSeats) { // assigns first free table to the customer or returns 0 if there aren't enough seats or a free table
         for (int i = 0; i < MAX_TABLES; i++) {
-            if (tables[i] == 0) {
-                return i + 1;
+            if (tables[i] == 0) { // if the table is free
+                tables[i] = 1;  // sets the table as occupied
+                availableTables--; // decreases available tables
+                availableSeats -= requiredSeats; // decreases available seats
+                return i + 1; // returns table number
             }
         }
         return 0;

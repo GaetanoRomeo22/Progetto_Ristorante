@@ -12,7 +12,7 @@
 
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController"
-      style="-fx-background-color: #F5DEB3; -fx-padding: 20; -fx-border-color: #ccc;">
+      style="-fx-background-color: #F5DEB3; -fx-padding: 20">
 
     <!-- Distance Among Elements -->
     <padding>
@@ -27,16 +27,16 @@
     <!-- Logo -->
 
     <!-- Title -->
-    <Text text="REGISTRAZIONE" style="-fx-font-size: 30px; -fx-fill: #32CD32; -fx-padding: 10 0 20 0; -fx-font-family: 'Helvetica'; -fx-font-weight: bold"/>
+    <Text text="REGISTRAZIONE" style="-fx-font-size: 35px; -fx-fill: #32CD32; -fx-padding: 10 0 20 0; -fx-font-family: 'Helvetica'; -fx-font-weight: bold"/>
     <!-- Title -->
 
     <!-- Username and Password -->
     <TextField fx:id="registerUsername" promptText="Username" maxWidth="300" focusTraversable="false"
-               style="-fx-font-size: 30px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'"/>
+               style="-fx-font-size: 30px; -fx-background-color: #fff; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'; -fx-prompt-text-fill: #808080;"/>
     <PasswordField fx:id="registerPassword" promptText="Password" maxWidth="300" focusTraversable="false"
-                   style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'"/>
+                   style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'; -fx-prompt-text-fill: #808080;"/>
     <PasswordField fx:id="confirmPassword" promptText="Conferma Password" maxWidth="300" focusTraversable="false"
-                   style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'"/>
+                   style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'; -fx-prompt-text-fill: #808080;"/>
     <!-- Username and Password -->
 
     <!-- Buttons -->
@@ -44,7 +44,7 @@
             style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #228B22; -fx-border-width: 1"/>
     <HBox spacing="5.0" alignment="CENTER">
         <Text text="Hai già un account?" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
-        <Text text="Accedi" underline="true" onMouseClicked="#showLoginInterface" fill="#32CD32" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
+        <Text fx:id="registerLoginButton" text="Accedi" onMouseClicked="#showLoginInterface" fill="#32CD32" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
     </HBox>
     <!-- Buttons -->
 
