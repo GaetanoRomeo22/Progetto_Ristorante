@@ -163,24 +163,6 @@ public class ChefController implements Initializable {
         });
     }
 
-    @FXML
-    private void restoreMenu() { // undo menu's updates
-        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a confirmation dialog to check if chef confirms to undo menu's modifies
-        confirmationDialog.setTitle("Annulla modifiche");
-        confirmationDialog.setHeaderText(null);
-        confirmationDialog.setGraphic(null);
-        confirmationDialog.setContentText("Sei sicuro di voler annullare le modifiche al menu?");
-        confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
-        confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
-        confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
-        confirmationDialog.showAndWait().ifPresent(response -> { // waits for chef's response
-            if (response == ButtonType.OK) { // if chef confirms, confirms the menu and hides interface's elements
-                menuMemento.restoreMenu(); // returns to previous state
-                showStoredMenu();
-            }
-        });
-    }
-
     private void saveConfirmedMenu() { // stores menu's updates
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
             String clearMenuQuery = "DELETE FROM ORDINI"; // clears existing menu in the database
@@ -199,6 +181,24 @@ public class ChefController implements Initializable {
         } catch (SQLException exc) {
             throw new RuntimeException(exc);
         }
+    }
+
+    @FXML
+    private void restoreMenu() { // undo menu's updates
+        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION); // shows a confirmation dialog to check if chef confirms to undo menu's modifies
+        confirmationDialog.setTitle("Annulla modifiche");
+        confirmationDialog.setHeaderText(null);
+        confirmationDialog.setGraphic(null);
+        confirmationDialog.setContentText("Sei sicuro di voler annullare le modifiche al menu?");
+        confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
+        confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
+        confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
+        confirmationDialog.showAndWait().ifPresent(response -> { // waits for chef's response
+            if (response == ButtonType.OK) { // if chef confirms, confirms the menu and hides interface's elements
+                menuMemento.restoreMenu(); // returns to previous state
+                showStoredMenu(); // shows initial's menu state
+            }
+        });
     }
 
     private void setButtonShadow() { // sets a shadow effect when chef hovers buttons with mouse
