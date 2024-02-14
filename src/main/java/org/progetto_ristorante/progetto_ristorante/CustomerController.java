@@ -36,7 +36,6 @@ public class CustomerController {
             loginError,
             registerError,
             unavailableReceptionist,
-            menuUpdateMessage,
             unavailableWaiter,
             cashText;
 
@@ -85,17 +84,6 @@ public class CustomerController {
 
     public CustomerController() { // constructor
         model = CustomerModel.getInstance();
-    }
-
-
-    public void updateMenu(boolean isMenuUpdated) {
-        System.out.println("Setto il messaggio");
-        if (isMenuUpdated) {
-            menuUpdateMessage.setText("Menu non del giorno.");
-        } else {
-            menuUpdateMessage.setText("Menu del giorno.");
-        }
-        menuUpdateMessage.setVisible(true);
     }
 
     @FXML
@@ -401,7 +389,6 @@ public class CustomerController {
         billText = (Text) scene.lookup("#billText");
         billText.setText("€0");
         unavailableWaiter = (Text) scene.lookup("#unavailableWaiter");
-        menuUpdateMessage = (Text) scene.lookup("#menuUpdateMessage");
         stopButton = (Button) scene.lookup("#stopButton");
         stopButton.setOnMouseEntered(_ -> stopButton.setEffect(new DropShadow()));
         stopButton.setOnMouseExited(_ -> stopButton.setEffect(null));
