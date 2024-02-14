@@ -79,8 +79,8 @@ public class ChefController implements Initializable {
                 invalidData.setVisible(true);
                 return;
             }
-            Order newOrder = orderFactory.createOrder(orderName, price); // creates an order with entered name and price
-            if (menuOriginator.getMenu().stream().anyMatch(order -> order.name().equals(newOrder.name()))) { // checks if the order is already in the current menu
+            Product newOrder = orderFactory.createOrder(orderName, price); // creates an order with entered name and price
+            if (menuOriginator.getMenu().stream().anyMatch(order -> order.name().equals(((Order) newOrder).name()))) { // checks if the order is already in the current menu
                 invalidData.setText("Ordine già presente nel menu");
                 invalidData.setVisible(true);
             } else {
@@ -92,7 +92,7 @@ public class ChefController implements Initializable {
                 confirmationDialog.initOwner(menuOrderField.getScene().getWindow());
                 confirmationDialog.showAndWait().ifPresent(result -> { // checks chef's answer
                     if (result == ButtonType.OK) { // if chef confirms
-                        menuOriginator.getMenu().add(newOrder); // adds the order into current menu
+                        menuOriginator.getMenu().add((Order) newOrder); // adds the order into current menu
                         showCurrentMenu(); // shows current menu (with modifies)
                         menuOrderField.clear(); // clears previous text
                         orderPriceField.clear();
