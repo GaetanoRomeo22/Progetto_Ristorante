@@ -74,7 +74,7 @@ public class ChefController implements Initializable {
                 invalidData.setVisible(true);
                 return;
             }
-            if (!orderName.matches("[a-zA-Z]+")) { // checks if order's name contains only letters
+            if (!orderName.matches("[a-zA-Z ]+")) { // checks if order's name contains only letters
                 invalidData.setText("Il nome dell'ordine non deve contenere numeri o caratteri speciali");
                 invalidData.setVisible(true);
                 return;
