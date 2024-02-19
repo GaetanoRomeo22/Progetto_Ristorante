@@ -35,7 +35,7 @@
             </VBox>
         </HBox>
         <Button fx:id="confirmOrderButton" text="Conferma piatto" onAction="#addOrder" prefWidth="300"
-                style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #228B22; -fx-border-width: 1"/>
+                style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-width: 1"/>
     </VBox>
     <!-- Order and Price Writing -->
 
@@ -50,9 +50,9 @@
                   style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
         <HBox spacing="10.0" alignment="CENTER">
             <Button fx:id="cancelButton" text="Annulla modifiche" onAction="#restoreMenu" prefWidth="300"
-                    style="-fx-font-size: 30px; -fx-background-color: #FF0000; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #B22222; -fx-border-width: 1"/>
+                    style="-fx-font-size: 30px; -fx-background-color: #FF0000; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-width: 1"/>
             <Button fx:id="confirmMenuButton" text="Conferma menu" onAction="#cook" prefWidth="300"
-                    style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #228B22; -fx-border-width: 1"/>
+                    style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-width: 1"/>
         </HBox>
     </VBox>
     <!-- Menu -->
