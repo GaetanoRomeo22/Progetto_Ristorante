@@ -41,7 +41,7 @@
 
     <!-- Buttons -->
     <Button fx:id="registerButton" text="Registrati" onAction="#register"
-            style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #228B22; -fx-border-width: 1"/>
+            style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-width: 1"/>
     <HBox spacing="5.0" alignment="CENTER">
         <Text text="Hai già un account?" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
         <Text fx:id="registerLoginButton" text="Accedi" onMouseClicked="#showLoginInterface" fill="#32CD32" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>

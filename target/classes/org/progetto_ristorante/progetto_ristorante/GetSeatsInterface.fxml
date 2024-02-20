@@ -31,7 +31,7 @@
         <TextField fx:id="requiredSeatsField" promptText="Posti richiesti" maxWidth="280" focusTraversable="false"
                    style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-font-family: 'Helvetica'; -fx-prompt-text-fill: #808080;"/>
         <Button fx:id="confirmSeatsButton" text="Conferma" onAction="#getRequiredSeats"
-                style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #228B22; -fx-border-width: 1"/>
+                style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-width: 1"/>
     </VBox>
     <!-- Required Seats -->
 
@@ -40,9 +40,9 @@
         <Text fx:id="waitingMessage" visible="false" style="-fx-font-size: 30px; -fx-font-family: 'Helvetica'"/>
         <HBox spacing="10.0" alignment="CENTER">
             <Button fx:id="waitingButton" text="Si, attendo" onAction="#waitButton"
-                    style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #228B22; -fx-border-width: 1"/>
+                    style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-width: 1"/>
             <Button fx:id="leavingButton" text="No, me ne vado" onAction="#leave"
-                    style="-fx-font-size: 30px; -fx-background-color: #FF4500; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-color: #FF4500; -fx-border-width: 1"/>
+                    style="-fx-font-size: 30px; -fx-background-color: #FF4500; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-width: 1"/>
         </HBox>
     </VBox>
     <!-- Additional Elements for Waiting -->

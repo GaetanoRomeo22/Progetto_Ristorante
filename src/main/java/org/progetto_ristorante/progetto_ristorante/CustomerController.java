@@ -1,8 +1,7 @@
 package org.progetto_ristorante.progetto_ristorante;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -17,7 +16,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import javafx.util.Duration;
 
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
@@ -30,7 +28,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.ResourceBundle;
-import java.util.concurrent.*;
 
 import static java.lang.StringTemplate.STR;
 
@@ -90,7 +87,6 @@ public class CustomerController implements Initializable {
     private Label paymentConfirmationLabel;
 
     private final CustomerModel model;                      // reference to Model
-    private BufferedReader getWaitingTime;                  // used to get how much time has the customer to wait if there aren't available seats
     private int waitingTime;                                // time the customer has to wait if there aren't available seats
     private float bill = 0.0f;                              // customer's total bill
     private int table;                                      // customer's table's number
@@ -147,6 +143,9 @@ public class CustomerController implements Initializable {
             registerError.setVisible(true);
         } else if (model.registerUser(username, password)) { // if the register works, sends the user to login interface
             showLoginInterface();
+        } else if (username.contains(" ")) { // checks that the username not contains spaces
+            loginError.setText("L'username non può contenere spazi");
+            loginError.setVisible(true);
         } else { // checks if the username is available
             registerError.setText("Username non disponibile");
             registerError.setVisible(true);
@@ -156,53 +155,40 @@ public class CustomerController implements Initializable {
     @FXML
     private void getRequiredSeats() { // manages the request of seats by a customer
         final int RECEPTIONIST_PORT = 1313; // port to communicate with the receptionist
-        try (SocketHandler receptionSocket = new SocketProxy(new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT))){ // creates a socket to communicate with the receptionist
+        try (SocketHandler receptionSocket = new SocketProxy(new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT))) { // creates a socket to communicate with the receptionist
             unavailableReceptionist.setVisible(false);
-            table = getTable(receptionSocket); // says how many seats he needs to the receptionist and gets a table
-            if (table > 0) { // if there are available seats, the customer takes them
-                showOrderInterface(); // shows second interface's elements
-            } else { // otherwise, opens a second socket
-                try (SocketHandler receptionSocket2 = new SocketProxy(new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT))) {
-                    seatsBox.setVisible(false); // hides the interface's element to get required seats
-                    waitingBox.setVisible(true); // shows the interface's element to get customer's answer about waiting or not
-                    getWaitingTime = receptionSocket2.getReader(); // used to read the time to wait communicated by the receptionist
-                    waitingTime = Integer.parseInt(getWaitingTime.readLine()); // read the time to wait from the socket and parses it to integer
-                    waitingMessage.setText(STR."Non ci sono abbastanza posti disponibili, vuoi attendere \{waitingTime} minuti ?"); // shows the waiting time message
-                    waitingMessage.setVisible(true);
+            Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION); // shows a confirmation dialog
+            confirmationAlert.setTitle("Conferma posti");
+            confirmationAlert.setGraphic(null);
+            confirmationAlert.setHeaderText(null);
+            confirmationAlert.initOwner(requiredSeatsField.getScene().getWindow());
+            confirmationAlert.setContentText(STR."Vuoi prenotare \{requiredSeatsField.getText().trim()} posti?");
+            confirmationAlert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    try {
+                        table = getTable(receptionSocket); // says how many seats he needs to the receptionist and gets a table
+                        if (table > 0) { // if there are available seats, the customer takes them
+                            showOrderInterface(); // shows second interface's elements
+                        } else { // otherwise, opens a second socket
+                            try (SocketHandler receptionSocket2 = new SocketProxy(new Socket(InetAddress.getLocalHost(), RECEPTIONIST_PORT))) {
+                                seatsBox.setVisible(false);
+                                waitingBox.setVisible(true);
+                                BufferedReader getWaitingTime = receptionSocket2.getReader(); // used to read the time to wait communicated by the receptionist
+                                waitingTime = Integer.parseInt(getWaitingTime.readLine()); // reads waiting time
+                                waitingMessage.setText(STR."Non ci sono abbastanza posti disponibili, vuoi attendere \{waitingTime} minuti?"); // shows waiting message
+                                waitingMessage.setVisible(true);
+                            }
+                        }
+                    } catch (IOException exc) { // shows an error message if receptionist isn't available
+                        unavailableReceptionist.setText("Receptionist non disponibile al momento");
+                        unavailableReceptionist.setVisible(true);
+                    }
                 }
-            }
-        } catch (IOException exc) { // if receptionist is unreachable, shows an error message
+            });
+        } catch (IOException exc) { // se il receptionist non è raggiungibile, mostra un messaggio di errore
             unavailableReceptionist.setText("Receptionist non disponibile al momento");
             unavailableReceptionist.setVisible(true);
         }
-    }
-
-    @FXML
-    private void waitButton() throws IOException { // manages the action when the customer clicks the "Wait" button
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1); // creates a scheduler to plan the periodic execution of tasks
-        ScheduledFuture<?> waitTask = scheduler.schedule(this::onWaitComplete, waitingTime, TimeUnit.SECONDS); // plans which task execute after a waiting time, and specifies the time unit
-        try { // waits for the task to complete (the estimated wait time)
-            waitTask.get();
-        } catch (InterruptedException | ExecutionException exc) {
-            throw new RuntimeException(exc);
-        } finally { // deallocates used resources
-            scheduler.shutdown();
-            getWaitingTime.close();
-        }
-    }
-
-    private void onWaitComplete() { // manages the completion of the waiting time
-        Platform.runLater(() -> {
-            Timeline timeline = new Timeline( // after a certain period of time, hides the waiting components and sends the customer to the interface to take orders
-                new KeyFrame(Duration.seconds(1), _ -> {
-                    try { showOrderInterface(); // shows the interface to get orders
-                    } catch (IOException exc) {
-                        throw new RuntimeException(exc);
-                    }
-                })
-            );
-            timeline.play();
-        });
     }
 
     @FXML
@@ -222,6 +208,32 @@ public class CustomerController implements Initializable {
         sendSeats.close();
         receptionSocket.close();
         return tableNumber;
+    }
+
+    @FXML
+    private void waitButton() {
+        Service<Void> waitService = new Service<>() {
+            @Override
+            protected Task<Void> createTask() {
+                return new Task<>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        Thread.sleep(waitingTime * 1000L);
+                        return null;
+                    }
+                };
+            }
+        };
+
+        waitService.setOnSucceeded(_ -> {
+            try {
+                showOrderInterface();
+            } catch (IOException exc) {
+                throw new RuntimeException(exc);
+            }
+        });
+
+        waitService.start();
     }
 
     @FXML
