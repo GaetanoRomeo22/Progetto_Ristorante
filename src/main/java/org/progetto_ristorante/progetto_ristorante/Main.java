@@ -1,5 +1,6 @@
 package org.progetto_ristorante.progetto_ristorante;
 
+import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
