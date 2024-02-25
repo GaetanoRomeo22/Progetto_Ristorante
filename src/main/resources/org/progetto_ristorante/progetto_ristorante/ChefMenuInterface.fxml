@@ -34,7 +34,7 @@
                 </HBox>
             </VBox>
         </HBox>
-        <Button fx:id="confirmOrderButton" text="Conferma piatto" onAction="#addOrder" prefWidth="300"
+        <Button fx:id="confirmOrderButton" text="Conferma piatto" onAction="#addOrderToMenu" prefWidth="300"
                 style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Helvetica'; -fx-border-width: 1"/>
     </VBox>
     <!-- Order and Price Writing -->

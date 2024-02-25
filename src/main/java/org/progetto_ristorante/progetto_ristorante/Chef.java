@@ -15,7 +15,7 @@ public class Chef extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("Chef");
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ChefInterface.fxml")); // loads the fxml containing the interface
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ChefMenuInterface.fxml")); // loads the fxml containing the interface
         Scene scene = new Scene(fxmlLoader.load());
         stage.setScene(scene);
         stage.setMaximized(true); // sets fullscreen

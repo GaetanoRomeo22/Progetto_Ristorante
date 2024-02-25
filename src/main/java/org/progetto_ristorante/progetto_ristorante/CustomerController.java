@@ -16,11 +16,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -28,7 +26,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.ResourceBundle;
-
 import static java.lang.StringTemplate.STR;
 
 public class CustomerController implements Initializable {
@@ -185,7 +182,7 @@ public class CustomerController implements Initializable {
                     }
                 }
             });
-        } catch (IOException exc) { // se il receptionist non è raggiungibile, mostra un messaggio di errore
+        } catch (IOException exc) { // shows an error message if receptionist isn't available
             unavailableReceptionist.setText("Receptionist non disponibile al momento");
             unavailableReceptionist.setVisible(true);
         }
