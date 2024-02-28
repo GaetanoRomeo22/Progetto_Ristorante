@@ -110,41 +110,51 @@ public class CustomerController implements Initializable {
     }
 
     @FXML
-    private void login() throws SQLException, NoSuchAlgorithmException, IOException { // manages customer's login
+    private void login() { // manages customer's login
         String username = loginUsername.getText().trim(); // gets username from the interface
         String password = loginPassword.getText().trim(); // gets password from the interface
-        if (username.isEmpty() || password.isEmpty()) { // checks if the customer has entered null values
-            loginError.setText("Credenziali incomplete");
-            loginError.setVisible(true);
-        } else if (model.loginUser(username, password)) { // if the login works, shows get seats interface
-            showSeatsInterface();
-        } else { // if the login doesn't work, shows an error message
-            loginError.setText("Credenziali errate, riprovare");
+        try {
+            if (username.isEmpty() || password.isEmpty()) { // checks if the customer has entered null values
+                loginError.setText("Credenziali incomplete");
+                loginError.setVisible(true);
+            } else if (model.loginUser(username, password)) { // if the login works, shows get seats interface
+                showSeatsInterface();
+            } else { // if the login doesn't work, shows an error message
+                loginError.setText("Credenziali errate, riprovare");
+                loginError.setVisible(true);
+            }
+        } catch (SQLException | NoSuchAlgorithmException | IOException e) { // if database isn't reachable
+            loginError.setText("Database non raggiungibile");
             loginError.setVisible(true);
         }
     }
 
     @FXML
-    private void register() throws SQLException, IOException, NoSuchAlgorithmException { // manages customer's registration
+    private void register() { // manages customer's registration
         String username = registerUsername.getText().trim(); // gets username from the interface
         String password = registerPassword.getText().trim(); // gets password from the interface
         String confirmedPassword = confirmPassword.getText().trim(); // gets confirmed password from the interface
-        if (username.isEmpty() || password.isEmpty() || confirmedPassword.isEmpty()) { // checks if the customer has entered null values
-            registerError.setText("Credenziali incomplete");
-            registerError.setVisible(true);
-        } else if (!validPassword(password)) { // checks if the password respects the standard
-            registerError.setText("La password deve contenere almeno 8 caratteri, una lettera maiuscola, un carattere speciale e un numero");
-            registerError.setVisible(true);
-        } else if (!confirmedPassword.equals(password)) { // checks if the password isn't correctly confirmed
-            registerError.setText("Conferma password errata");
-            registerError.setVisible(true);
-        } else if (model.registerUser(username, password)) { // if the register works, sends the user to login interface
-            showLoginInterface();
-        } else if (username.contains(" ")) { // checks that the username not contains spaces
-            loginError.setText("L'username non può contenere spazi");
-            loginError.setVisible(true);
-        } else { // checks if the username is available
-            registerError.setText("Username non disponibile");
+        try {
+            if (username.isEmpty() || password.isEmpty() || confirmedPassword.isEmpty()) { // checks if the customer has entered null values
+                registerError.setText("Credenziali incomplete");
+                registerError.setVisible(true);
+            } else if (!validPassword(password)) { // checks if the password respects the standard
+                registerError.setText("La password deve contenere almeno 8 caratteri, una lettera maiuscola, un carattere speciale e un numero");
+                registerError.setVisible(true);
+            } else if (!confirmedPassword.equals(password)) { // checks if the password isn't correctly confirmed
+                registerError.setText("Conferma password errata");
+                registerError.setVisible(true);
+            } else if (model.registerUser(username, password)) { // if the register works, sends the user to login interface
+                showLoginInterface();
+            } else if (username.contains(" ")) { // checks that the username not contains spaces
+                registerError.setText("L'username non può contenere spazi");
+                registerError.setVisible(true);
+            } else { // checks if the username is available
+                registerError.setText("Username non disponibile");
+                registerError.setVisible(true);
+            }
+        } catch (SQLException | NoSuchAlgorithmException | IOException e) { // if database isn't reachable
+            loginError.setText("Database non raggiungibile");
             registerError.setVisible(true);
         }
     }
@@ -302,6 +312,7 @@ public class CustomerController implements Initializable {
         });
     }
 
+    @FXML
     public void pay() { // allows the user to pay
         String cardNumber = cardNumberField.getText().trim(); // gets card's data from the interface
         String cardName = cardNameField.getText().trim();
@@ -399,6 +410,7 @@ public class CustomerController implements Initializable {
         stage.show(); // shows the interface
     }
 
+    @FXML
     private void showOrderInterface() throws IOException { // switches the interface to get orders
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GetOrderInterface.fxml")); // loads the fxml containing the interface
         Parent parent = loader.load();
@@ -424,6 +436,7 @@ public class CustomerController implements Initializable {
         stage.show(); // shows the interface
     }
 
+    @FXML
     private void initializeLoginInterfaceElements(Scene scene) { // initializes LoginInterface's elements
         loginButton = (Button) scene.lookup("#loginButton");
         loginRegisterButton = (Text) scene.lookup("#loginRegisterButton");
@@ -433,6 +446,7 @@ public class CustomerController implements Initializable {
         loginRegisterButton.setOnMouseExited(_ -> loginRegisterButton.setUnderline(false));
     }
 
+    @FXML
     private void initializeRegisterInterfaceElements(Scene scene) { // initializes RegisterInterface's elements
         registerButton = (Button) scene.lookup("#registerButton");
         registerLoginButton = (Text) scene.lookup("#registerLoginButton");
@@ -442,12 +456,14 @@ public class CustomerController implements Initializable {
         registerLoginButton.setOnMouseExited(_ -> registerLoginButton.setUnderline(false));
     }
 
+    @FXML
     private void initializeSeatsOrderInterface(Scene scene) { // initializes GetSeatsInterface's elements
         confirmSeatsButton = (Button) scene.lookup("#confirmSeatsButton");
         confirmSeatsButton.setOnMouseEntered(_ -> confirmSeatsButton.setEffect(new DropShadow()));
         confirmSeatsButton.setOnMouseExited(_ -> confirmSeatsButton.setEffect(null));
     }
 
+    @FXML
     private void initializeOrderInterfaceElements(Scene scene) { // initializes GetOrderInterface's elements
         menu = (ListView<ConcreteOrder>) scene.lookup("#menu");
         totalOrderedArea = (ListView<String>) scene.lookup("#totalOrderedArea");
@@ -461,6 +477,7 @@ public class CustomerController implements Initializable {
         stopButton.setOnMouseExited(_ -> stopButton.setEffect(null));
     }
 
+    @FXML
     private void initializeCreditCardInterfaceElements(Scene scene) { // initializes CreditCardPaymentInterface's elements
         cardNameField = (TextField) scene.lookup("#cardNameField");
         cardNumberField = (TextField) scene.lookup("#cardNumberField");
@@ -472,6 +489,7 @@ public class CustomerController implements Initializable {
         payButton.setOnMouseExited(_ -> payButton.setEffect(null));
     }
 
+    @FXML
     private void setMouseClickHandler () { // sets an event handler that catches customer's clicks on the interface
         menu.setOnMouseClicked(_ -> { // adds an event manager to get customer's order by clicking onto the menu
             ConcreteOrder order = menu.getSelectionModel().getSelectedItem(); // gets customer's clicked order
@@ -504,6 +522,7 @@ public class CustomerController implements Initializable {
         return password.matches(regex);
     }
 
+    @FXML
     private void applyMenuStyle() { // applies a style to the menu
         menu.setCellFactory(new Callback<>() { // applies a border to each menu's order
             @Override
@@ -535,6 +554,7 @@ public class CustomerController implements Initializable {
         menu.setItems(menuContext.getMenuState().getMenu()); // makes the menu viewable as a list of Order elements (name-price)
     }
 
+    @FXML
     private void applyTotalOrderedStyle() { // applies a style to the list of orders
         totalOrderedArea.setCellFactory(new Callback<>() { // applies a border to each customer's order
             @Override
