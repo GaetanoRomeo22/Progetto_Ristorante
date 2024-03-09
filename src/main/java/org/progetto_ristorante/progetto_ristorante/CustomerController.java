@@ -144,6 +144,9 @@ public class CustomerController implements Initializable {
             } else if (!confirmedPassword.equals(password)) { // checks if the password isn't correctly confirmed
                 registerError.setText("Conferma password errata");
                 registerError.setVisible(true);
+            } else if (username.contains(" ") || password.contains(" ")) { // checks if username or password contain spaces
+                registerError.setText("Username e password non possono contenere spazi");
+                registerError.setVisible(true);
             } else if (model.registerUser(username, password)) { // if the register works, sends the user to login interface
                 showLoginInterface();
             } else if (username.contains(" ")) { // checks that the username not contains spaces
@@ -154,7 +157,7 @@ public class CustomerController implements Initializable {
                 registerError.setVisible(true);
             }
         } catch (SQLException | NoSuchAlgorithmException | IOException e) { // if database isn't reachable
-            loginError.setText("Database non raggiungibile");
+            registerError.setText("Database non raggiungibile");
             registerError.setVisible(true);
         }
     }
@@ -169,11 +172,19 @@ public class CustomerController implements Initializable {
             confirmationAlert.setGraphic(null);
             confirmationAlert.setHeaderText(null);
             confirmationAlert.initOwner(requiredSeatsField.getScene().getWindow());
-            confirmationAlert.setContentText(STR."Vuoi prenotare \{requiredSeatsField.getText().trim()} posti?");
+            String input = requiredSeatsField.getText().trim(); // gets customer's required seats from the interface
+            if (!input.matches("\\d+")) { // checks if the user's entered a number
+                unavailableReceptionist.setText("Numero di posti non valido");
+                unavailableReceptionist.setVisible(true);
+                return;
+            }
+            requiredSeatsField.clear(); // clears previous input
+            int requiredSeats = Integer.parseInt(input); // parses to Integer
+            confirmationAlert.setContentText(STR."Vuoi prenotare \{requiredSeats} posti?");
             confirmationAlert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
                     try {
-                        table = getTable(receptionSocket); // says how many seats he needs to the receptionist and gets a table
+                        table = getTable(receptionSocket, requiredSeats); // says how many seats he needs to the receptionist and gets a table
                         if (table > 0) { // if there are available seats, the customer takes them
                             showOrderInterface(); // shows second interface's elements
                         } else { // otherwise, opens a second socket
@@ -199,16 +210,9 @@ public class CustomerController implements Initializable {
     }
 
     @FXML
-    private int getTable(SocketHandler receptionSocket) throws IOException { // allows the customer to specify how many seats they need and to get a table if available
+    private int getTable(SocketHandler receptionSocket, int requiredSeats) throws IOException { // allows the customer to specify how many seats they need and to get a table if available
         BufferedReader checkSeats = receptionSocket.getReader(); // used to gets a table from the receptionist
         PrintWriter sendSeats = receptionSocket.getWriter(); // used to say to the receptionist how much seats does him require
-        String input = requiredSeatsField.getText().trim(); // gets customer's required seats from the interface
-        if (!input.matches("\\d+")) { // checks if the user's entered a number
-            unavailableReceptionist.setText("Numero di posti non valido");
-            unavailableReceptionist.setVisible(true);
-        }
-        requiredSeatsField.clear(); // clears previous input
-        int requiredSeats = Integer.parseInt(input); // parses to Integer
         sendSeats.println(requiredSeats); // says how many seats he requires to the receptionist
         int tableNumber = Integer.parseInt(checkSeats.readLine());  // gets the table number from the receptionist if it's possible
         checkSeats.close(); // closes used resources and connection
@@ -318,7 +322,7 @@ public class CustomerController implements Initializable {
         String cardName = cardNameField.getText().trim();
         String expiryDate = expiryDateField.getText().trim();
         String cvv = cvvField.getText().trim();
-        if (cardNumber.length() != 16) { // checks if card's number's length is valid
+        if (!cardNumber.matches("\\d{16}")) { // checks if card's number is valid
             paymentConfirmationLabel.setText("Numero di carta non valido");
             paymentConfirmationLabel.setVisible(true);
             return;
@@ -328,7 +332,7 @@ public class CustomerController implements Initializable {
             paymentConfirmationLabel.setVisible(true);
             return;
         }
-        if (cvv.length() != 3) { // checks if the CVV is valid
+        if (!cvv.matches("\\d{3}")) { // checks if the CVV is valid
             paymentConfirmationLabel.setText("CVV non valido");
             paymentConfirmationLabel.setVisible(true);
             return;
@@ -365,8 +369,7 @@ public class CustomerController implements Initializable {
         confirmationDialog.setContentText("Sei sicuro di voler procedere al pagamento?");
         confirmationDialog.initOwner(cardBox.getScene().getWindow());
         confirmationDialog.showAndWait().ifPresent(result -> { // checks customer's answer
-            if (result == ButtonType.OK) { // if chef confirms
-                // performs the payment
+            if (result == ButtonType.OK) { // if chef confirms, performs the payment
                 paymentStrategy = new CreditCardPayment(cardNumberField, paymentConfirmationLabel);
                 paymentStrategy.processPayment();
                 cardBox.setVisible(false);

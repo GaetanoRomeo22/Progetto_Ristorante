@@ -25,13 +25,13 @@ public class WaiterController {
     }
 
     public void startServer() throws IOException {
-            while (true) { // accepts a connection and creates a thread to manage the request
-                Socket acceptedCustomer = waiterSocket.accept();
-                SocketHandler customerSocket = new SocketProxy(acceptedCustomer);
-                int CHEF_PORT = 1315; // port to communicate with the chef
-                WaiterModel.WaiterHandler waiterHandler = new WaiterModel.WaiterHandler(customerSocket, CHEF_PORT); // creates a handler to manage the request
-                Thread waiterThread = new Thread(waiterHandler); // creates a thread
-                waiterThread.start(); // starts the thread
-            }
+        while (true) { // accepts a connection and creates a thread to manage the request
+            Socket acceptedCustomer = waiterSocket.accept();
+            SocketHandler customerSocket = new SocketProxy(acceptedCustomer);
+            int CHEF_PORT = 1315; // port to communicate with the chef
+            WaiterModel.WaiterHandler waiterHandler = new WaiterModel.WaiterHandler(customerSocket, CHEF_PORT); // creates a handler to manage the request
+            Thread waiterThread = new Thread(waiterHandler); // creates a thread
+            waiterThread.start(); // starts the thread
+        }
     }
 }
