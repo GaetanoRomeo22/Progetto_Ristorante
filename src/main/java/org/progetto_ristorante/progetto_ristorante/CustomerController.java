@@ -9,10 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -81,7 +78,8 @@ public class CustomerController implements Initializable {
             cardBox;
 
     @FXML
-    private Label paymentConfirmationLabel;
+    private Label paymentConfirmationLabel,
+                  progressLabel;
 
     private final CustomerModel model;                      // reference to Model
     private int waitingTime;                                // time the customer has to wait if there aren't available seats
@@ -101,6 +99,10 @@ public class CustomerController implements Initializable {
             loginButton.setOnMouseExited(_ -> loginButton.setEffect(null));
             loginRegisterButton.setOnMouseEntered(_ -> loginRegisterButton.setUnderline(true));
             loginRegisterButton.setOnMouseExited(_ -> loginRegisterButton.setUnderline(false));
+            loginUsername.setOnMouseEntered(_ -> loginUsername.setEffect(new DropShadow()));
+            loginUsername.setOnMouseExited(_ -> loginUsername.setEffect(null));
+            loginPassword.setOnMouseEntered(_ -> loginPassword.setEffect(new DropShadow()));
+            loginPassword.setOnMouseExited(_ -> loginPassword.setEffect(null));
         } else if (waitingButton != null && leavingButton != null) { // sets hover effect in get seats interface
             waitingButton.setOnMouseEntered(_ -> waitingButton.setEffect(new DropShadow()));
             waitingButton.setOnMouseExited(_ -> waitingButton.setEffect(null));
@@ -149,9 +151,6 @@ public class CustomerController implements Initializable {
                 registerError.setVisible(true);
             } else if (model.registerUser(username, password)) { // if the register works, sends the user to login interface
                 showLoginInterface();
-            } else if (username.contains(" ")) { // checks that the username not contains spaces
-                registerError.setText("L'username non può contenere spazi");
-                registerError.setVisible(true);
             } else { // checks if the username is available
                 registerError.setText("Username non disponibile");
                 registerError.setVisible(true);
@@ -176,9 +175,9 @@ public class CustomerController implements Initializable {
             if (!input.matches("\\d+")) { // checks if the user's entered a number
                 unavailableReceptionist.setText("Numero di posti non valido");
                 unavailableReceptionist.setVisible(true);
+                requiredSeatsField.clear(); // clears previous input
                 return;
             }
-            requiredSeatsField.clear(); // clears previous input
             int requiredSeats = Integer.parseInt(input); // parses to Integer
             confirmationAlert.setContentText(STR."Vuoi prenotare \{requiredSeats} posti?");
             confirmationAlert.showAndWait().ifPresent(response -> {
@@ -201,6 +200,8 @@ public class CustomerController implements Initializable {
                         unavailableReceptionist.setText("Receptionist non disponibile al momento");
                         unavailableReceptionist.setVisible(true);
                     }
+                } else {
+                    requiredSeatsField.clear(); // clears previous input
                 }
             });
         } catch (IOException exc) { // shows an error message if receptionist isn't available
@@ -223,19 +224,26 @@ public class CustomerController implements Initializable {
 
     @FXML
     private void waitButton() {
+        ((Pane) waitingBox.getParent()).getChildren().remove(waitingBox); // removes waitingBox from interface
         Service<Void> waitService = new Service<>() {
             @Override
             protected Task<Void> createTask() {
                 return new Task<>() {
                     @Override
                     protected Void call() throws Exception {
-                        Thread.sleep(waitingTime * 1000L);
+                        int remainingTime = waitingTime;
+                        while (remainingTime > 0) { // while customer waits
+                            updateMessage(STR."Tempo rimanente: \{remainingTime} minuti"); // shows remaining time
+                            Thread.sleep(1000); // waits a second
+                            remainingTime--; // decreases remaining time
+                        }
                         return null;
                     }
                 };
             }
         };
 
+        // Quando il servizio ha completato l'attesa
         waitService.setOnSucceeded(_ -> {
             try {
                 showOrderInterface();
@@ -244,6 +252,10 @@ public class CustomerController implements Initializable {
             }
         });
 
+        // Bind il messaggio di avanzamento del servizio alla proprietà message della ProgressBar
+        progressLabel.textProperty().bind(waitService.messageProperty());
+
+        // Avvia il servizio
         waitService.start();
     }
 
@@ -443,8 +455,14 @@ public class CustomerController implements Initializable {
     private void initializeLoginInterfaceElements(Scene scene) { // initializes LoginInterface's elements
         loginButton = (Button) scene.lookup("#loginButton");
         loginRegisterButton = (Text) scene.lookup("#loginRegisterButton");
+        loginUsername = (TextField) scene.lookup("#loginUsername");
+        loginPassword = (PasswordField) scene.lookup("#loginPassword");
         loginButton.setOnMouseEntered(_ -> loginButton.setEffect(new DropShadow()));
         loginButton.setOnMouseExited(_ -> loginButton.setEffect(null));
+        loginUsername.setOnMouseEntered(_ -> loginUsername.setEffect(new DropShadow()));
+        loginUsername.setOnMouseExited(_ -> loginUsername.setEffect(null));
+        loginPassword.setOnMouseEntered(_ -> loginPassword.setEffect(new DropShadow()));
+        loginPassword.setOnMouseExited(_ -> loginPassword.setEffect(null));
         loginRegisterButton.setOnMouseEntered(_ -> loginRegisterButton.setUnderline(true));
         loginRegisterButton.setOnMouseExited(_ -> loginRegisterButton.setUnderline(false));
     }
@@ -453,6 +471,15 @@ public class CustomerController implements Initializable {
     private void initializeRegisterInterfaceElements(Scene scene) { // initializes RegisterInterface's elements
         registerButton = (Button) scene.lookup("#registerButton");
         registerLoginButton = (Text) scene.lookup("#registerLoginButton");
+        registerUsername = (TextField) scene.lookup("#registerUsername");
+        registerPassword = (PasswordField) scene.lookup("#registerPassword");
+        confirmPassword = (PasswordField) scene.lookup("#confirmPassword");
+        registerUsername.setOnMouseEntered(_ -> registerUsername.setEffect(new DropShadow()));
+        registerUsername.setOnMouseExited(_ -> registerUsername.setEffect(null));
+        registerPassword.setOnMouseEntered(_ -> registerPassword.setEffect(new DropShadow()));
+        registerPassword.setOnMouseExited(_ -> registerPassword.setEffect(null));
+        confirmPassword.setOnMouseEntered(_ -> confirmPassword.setEffect(new DropShadow()));
+        confirmPassword.setOnMouseExited(_ -> confirmPassword.setEffect(null));
         registerButton.setOnMouseEntered(_ -> registerButton.setEffect(new DropShadow()));
         registerButton.setOnMouseExited(_ -> registerButton.setEffect(null));
         registerLoginButton.setOnMouseEntered(_ -> registerLoginButton.setUnderline(true));
@@ -462,6 +489,9 @@ public class CustomerController implements Initializable {
     @FXML
     private void initializeSeatsOrderInterface(Scene scene) { // initializes GetSeatsInterface's elements
         confirmSeatsButton = (Button) scene.lookup("#confirmSeatsButton");
+        requiredSeatsField = (TextField) scene.lookup("#requiredSeatsField");
+        requiredSeatsField.setOnMouseEntered(_ -> requiredSeatsField.setEffect(new DropShadow()));
+        requiredSeatsField.setOnMouseExited(_ -> requiredSeatsField.setEffect(null));
         confirmSeatsButton.setOnMouseEntered(_ -> confirmSeatsButton.setEffect(new DropShadow()));
         confirmSeatsButton.setOnMouseExited(_ -> confirmSeatsButton.setEffect(null));
     }

@@ -60,6 +60,10 @@ public class ChefController implements Initializable, SocketInitializedListener 
             setButtonShadow(); // sets buttons' shadow when chef hovers them with mouse
             showStoredMenu(); // shows the initial menu's state
             setMouseClickHandler(); // sets an event handler that catches chef's clicks on the interface
+            menuOrderField.setOnMouseEntered(_ -> menuOrderField.setEffect(new DropShadow()));
+            menuOrderField.setOnMouseExited(_ -> menuOrderField.setEffect(null));
+            orderPriceField.setOnMouseEntered(_ -> orderPriceField.setEffect(new DropShadow()));
+            orderPriceField.setOnMouseExited(_ -> orderPriceField.setEffect(null));
         } else if (ordersToPrepare != null) { // if is loaded the second interface
             ordersToPrepare.setOnMouseClicked(_ -> { // sets an event listener to get chef's clicked order onto the listview
                 String selectedOrder = ordersToPrepare.getSelectionModel().getSelectedItem(); // gets the name of the order clicked by the chef

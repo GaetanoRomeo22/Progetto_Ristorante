@@ -19,7 +19,7 @@ public class CreditCardPayment implements PaymentStrategy {
 
     @Override
     public void processPayment() { // executes the payment with card
-        paymentConfirmationLabel.setText(STR."Importo pagato correttamente con carta di credito. Numero carta: \{cardNumberField.getText()}");
+        paymentConfirmationLabel.setText(STR."Importo pagato correttamente con carta di credito. Numero carta: \{cardNumberField.getText().trim()}");
         paymentConfirmationLabel.setStyle("-fx-text-fill: #32CD32; -fx-font-family: 'Helvetica'; -fx-font-size: 30px;");
         paymentConfirmationLabel.setVisible(true);
     }

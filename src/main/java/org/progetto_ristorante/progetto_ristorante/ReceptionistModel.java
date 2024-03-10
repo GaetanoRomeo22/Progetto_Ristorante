@@ -1,6 +1,7 @@
 package org.progetto_ristorante.progetto_ristorante;
 
 import java.io.PrintWriter;
+import java.time.Instant;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -8,16 +9,15 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 public class ReceptionistModel {
-    private static final int MAX_TABLES = 20;        // max number of tables of the restaurant
-    private static final int MAX_SEATS = 100;        // max number of seats of the restaurant
-    private int availableSeats;                      // number of current available seats
-    private int availableTables;                     // number of current available tables
-    private final int[] tables;                      // array to manage tables (0 means free and 1 occupied)
-    private final Semaphore semaphore;               // semaphore to synchronize the access to the receptionist
-    private static final Random rand = new Random(); // used to generate random numbers
+    private static final int MAX_TABLES = 20; // max number of tables of the restaurant
+    private static final int MAX_SEATS = 100; // max number of seats of the restaurant
+    private int availableSeats; // number of current available seats
+    private int availableTables; // number of current available tables
+    private final int[] tables; // array to manage tables (0 means free and 1 occupied)
+    private final Semaphore semaphore = new Semaphore(1); // semaphore to synchronize the access to the receptionist
+    private static final Random rand = new Random(Instant.now().getEpochSecond()); // used to generate random numbers by a specified seed
 
     public ReceptionistModel() { // constructor
-        semaphore = new Semaphore(1);
         availableSeats = MAX_SEATS; // sets the number of available seats
         availableTables = MAX_TABLES; // sets the number of available tables
         tables = new int[MAX_TABLES]; // allocates an array of MAX_TABLES that indicates restaurant's menu
