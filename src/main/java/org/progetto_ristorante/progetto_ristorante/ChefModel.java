@@ -4,12 +4,6 @@ import java.io.*;
 import java.net.Socket;
 public class ChefModel {
     private final int WAITER_PORT = 1315;  // port to communicate with the waiter
-    private SocketHandler orderSocket; // socket used to communicate with accepted waiter
-    protected SocketInitializedListener socketInitializedListener; // event to communicate that the socket's been created
-
-    public ChefModel(SocketInitializedListener listener) {
-        this.socketInitializedListener = listener;
-    }
 
     public void startServer() {
         Thread serverThread = new Thread(() -> { // creates chef's server thread
@@ -17,8 +11,6 @@ public class ChefModel {
                 while (true) {
                     Socket acceptedOrder = chefSocket.accept(); // accepts a connection
                     SocketHandler orderSocket = new SocketProxy(acceptedOrder);
-                    this.orderSocket = orderSocket;
-                    socketInitializedListener.socketInitialized(orderSocket);
                     Thread chef = new Thread(new ChefHandler(orderSocket)); // creates a thread to manage the request
                     chef.start(); // starts the thread
                 }
@@ -27,10 +19,6 @@ public class ChefModel {
             }
         });
         serverThread.start(); // starts chef's server thread
-    }
-
-    public SocketHandler getSocket() { // returns the socket used to communicate with the waiter
-        return orderSocket;
     }
 
     public static class ChefHandler implements Runnable {

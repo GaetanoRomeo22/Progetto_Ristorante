@@ -1,13 +1,9 @@
 package org.progetto_ristorante.progetto_ristorante;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
@@ -15,26 +11,20 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.sql.*;
 import java.util.ResourceBundle;
 
-public class ChefController implements Initializable, SocketInitializedListener {
+public class ChefController implements Initializable {
     @FXML
     private TextField menuOrderField,
             orderPriceField;
 
     @FXML
     private ListView<ConcreteOrder> menu;
-
-    @FXML
-    private ListView<String> ordersToPrepare;
 
     @FXML
     private Text invalidData;
@@ -48,11 +38,10 @@ public class ChefController implements Initializable, SocketInitializedListener 
                     cancelButton,
                     confirmMenuButton;
 
-    private final ChefModel chefModel = new ChefModel(this);                // reference to Model
+    private final ChefModel chefModel = new ChefModel();                // reference to Model
     private final OrderFactory orderFactory = new SimpleOrderFactory();             // used to create an order with name and price
     private final MenuOriginator menuOriginator = new MenuOriginator();             // initial menu's state (before modifies)
     private final MenuMemento menuMemento = menuOriginator.saveMenuState();         // used to restore menu's previous state if chef undo modifies
-    protected ObservableList<String> orders = FXCollections.observableArrayList();  // list of orders to prepare by the chef
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) { // shows current menu when the interface is loaded and sets the action to perform when the chef clicks on buttons
@@ -64,26 +53,7 @@ public class ChefController implements Initializable, SocketInitializedListener 
             menuOrderField.setOnMouseExited(_ -> menuOrderField.setEffect(null));
             orderPriceField.setOnMouseEntered(_ -> orderPriceField.setEffect(new DropShadow()));
             orderPriceField.setOnMouseExited(_ -> orderPriceField.setEffect(null));
-        } else if (ordersToPrepare != null) { // if is loaded the second interface
-            ordersToPrepare.setOnMouseClicked(_ -> { // sets an event listener to get chef's clicked order onto the listview
-                String selectedOrder = ordersToPrepare.getSelectionModel().getSelectedItem(); // gets the name of the order clicked by the chef
-                if (selectedOrder != null) {
-                    try {
-                        confirmOrderPreparation(selectedOrder); // confirms that the order is ready
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
         }
-    }
-
-    private void confirmOrderPreparation(String order) throws IOException { // confirms to the waiter that the order is ready and sends it to him
-        orders.remove(order); // removes the order from the list of orders to prepare
-        ordersToPrepare.setItems(orders); // shows the list of orders to prepare
-        SocketHandler socket = chefModel.getSocket(); // gets the socket used to communicate with the waiter
-        PrintWriter writer = socket.getWriter(); // gets the input stream from the socket
-        writer.println(order); // sends the order to the waiter
     }
 
     @FXML
@@ -222,7 +192,6 @@ public class ChefController implements Initializable, SocketInitializedListener 
         } catch (SQLException exc) {
             throw new RuntimeException(exc);
         }
-        showOrdersToPrepareInterface();
     }
 
     @FXML
@@ -241,18 +210,6 @@ public class ChefController implements Initializable, SocketInitializedListener 
                 showStoredMenu(); // shows initial's menu state
             }
         });
-    }
-
-    @FXML
-    private void showOrdersToPrepareInterface() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("ChefOrderInterface.fxml")); // loads the fxml containing the interface
-        Parent parent = loader.load();
-        Scene scene = new Scene(parent);
-        Stage stage = (Stage) orderPriceField.getScene().getWindow();
-        stage.setScene(scene);
-        stage.setMaximized(true); // sets fullscreen
-        ordersToPrepare = (ListView<String>)scene.lookup("#ordersToPrepare");
-        stage.show(); // shows the interface
     }
 
     private void setButtonShadow() { // sets a shadow effect when chef hovers buttons with mouse
@@ -313,28 +270,5 @@ public class ChefController implements Initializable, SocketInitializedListener 
                 };
             }
         });
-    }
-
-    @Override
-    public void socketInitialized(SocketHandler socket) { // launched when the socket to communicate with the waiter has been created
-        Runnable orderListener = () -> { // creates a thread to get each waiter's orders
-            try {
-                BufferedReader reader = socket.getReader(); // gets the input stream from the socket
-                while (true) { // while customer keeps ordering
-                    String order = reader.readLine(); // gets an order
-                    if (order != null) {
-                        Platform.runLater(() -> {
-                            orders.add(order); // adds the order to the list of orders to prepare
-                            ordersToPrepare.setItems(orders); // shows the list of orders to prepare
-                        });
-                    }
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        };
-        Thread orderListenerThread = new Thread(orderListener); // creates a thread to manage the getting of the order
-        orderListenerThread.setDaemon(true); // sets the thread as a daemon to end with the interface
-        orderListenerThread.start(); // starts the thread
     }
 }
