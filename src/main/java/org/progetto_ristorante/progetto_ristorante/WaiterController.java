@@ -18,7 +18,7 @@ public class WaiterController {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main() throws IOException {
         WaiterModel waiterModel = new WaiterModel();
         WaiterController waiterController = new WaiterController(waiterModel);
         waiterController.startServer();

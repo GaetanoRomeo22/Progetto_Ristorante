@@ -23,7 +23,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.ResourceBundle;
-import static java.lang.StringTemplate.STR;
 
 public class CustomerController implements Initializable {
     @FXML
@@ -179,7 +178,7 @@ public class CustomerController implements Initializable {
                 return;
             }
             int requiredSeats = Integer.parseInt(input); // parses to Integer
-            confirmationAlert.setContentText(STR."Vuoi prenotare \{requiredSeats} posti?");
+            confirmationAlert.setContentText("Vuoi prenotare %d posti?".formatted(requiredSeats));
             confirmationAlert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
                     try {
@@ -192,7 +191,7 @@ public class CustomerController implements Initializable {
                                 waitingBox.setVisible(true);
                                 BufferedReader getWaitingTime = receptionSocket2.getReader(); // used to read the time to wait communicated by the receptionist
                                 waitingTime = Integer.parseInt(getWaitingTime.readLine()); // reads waiting time
-                                waitingMessage.setText(STR."Non ci sono abbastanza posti disponibili, vuoi attendere \{waitingTime} minuti?"); // shows waiting message
+                                waitingMessage.setText("Non ci sono abbastanza posti disponibili, vuoi attendere %d minuti?".formatted(waitingTime)); // shows waiting message
                                 waitingMessage.setVisible(true);
                             }
                         }
@@ -233,7 +232,7 @@ public class CustomerController implements Initializable {
                     protected Void call() throws Exception {
                         int remainingTime = waitingTime;
                         while (remainingTime > 0) { // while customer waits
-                            updateMessage(STR."Tempo rimanente: \{remainingTime} minuti"); // shows remaining time
+                            updateMessage("Tempo rimanente: %d minuti".formatted(remainingTime)); // shows remaining time
                             Thread.sleep(1000); // waits a second
                             remainingTime--; // decreases remaining time
                         }
@@ -284,7 +283,7 @@ public class CustomerController implements Initializable {
             totalOrdered.append(order).append("\n"); // adds the order to the customer's list and its price to the bill
             applyTotalOrderedStyle(); // applies a style to total ordered
             bill += price; // updates customer's bill
-            billText.setText(STR."€\{String.format("%.2f", bill)}");
+            billText.setText("€%s".formatted(String.format("%.2f", bill)));
             totalOrderedArea.getItems().add(totalOrdered.toString()); // shows orders and total bill
         } catch (IOException exc) { // if waiter is unreachable
             unavailableWaiter.setText("Nessun cameriere disponibile al momento");
@@ -531,7 +530,7 @@ public class CustomerController implements Initializable {
                 confirmationDialog.setTitle("Conferma ordine");
                 confirmationDialog.setHeaderText(null);
                 confirmationDialog.setGraphic(null);
-                confirmationDialog.setContentText(STR."Sei sicuro di voler ordinare \{order.name()} ?");
+                confirmationDialog.setContentText("Sei sicuro di voler ordinare %s?".formatted(order.name()));
                 confirmationDialog.initOwner(menu.getScene().getWindow());
                 confirmationDialog.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL); // adds confirm and deny buttons
                 confirmationDialog.showAndWait().ifPresent(response -> { // waits for customer's response
@@ -570,7 +569,7 @@ public class CustomerController implements Initializable {
                         } else {
                             HBox hbox = new HBox();
                             Label nameLabel = new Label(item.name());
-                            Label priceLabel = new Label(STR."€\{String.format("%.2f", item.price())}");
+                            Label priceLabel = new Label("€%s".formatted(String.format("%.2f", item.price())));
                             Region spacer = new Region();
                             HBox.setHgrow(spacer, Priority.ALWAYS);
                             hbox.getChildren().addAll(nameLabel, spacer, priceLabel);

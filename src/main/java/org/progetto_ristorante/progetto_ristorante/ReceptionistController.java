@@ -19,7 +19,7 @@ public class ReceptionistController {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main() throws IOException {
         ReceptionistModel model = new ReceptionistModel();
         ReceptionistController controller = new ReceptionistController(model);
         controller.startServer();

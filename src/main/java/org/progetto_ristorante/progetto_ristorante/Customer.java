@@ -8,14 +8,14 @@ import javafx.stage.Stage;
 
 public class Customer extends Application {
 
-    public static void main(String[] args) {
+    public static void main() {
         launch();
     }
 
     @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("Customer");
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("GetSeatsInterface.fxml")); // loads the fxml containing the interface
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("LoginInterface.fxml")); // loads the fxml containing the interface
         Scene scene = new Scene(fxmlLoader.load());
         stage.setScene(scene);
         stage.setMaximized(true); // sets fullscreen
