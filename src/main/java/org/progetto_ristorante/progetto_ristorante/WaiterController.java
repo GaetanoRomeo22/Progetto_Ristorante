@@ -3,7 +3,7 @@ package org.progetto_ristorante.progetto_ristorante;
 import java.io.IOException;
 import java.net.Socket;
 
-public class WaiterController {
+public class WaiterController { // manages waiter's work
 
     protected final WaiterModel model; // reference to the Model
     private final ServerSocketHandler waiterSocket; // socket to communicate with customers
