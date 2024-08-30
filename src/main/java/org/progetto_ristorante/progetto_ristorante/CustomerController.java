@@ -148,8 +148,8 @@ public class CustomerController implements Initializable {
             } else if (username.contains(" ") || password.contains(" ")) { // checks if username or password contain spaces
                 registerError.setText("Username e password non possono contenere spazi");
                 registerError.setVisible(true);
-            } else if (model.registerUser(username, password)) { // if the register works, sends the user to login interface
-                showLoginInterface();
+            } else if (model.registerUser(username, password)) { // if the register works, shows get seats interface
+                showSeatsInterface();
             } else { // checks if the username is available
                 registerError.setText("Username non disponibile");
                 registerError.setVisible(true);
@@ -241,8 +241,6 @@ public class CustomerController implements Initializable {
                 };
             }
         };
-
-        // Quando il servizio ha completato l'attesa
         waitService.setOnSucceeded(_ -> {
             try {
                 showOrderInterface();
@@ -250,11 +248,7 @@ public class CustomerController implements Initializable {
                 throw new RuntimeException(exc);
             }
         });
-
-        // Bind il messaggio di avanzamento del servizio alla proprietà message della ProgressBar
         progressLabel.textProperty().bind(waitService.messageProperty());
-
-        // Avvia il servizio
         waitService.start();
     }
 

@@ -18,7 +18,8 @@ public class NotDiscountMenu implements MenuState {
                 while (resultSet.next()) { // gets each order's name and price
                     String name = resultSet.getString("NOME");
                     float price = resultSet.getFloat("PREZZO");
-                    ConcreteOrder order = new ConcreteOrder(name, price); // calls the constructor to build an Order object
+                    String category = resultSet.getString("CATEGORIA");
+                    ConcreteOrder order = new ConcreteOrder(name, price, category); // calls the constructor to build an Order object
                     menu.add(order); // adds the order to the menu
                 }
                 this.menu = menu; // updates the menu

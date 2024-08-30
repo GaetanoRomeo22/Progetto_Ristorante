@@ -18,7 +18,8 @@ public class DiscountMenu implements MenuState {
                 while (resultSet.next()) { // gets each order's name and price
                     String name = resultSet.getString("NOME");
                     float price = resultSet.getFloat("PREZZO");
-                    ConcreteOrder order = new ConcreteOrder(name, price - price * 0.1f); // calls the constructor to build an Order object and applies the sale
+                    String category = resultSet.getString("CATEGORIA");
+                    ConcreteOrder order = new ConcreteOrder(name, price - price * 0.1f, category); // calls the constructor to build an Order object and applies the sale
                     menu.add(order); // adds the order to the menu
                 }
                 this.discountedMenu = menu; // updates the menu
