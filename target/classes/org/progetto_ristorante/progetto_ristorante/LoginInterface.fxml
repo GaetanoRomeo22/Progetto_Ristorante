@@ -4,10 +4,12 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController"
@@ -20,26 +22,35 @@
     <!-- Logo -->
 
     <!-- Title -->
-    <Text text="LOGIN" style="-fx-font-size: 35px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
+    <Text text="LOGIN" style="-fx-font-size: 25px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
     <!-- Title -->
 
     <!-- Username and Password -->
-    <TextField fx:id="loginUsername" promptText="Username" maxWidth="300" focusTraversable="false"
-               style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-prompt-text-fill: #808080"/>
-    <PasswordField fx:id="loginPassword" promptText="Password" maxWidth="300" focusTraversable="false"
-                   style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-prompt-text-fill: #808080"/>
+    <VBox spacing="15.0" alignment="CENTER">
+        <TextField fx:id="loginUsername" promptText="Username" maxWidth="280" focusTraversable="false"
+                   style="-fx-font-size: 20px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 10; -fx-prompt-text-fill: #808080"/>
+        <StackPane>
+            <PasswordField fx:id="loginPassword" promptText="Password" focusTraversable="false" maxWidth="280"
+                           style="-fx-font-size: 20px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 10; -fx-prompt-text-fill: #808080"/>
+            <TextField fx:id="visibleLoginPassword" promptText="Password" focusTraversable="false" visible="false" maxWidth="280"
+                       style="-fx-font-size: 20px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 10; -fx-prompt-text-fill: #808080"/>
+        </StackPane>
+        <Label text="👁️" style="-fx-font-size: 20px; -fx-cursor: hand; -fx-padding: 10; -fx-text-fill: #808080" onMouseClicked="#toggleLoginPasswordVisibility"/>
+    </VBox>
     <!-- Username and Password -->
 
     <!-- Buttons -->
-    <Button fx:id="loginButton" text="Accedi" onAction="#login"
-            style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
-    <HBox spacing="5.0" alignment="CENTER">
-        <Text text="Non hai un account?" style="-fx-font-size: 30px"/>
-        <Text fx:id="loginRegisterButton" text="Registrati" onMouseClicked="#showRegisterInterface" fill="#32CD32" style="-fx-font-size: 30px"/>
-    </HBox>
+    <VBox spacing="15.0" alignment="CENTER">
+        <Button fx:id="loginButton" text="Accedi" onAction="#login"
+                style="-fx-font-size: 20px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
+        <HBox spacing="5.0" alignment="CENTER">
+            <Text text="Non hai un account?" style="-fx-font-size: 20px"/>
+            <Text fx:id="loginRegisterButton" text="Registrati" onMouseClicked="#showRegisterInterface" fill="#32CD32" style="-fx-font-size: 20px; -fx-cursor: hand;"/>
+        </HBox>
+    </VBox>
     <!-- Buttons -->
 
     <!-- Error Messages -->
-    <Text fx:id="loginError" visible="false" fill="red" style="-fx-font-size: 30px"/>
+    <Text fx:id="loginError" visible="false" fill="red" style="-fx-font-size: 20px"/>
     <!-- Error Messages -->
 </VBox>

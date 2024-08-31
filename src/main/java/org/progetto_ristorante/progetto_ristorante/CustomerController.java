@@ -1,5 +1,7 @@
 package org.progetto_ristorante.progetto_ristorante;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -15,12 +17,10 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
+import java.sql.*;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.ResourceBundle;
 
@@ -45,6 +45,9 @@ public class CustomerController implements Initializable {
 
     @FXML
     private TextField loginUsername,
+            visibleLoginPassword,
+            visibleRegisterPassword,
+            visibleConfirmPassword,
             registerUsername,
             requiredSeatsField,
             cardNumberField,
@@ -82,12 +85,16 @@ public class CustomerController implements Initializable {
 
     private final CustomerModel model;                      // reference to Model
     private int waitingTime;                                // time the customer has to wait if there aren't available seats
-    private float bill = 0.0f;                              // customer's total bill
+    private float bill;                              // customer's total bill
     private int table;                                      // customer's table's number
     protected MenuContext menuContext = new MenuContext();  // used to show discounted or not discounted menu
     protected PaymentStrategy paymentStrategy;              // used to manage payment method
+    private final MenuOriginator menuOriginator = new MenuOriginator(); // initial menu's state (before modifies)
+    private boolean isLoginPasswordVisible = false;
+    private boolean isRegisterPasswordVisible = false;
 
     public CustomerController() { // constructor
+        bill = 0.0f;
         model = CustomerModel.getInstance();
     }
 
@@ -108,6 +115,40 @@ public class CustomerController implements Initializable {
             leavingButton.setOnMouseEntered(_ -> leavingButton.setEffect(new DropShadow()));
             leavingButton.setOnMouseExited(_ -> leavingButton.setEffect(null));
         }
+    }
+
+    @FXML
+    private void toggleLoginPasswordVisibility() {
+        if (isLoginPasswordVisible) {
+            loginPassword.setText(visibleLoginPassword.getText());
+            visibleLoginPassword.setVisible(false);
+            loginPassword.setVisible(true);
+        } else {
+            visibleLoginPassword.setText(loginPassword.getText());
+            visibleLoginPassword.setVisible(true);
+            loginPassword.setVisible(false);
+        }
+        isLoginPasswordVisible = !isLoginPasswordVisible;
+    }
+
+    @FXML
+    private void toggleRegisterPasswordVisibility() {
+        if (isRegisterPasswordVisible) {
+            registerPassword.setText(visibleRegisterPassword.getText());
+            visibleRegisterPassword.setVisible(false);
+            registerPassword.setVisible(true);
+            confirmPassword.setText(visibleConfirmPassword.getText());
+            visibleConfirmPassword.setVisible(false);
+            confirmPassword.setVisible(true);
+        } else {
+            visibleRegisterPassword.setText(registerPassword.getText());
+            visibleRegisterPassword.setVisible(true);
+            registerPassword.setVisible(false);
+            visibleConfirmPassword.setText(confirmPassword.getText());
+            visibleConfirmPassword.setVisible(true);
+            confirmPassword.setVisible(false);
+        }
+        isRegisterPasswordVisible = !isRegisterPasswordVisible;
     }
 
     @FXML
@@ -253,15 +294,39 @@ public class CustomerController implements Initializable {
     }
 
     @FXML
-    private void showMenu() { // shows the menu in real time
-        LocalDate today = LocalDate.now(); // local's date
-        DayOfWeek day = today.getDayOfWeek(); // local's day
-        if (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) { // shows discounted menu during the weekend
-            menuContext.setMenuState(new DiscountMenu());
-        } else { // shows full price menu during the week
-            menuContext.setMenuState(new NotDiscountMenu());
+    private void showMenu() { // shows the menu
+        ObservableList<ConcreteOrder> menuItems = FXCollections.observableArrayList(); // list of orders
+        ConcreteOrder antipastiPlaceholder = new ConcreteOrder("Antipasti", 0.0f, "Antipasti"); // placeholders for order's categories
+        ConcreteOrder primiPlaceholder = new ConcreteOrder("Primi", 0.0f, "Primi");
+        ConcreteOrder secondiPlaceholder = new ConcreteOrder("Secondi", 0.0f, "Secondi");
+        ConcreteOrder dolciPlaceholder = new ConcreteOrder("Dolci", 0.0f, "Dolci");
+        menuItems.add(antipastiPlaceholder); // adds placeholders' visualization
+        menuItems.add(primiPlaceholder);
+        menuItems.add(secondiPlaceholder);
+        menuItems.add(dolciPlaceholder);
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
+            String selectQuery = "SELECT * FROM ORDINI ORDER BY CATEGORIA"; // query to get each menu's order
+            try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) { // performs the select
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) { // each order is added into the menu
+                    String name = resultSet.getString("NOME"); // gets order's name
+                    float price = resultSet.getFloat("PREZZO"); // gets order's price
+                    String category = resultSet.getString("CATEGORIA"); // gets order's category
+                    ConcreteOrder order = new ConcreteOrder(name, price, category); // calls the constructor to create an Order object
+                    switch (category) { // adds the order under the correct category placeholder
+                        case "Antipasti" -> menuItems.add(menuItems.indexOf(antipastiPlaceholder) + 1, order);
+                        case "Primi" -> menuItems.add(menuItems.indexOf(primiPlaceholder) + 1, order);
+                        case "Secondi" -> menuItems.add(menuItems.indexOf(secondiPlaceholder) + 1, order);
+                        case "Dolci" -> menuItems.add(menuItems.indexOf(dolciPlaceholder) + 1, order);
+                    }
+                }
+                menuOriginator.setMenu(menuItems); // sets menu's initial state
+                applyMenuStyle(); // applies a border to the menu
+                menu.setItems(menuItems); // makes the menu viewable as list of Order elements (name-price)
+            }
+        } catch (SQLException exc) {
+            throw new RuntimeException(exc);
         }
-        applyMenuStyle(); // applies a style to the menu
     }
 
     @FXML
@@ -560,6 +625,11 @@ public class CustomerController implements Initializable {
                         if (empty || item == null) {
                             setText(null);
                             setStyle(null);
+                        } else if (item.price() == 0.0f) {
+                            setText(item.name());
+                            setStyle("-fx-font-weight: bold; -fx-font-size: 18px; -fx-padding: 10px; -fx-background-color: #D3D3D3;");
+                            setGraphic(null);
+                            setDisable(true);
                         } else {
                             HBox hbox = new HBox();
                             Label nameLabel = new Label(item.name());

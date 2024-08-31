@@ -20,24 +20,24 @@
 
     <!-- Card Details -->
     <VBox fx:id="cardBox" spacing="20.0" alignment="CENTER">
-        <Text text="Dati Carta" style="-fx-font-size: 35px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
+        <Text text="Dati Carta" style="-fx-font-size: 25px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
         <TextField fx:id="cardNumberField" promptText="Numero" maxWidth="300" focusTraversable="false"
-                   style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-prompt-text-fill: #808080"/>
+                   style="-fx-font-size: 20px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-prompt-text-fill: #808080"/>
         <TextField fx:id="cardNameField" promptText="Intestatario" maxWidth="300" focusTraversable="false"
-                   style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-prompt-text-fill: #808080"/>
+                   style="-fx-font-size: 20px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-prompt-text-fill: #808080"/>
         <TextField fx:id="expiryDateField" promptText="Data Scadenza" maxWidth="300" focusTraversable="false"
-                   style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-prompt-text-fill: #808080"/>
+                   style="-fx-font-size: 20px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-prompt-text-fill: #808080"/>
         <TextField fx:id="cvvField" promptText="CVV" maxWidth="300" focusTraversable="false"
-                   style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-prompt-text-fill: #808080"/>
+                   style="-fx-font-size: 20px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-prompt-text-fill: #808080"/>
         <!-- Card Details -->
 
         <!-- Pay Button -->
         <Button fx:id="payButton" text="Paga" onAction="#pay"
-                style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
+                style="-fx-font-size: 20px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
         <!-- Pay Button -->
     </VBox>
 
     <!-- Payment Confirmation Message -->
-    <Label fx:id="paymentConfirmationLabel" style="-fx-font-size: 30px" visible="false" textFill="red"/>
+    <Label fx:id="paymentConfirmationLabel" style="-fx-font-size: 20px; -fx-fill: #FF0000" visible="false"/>
     <!-- Payment Confirmation Message -->
 </VBox>

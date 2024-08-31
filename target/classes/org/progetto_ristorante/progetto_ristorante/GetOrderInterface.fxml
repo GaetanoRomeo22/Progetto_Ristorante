@@ -5,46 +5,51 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.Region?>
 
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController"
       style="-fx-background-color: #F5DEB3; -fx-font-family: 'Helvetica'">
 
+    <!-- Spacer to Push Content Down -->
+    <Region prefHeight="50"/>
+    <!-- Spacer to Push Content Down -->
+
     <!-- Table and Bill -->
     <HBox fx:id="tableBillBox" spacing="20.0" alignment="CENTER">
-        <VBox spacing="5.0" alignment="CENTER">
-            <Text text="TAVOLO" style="-fx-font-size: 35px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
-            <Text fx:id="tableNumber" style="-fx-font-size: 30px"/>
+        <VBox spacing="15.0" alignment="CENTER">
+            <Text text="TAVOLO" style="-fx-font-size: 25px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
+            <Text fx:id="tableNumber" style="-fx-font-size: 20px; -fx-fill: #333333"/>
         </VBox>
-        <VBox spacing="5.0" alignment="CENTER">
-            <Text text="TOTALE" style="-fx-font-size: 35px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
-            <Text fx:id="billText" style="-fx-font-size: 30px"/>
+        <VBox spacing="15.0" alignment="CENTER">
+            <Text text="TOTALE" style="-fx-font-size: 25px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
+            <Text fx:id="billText" style="-fx-font-size: 20px; -fx-fill: #333333"/>
         </VBox>
     </HBox>
     <!-- Table and Bill -->
 
     <!-- Menu -->
-    <VBox fx:id="menuBox" spacing="10.0" alignment="CENTER">
-        <Text text="MENU" style="-fx-font-size: 35px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
-        <ListView fx:id="menu" style="-fx-font-size: 30px" prefWidth="808" maxWidth="808"/>
+    <VBox fx:id="menuBox" spacing="15.0" alignment="CENTER">
+        <Text text="MENU" style="-fx-font-size: 25px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
+        <ListView fx:id="menu" style="-fx-font-size: 20px" prefWidth="808" maxWidth="808"/>
     </VBox>
     <!-- Menu -->
 
-    <Text fx:id="cashText" style="-fx-font-size: 30px; -fx-fill: #32CD32" visible="false"/>
+    <Text fx:id="cashText" style="-fx-font-size: 25px; -fx-font-weight: bold; -fx-fill: #32CD32" visible="false"/>
 
     <!-- Orders -->
-    <VBox fx:id="orderBox" spacing="10.0" alignment="CENTER">
-        <Text text="ORDINI EFFETTUATI" style="-fx-font-size: 35px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
+    <VBox fx:id="orderBox" spacing="15.0" alignment="CENTER">
+        <Text text="ORDINI EFFETTUATI" style="-fx-font-size: 25px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
         <ListView fx:id="totalOrderedArea" prefWidth="808" maxWidth="808"
-                  style="-fx-font-size: 30px; -fx-opacity: 1.0;" disable="true"/>
+                  style="-fx-font-size: 20px; -fx-opacity: 1.0;" disable="true"/>
         <!-- Stop Button -->
         <Button fx:id="stopButton" text="Chiedi il conto" onAction="#askBill"
-                style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
+                style="-fx-font-size: 20px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
         <!-- Stop Button -->
     </VBox>
     <!-- Orders -->
 
     <!-- Error Message -->
-    <Text fx:id="unavailableWaiter" visible="false" fill="#FF0000" style="-fx-font-size: 30px"/>
+    <Text fx:id="unavailableWaiter" visible="false" fill="#FF0000" style="-fx-font-size: 20px"/>
     <!-- Error Message -->
 </VBox>

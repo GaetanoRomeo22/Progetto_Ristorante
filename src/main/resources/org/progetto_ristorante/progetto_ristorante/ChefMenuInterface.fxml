@@ -6,27 +6,27 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.VBox?>
-
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
+
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.ChefController"
       style="-fx-background-color: #F5DEB3; -fx-font-family: 'Helvetica'">
 
     <!-- Order and Price Writing -->
     <VBox fx:id="order" spacing="20.0" alignment="CENTER">
-        <Text text="ORDINE" style="-fx-font-size: 35px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
+        <Text text="ORDINE" style="-fx-font-size: 25px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
         <HBox spacing="10.0" alignment="CENTER">
             <VBox spacing="10.0" alignment="CENTER">
                 <TextField fx:id="menuOrderField" prefWidth="400" maxWidth="400" promptText="Piatto" focusTraversable="false"
-                           style="-fx-font-size: 30px; -fx-padding: 10px; -fx-border-radius: 5px; -fx-background-radius: 10px; -fx-prompt-text-fill: #808080; -fx-background-color: #F9F6F7; -fx-border-color: #D2B48C"/>
+                           style="-fx-font-size: 20px; -fx-padding: 10px; -fx-border-radius: 5px; -fx-background-radius: 10px; -fx-prompt-text-fill: #808080; -fx-background-color: #F9F6F7; -fx-border-color: #D2B48C"/>
             </VBox>
             <VBox spacing="10.0" alignment="CENTER">
                 <HBox spacing="5.0" alignment="CENTER">
                     <TextField fx:id="orderPriceField" prefWidth="150" maxWidth="150" promptText="Prezzo" focusTraversable="false"
-                               style="-fx-font-size: 30px; -fx-padding: 10px; -fx-border-radius: 5px; -fx-background-radius: 10px; -fx-prompt-text-fill: #808080; -fx-background-color: #F9F6F7; -fx-border-color: #D2B48C"/>
-                    <Text text="€" style="-fx-font-size: 30px; -fx-fill: #333333"/>
+                               style="-fx-font-size: 20px; -fx-padding: 10px; -fx-border-radius: 5px; -fx-background-radius: 10px; -fx-prompt-text-fill: #808080; -fx-background-color: #F9F6F7; -fx-border-color: #D2B48C"/>
+                    <Text text="€" style="-fx-font-size: 20px; -fx-fill: #333333"/>
                 </HBox>
             </VBox>
         </HBox>
@@ -34,7 +34,7 @@
         <!-- Category Selection -->
         <HBox spacing="10.0" alignment="CENTER">
             <ComboBox fx:id="orderCategory" prefWidth="400" maxWidth="400" promptText="Seleziona categoria"
-                      style="-fx-font-size: 30px; -fx-padding: 10px; -fx-border-radius: 5px; -fx-background-radius: 10px; -fx-prompt-text-fill: #808080; -fx-background-color: #F9F6F7; -fx-border-color: #D2B48C">
+                      style="-fx-font-size: 20px; -fx-padding: 10px; -fx-border-radius: 5px; -fx-background-radius: 10px; -fx-prompt-text-fill: #808080; -fx-background-color: #F9F6F7; -fx-border-color: #D2B48C">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="Antipasti"/>
@@ -48,24 +48,24 @@
         <!-- Category Selection -->
 
         <Button fx:id="confirmOrderButton" text="Conferma piatto" onAction="#addOrderToMenu" prefWidth="300"
-                style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
+                style="-fx-font-size: 20px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
     </VBox>
     <!-- Order and Price Writing -->
 
     <!-- Error Message -->
-    <Text fx:id="invalidData" visible="false" fill="#FF0000" style="-fx-font-size: 30px"/>
+    <Text fx:id="invalidData" visible="false" fill="#FF0000" style="-fx-font-size: 20px"/>
     <!-- Error Message -->
 
     <!-- Menu -->
     <VBox fx:id="menuArea" spacing="15.0" alignment="CENTER">
-        <Text text="MENU" style="-fx-font-size: 35px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
+        <Text text="MENU" style="-fx-font-size: 25px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
         <ListView fx:id="menu" prefWidth="808" maxWidth="808"
-                  style="-fx-font-size: 30px"/>
+                  style="-fx-font-size: 20px"/>
         <HBox spacing="10.0" alignment="CENTER">
             <Button fx:id="cancelButton" text="Annulla modifiche" onAction="#restoreMenu" prefWidth="300"
-                    style="-fx-font-size: 30px; -fx-background-color: #FF0000; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
+                    style="-fx-font-size: 20px; -fx-background-color: #FF0000; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
             <Button fx:id="confirmMenuButton" text="Conferma menu" onAction="#cook" prefWidth="300"
-                    style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
+                    style="-fx-font-size: 20px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
         </HBox>
     </VBox>
     <!-- Menu -->

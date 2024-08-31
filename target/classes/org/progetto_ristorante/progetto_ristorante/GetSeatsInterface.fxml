@@ -7,8 +7,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
-
 <?import javafx.scene.control.Label?>
+
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.progetto_ristorante.progetto_ristorante.CustomerController"
       style="-fx-background-color: #F5DEB3; -fx-font-family: 'Helvetica'">
@@ -21,28 +21,30 @@
 
     <!-- Required Seats -->
     <VBox fx:id="seatsBox" spacing="20.0" alignment="CENTER">
-        <Text text="Benvenuto, di quanti posti hai bisogno?" style="-fx-font-size: 30px"/>
+        <Text text="Benvenuto, di quanti posti hai bisogno?" style="-fx-font-size: 25px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
         <TextField fx:id="requiredSeatsField" promptText="Posti richiesti" maxWidth="280" focusTraversable="false"
-                   style="-fx-font-size: 30px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-prompt-text-fill: #808080"/>
+                   style="-fx-font-size: 20px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 8; -fx-prompt-text-fill: #808080"/>
         <Button fx:id="confirmSeatsButton" text="Conferma" onAction="#getRequiredSeats"
-                style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
+                style="-fx-font-size: 20px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
     </VBox>
     <!-- Required Seats -->
 
     <!-- Additional Elements for Waiting -->
     <VBox fx:id="waitingBox" spacing="20.0" visible="false" alignment="CENTER">
-        <Text fx:id="waitingMessage" visible="false" style="-fx-font-size: 30px"/>
+        <Text fx:id="waitingMessage" visible="false" style="-fx-font-size: 25px; -fx-fill: #32CD32; -fx-font-weight: bold"/>
         <HBox spacing="10.0" alignment="CENTER">
             <Button fx:id="waitingButton" text="Si, attendo" onAction="#waitButton"
-                    style="-fx-font-size: 30px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
+                    style="-fx-font-size: 20px; -fx-background-color: #32CD32; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
             <Button fx:id="leavingButton" text="No, me ne vado" onAction="#leave"
-                    style="-fx-font-size: 30px; -fx-background-color: #FF4500; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
+                    style="-fx-font-size: 20px; -fx-background-color: #FF4500; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-text-fill: #FFFFFF"/>
         </HBox>
     </VBox>
-    <Label fx:id="progressLabel" style="-fx-font-size: 30px"/>
     <!-- Additional Elements for Waiting -->
 
+    <!-- Progress Label -->
+    <Label fx:id="progressLabel" style="-fx-font-size: 20px; -fx-fill: #32CD32"/>
+
     <!-- Error Message -->
-    <Text fx:id="unavailableReceptionist" visible="false" fill="red" style="-fx-font-size: 30px"/>
+    <Text fx:id="unavailableReceptionist" visible="false" fill="#FF0000" style="-fx-font-size: 20px"/>
     <!-- Error Message -->
 </VBox>
