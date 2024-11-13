@@ -10,7 +10,7 @@ public class NotDiscountMenu implements MenuState {
 
     @Override
     public void changeMenuState(MenuContext menuContext) { // changes menu's state from discounted to full price version
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano_22")) { // connection to the database
             String selectQuery = "SELECT * FROM ORDINI"; // query to get each menu's orders
             try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) { // performs the query
                 ResultSet resultSet = preparedStatement.executeQuery();

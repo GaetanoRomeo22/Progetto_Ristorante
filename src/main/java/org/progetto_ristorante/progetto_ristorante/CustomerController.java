@@ -45,9 +45,6 @@ public class CustomerController implements Initializable {
 
     @FXML
     private TextField loginUsername,
-            visibleLoginPassword,
-            visibleRegisterPassword,
-            visibleConfirmPassword,
             registerUsername,
             requiredSeatsField,
             cardNumberField,
@@ -90,8 +87,6 @@ public class CustomerController implements Initializable {
     protected MenuContext menuContext = new MenuContext();  // used to show discounted or not discounted menu
     protected PaymentStrategy paymentStrategy;              // used to manage payment method
     private final MenuOriginator menuOriginator = new MenuOriginator(); // initial menu's state (before modifies)
-    private boolean isLoginPasswordVisible = false;
-    private boolean isRegisterPasswordVisible = false;
 
     public CustomerController() { // constructor
         bill = 0.0f;
@@ -115,40 +110,6 @@ public class CustomerController implements Initializable {
             leavingButton.setOnMouseEntered(_ -> leavingButton.setEffect(new DropShadow()));
             leavingButton.setOnMouseExited(_ -> leavingButton.setEffect(null));
         }
-    }
-
-    @FXML
-    private void toggleLoginPasswordVisibility() {
-        if (isLoginPasswordVisible) {
-            loginPassword.setText(visibleLoginPassword.getText());
-            visibleLoginPassword.setVisible(false);
-            loginPassword.setVisible(true);
-        } else {
-            visibleLoginPassword.setText(loginPassword.getText());
-            visibleLoginPassword.setVisible(true);
-            loginPassword.setVisible(false);
-        }
-        isLoginPasswordVisible = !isLoginPasswordVisible;
-    }
-
-    @FXML
-    private void toggleRegisterPasswordVisibility() {
-        if (isRegisterPasswordVisible) {
-            registerPassword.setText(visibleRegisterPassword.getText());
-            visibleRegisterPassword.setVisible(false);
-            registerPassword.setVisible(true);
-            confirmPassword.setText(visibleConfirmPassword.getText());
-            visibleConfirmPassword.setVisible(false);
-            confirmPassword.setVisible(true);
-        } else {
-            visibleRegisterPassword.setText(registerPassword.getText());
-            visibleRegisterPassword.setVisible(true);
-            registerPassword.setVisible(false);
-            visibleConfirmPassword.setText(confirmPassword.getText());
-            visibleConfirmPassword.setVisible(true);
-            confirmPassword.setVisible(false);
-        }
-        isRegisterPasswordVisible = !isRegisterPasswordVisible;
     }
 
     @FXML
@@ -189,8 +150,8 @@ public class CustomerController implements Initializable {
             } else if (username.contains(" ") || password.contains(" ")) { // checks if username or password contain spaces
                 registerError.setText("Username e password non possono contenere spazi");
                 registerError.setVisible(true);
-            } else if (model.registerUser(username, password)) { // if the register works, shows get seats interface
-                showSeatsInterface();
+            } else if (model.registerUser(username, password)) { // if the register works, shows login interface
+                showLoginInterface();
             } else { // checks if the username is available
                 registerError.setText("Username non disponibile");
                 registerError.setVisible(true);
@@ -304,7 +265,7 @@ public class CustomerController implements Initializable {
         menuItems.add(primiPlaceholder);
         menuItems.add(secondiPlaceholder);
         menuItems.add(dolciPlaceholder);
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano_22")) { // connection to the database
             String selectQuery = "SELECT * FROM ORDINI ORDER BY CATEGORIA"; // query to get each menu's order
             try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) { // performs the select
                 ResultSet resultSet = preparedStatement.executeQuery();
@@ -609,7 +570,7 @@ public class CustomerController implements Initializable {
     }
 
     private boolean validPassword(String password) { // checks if the password respects the standard
-        String regex = "^(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\",.<>?])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
+        String regex = "^(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"|,.<>?])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
         return password.matches(regex);
     }
 

@@ -6,7 +6,6 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
@@ -30,19 +29,10 @@
         <TextField fx:id="registerUsername" promptText="Username" maxWidth="280" focusTraversable="false"
                    style="-fx-font-size: 20px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 10; -fx-prompt-text-fill: #808080"/>
         <VBox spacing="10.0" alignment="CENTER">
-            <StackPane>
-                <PasswordField fx:id="registerPassword" promptText="Password" focusTraversable="false" maxWidth="280"
+            <PasswordField fx:id="registerPassword" promptText="Password" focusTraversable="false" maxWidth="280"
+                       style="-fx-font-size: 20px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 10; -fx-prompt-text-fill: #808080"/>
+            <PasswordField fx:id="confirmPassword" promptText="Password" focusTraversable="false" maxWidth="280"
                            style="-fx-font-size: 20px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 10; -fx-prompt-text-fill: #808080"/>
-                <TextField fx:id="visibleRegisterPassword" promptText="Password" focusTraversable="false" visible="false" maxWidth="280"
-                           style="-fx-font-size: 20px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 10; -fx-prompt-text-fill: #808080"/>
-            </StackPane>
-            <StackPane>
-                <PasswordField fx:id="confirmPassword" promptText="Password" focusTraversable="false" maxWidth="280"
-                               style="-fx-font-size: 20px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 10; -fx-prompt-text-fill: #808080"/>
-                <TextField fx:id="visibleConfirmPassword" promptText="Password" focusTraversable="false" visible="false" maxWidth="280"
-                           style="-fx-font-size: 20px; -fx-background-color: #F9F6F7; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 10; -fx-prompt-text-fill: #808080"/>
-            </StackPane>
-            <Label text="👁️" style="-fx-font-size: 20px; -fx-cursor: hand; -fx-padding: 10; -fx-text-fill: #808080" onMouseClicked="#toggleRegisterPasswordVisibility"/>
         </VBox>
     </VBox>
     <!-- Username and Password -->

@@ -22,7 +22,7 @@ public class CustomerModel {
 
     public boolean loginUser(String username, String password) throws SQLException, NoSuchAlgorithmException { // checks if the customer is registered
         String hashedPassword = hashPassword(password); // encrypts the password
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano_22")) { // connection to the database
             String query = "SELECT * FROM UTENTI WHERE USERNAME = ? AND PASSWORD = ?"; // query to check if the customer is registered
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) { // substitutes "?" with username and password and performs the query
                 preparedStatement.setString(1, username);
@@ -36,7 +36,7 @@ public class CustomerModel {
 
     public boolean registerUser(String username, String password) throws SQLException, NoSuchAlgorithmException { // manages the insertion of customer's data into the database once registered
         String hashedPassword = hashPassword(password); // encrypts the password
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano_22")) { // connection to the database
             if (!usernameAvailable(connection, username)) { // checks if the username is available
                 return false;
             }

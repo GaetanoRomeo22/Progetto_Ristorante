@@ -177,7 +177,7 @@ public class ChefController implements Initializable {
         menuItems.add(primiPlaceholder);
         menuItems.add(secondiPlaceholder);
         menuItems.add(dolciPlaceholder);
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano_22")) { // connection to the database
             String selectQuery = "SELECT * FROM ORDINI ORDER BY CATEGORIA"; // query to get each menu's order
             try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) { // performs the select
                 ResultSet resultSet = preparedStatement.executeQuery();
@@ -227,7 +227,7 @@ public class ChefController implements Initializable {
     }
 
     private void saveConfirmedMenu() throws IOException { // stores menu's updates
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano22")) { // connection to the database
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RISTORANTE", "root", "Gaetano_22")) { // connection to the database
             String clearMenuQuery = "DELETE FROM ORDINI"; // clears existing menu in the database
             try (PreparedStatement clearMenuStatement = connection.prepareStatement(clearMenuQuery)) { // executes the query
                 clearMenuStatement.executeUpdate();
